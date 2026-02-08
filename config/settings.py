@@ -121,6 +121,18 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+CELERY_BEAT_SCHEDULE = {
+    'generate-daily-horoscopes': {
+        'task': 'horoscope.generate_daily_for_all_users',
+        'schedule': 60 * 60 * 24,  # every 24 hours
+        'options': {'queue': 'default'},
+    },
+    'send-daily-horoscope-notifications': {
+        'task': 'horoscope.send_daily_horoscope_notifications',
+        'schedule': 60 * 60 * 24,  # every 24 hours (offset by crontab in prod)
+        'options': {'queue': 'default'},
+    },
+}
 
 
 # Bot configuration
