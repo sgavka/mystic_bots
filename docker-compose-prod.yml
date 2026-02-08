@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:17
+    env_file:
+      - .env
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped
+
+  bot_horoscope:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: "python manage.py start_bot --bot horoscope"
+    env_file:
+      - .env
+    environment:
+      - PYTHONOPTIMIZE=2
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: "celery -A config.celery worker --loglevel=info"
+    env_file:
+      - .env
+    environment:
+      - PYTHONOPTIMIZE=2
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: "celery -A config.celery beat --loglevel=info"
+    env_file:
+      - .env
+    environment:
+      - PYTHONOPTIMIZE=2
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
