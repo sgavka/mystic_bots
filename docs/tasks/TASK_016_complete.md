@@ -1,5 +1,9 @@
 # TASK_016 — Testing: unit tests for services and repositories
 
+## Commit ID
+
+96e1ca9
+
 ## Summary
 
 Project has zero tests. Add unit tests for core business logic: zodiac sign calculation, horoscope generation, subscription service, repositories, and entity conversions.
