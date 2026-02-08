@@ -4,12 +4,11 @@
 
 **Step 7** — Start task implementation
 
-Current status: Implementing TASK_001 — Project skeleton: Docker, Django, Aiogram, Poetry, Makefile setup.
+Current status: Implementing TASK_002 — Core app: User model, base repository, DI container.
 
 ## Tasks
 
-- [ ] TASK_001 — Project skeleton: Docker, Django, Aiogram, Poetry, Makefile setup — `docs/tasks/TASK_001_processing.md` **[IN PROGRESS]**
-- [ ] TASK_002 — Core app: User model, base repository, DI container — `docs/tasks/TASK_002.md`
+- [ ] TASK_002 — Core app: User model, base repository, DI container — `docs/tasks/TASK_002_processing.md` **[IN PROGRESS]**
 - [ ] TASK_003 — Telegram bot app: bot factory, middlewares, /start handler — `docs/tasks/TASK_003.md`
 - [ ] TASK_004 — Horoscope app: models (UserProfile, Horoscope, Subscription) — `docs/tasks/TASK_004.md`
 - [ ] TASK_005 — Wizard flow: name → birth date → birth place → living place — `docs/tasks/TASK_005.md`
