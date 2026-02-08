@@ -1,5 +1,9 @@
 # TASK_015 — Feature: Django admin interface
 
+## Commit ID
+
+ec9f7b5
+
 ## Summary
 
 No Django admin customization exists. Add admin classes for all models (User, UserProfile, Horoscope, Subscription) with search, filters, and read-only fields for operational visibility.
