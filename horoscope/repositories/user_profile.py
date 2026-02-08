@@ -58,3 +58,11 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
             place_of_birth,
             place_of_living,
         )
+
+    def get_all_telegram_uids(self) -> list[int]:
+        return list(
+            UserProfile.objects.values_list('user_telegram_uid', flat=True)
+        )
+
+    async def aget_all_telegram_uids(self) -> list[int]:
+        return await sync_to_async(self.get_all_telegram_uids)()

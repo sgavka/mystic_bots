@@ -2,13 +2,17 @@
 
 ## Next step
 
-**Step 11** — Analyze plan to create new tasks if needed
-
-Current status: All 10 tasks complete.
+**Step 2-3** — Pick next task and start implementing
 
 ## Tasks
 
-*(No pending tasks)*
+- [x] **TASK_011** (complete) — Refactor: fix repository pattern violations
+- [ ] **TASK_012** (new) — Refactor: extract config, keyboards, callbacks per project structure
+- [ ] **TASK_013** (new) — Improvement: error handling and Celery retry logic
+- [ ] **TASK_014** (new) — Feature: subscription expiry reminders
+- [ ] **TASK_015** (new) — Feature: Django admin interface
+- [ ] **TASK_016** (new) — Testing: unit tests for services and repositories
+- [ ] **TASK_017** (new) — Feature: LLM-based horoscope generation
 
 ---
 

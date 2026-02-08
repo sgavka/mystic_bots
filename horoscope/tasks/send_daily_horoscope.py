@@ -12,14 +12,15 @@ def generate_daily_for_all_users_task():
     Celery beat task: generate daily horoscopes for all users with profiles.
     Runs once daily (configured in Celery beat schedule).
     """
-    from horoscope.models import UserProfile
+    from core.containers import container
     from horoscope.tasks.generate_horoscope import generate_horoscope_task
 
     today = date.today()
-    profiles = UserProfile.objects.all().values_list('user_telegram_uid', flat=True)
+    user_profile_repo = container.horoscope.user_profile_repository()
+    telegram_uids = user_profile_repo.get_all_telegram_uids()
 
     count = 0
-    for telegram_uid in profiles:
+    for telegram_uid in telegram_uids:
         generate_horoscope_task.delay(
             telegram_uid=telegram_uid,
             target_date=today.isoformat(),
@@ -37,28 +38,28 @@ def send_daily_horoscope_notifications_task():
     Celery beat task: send daily horoscope notifications to all users.
     Runs after generation is expected to be complete.
     """
-    import asyncio
-    from horoscope.models import UserProfile, Horoscope, Subscription
-    from horoscope.enums import SubscriptionStatus
+    from core.containers import container
 
     today = date.today()
-    profiles = UserProfile.objects.all()
+    user_profile_repo = container.horoscope.user_profile_repository()
+    horoscope_repo = container.horoscope.horoscope_repository()
+    subscription_repo = container.horoscope.subscription_repository()
+
+    profiles = user_profile_repo.all()
 
     count = 0
     for profile in profiles:
-        try:
-            horoscope = Horoscope.objects.get(
-                user_telegram_uid=profile.user_telegram_uid,
-                date=today,
-            )
-        except Horoscope.DoesNotExist:
+        horoscope = horoscope_repo.get_by_user_and_date(
+            telegram_uid=profile.user_telegram_uid,
+            target_date=today,
+        )
+        if not horoscope:
             logger.warning(f"No horoscope found for user {profile.user_telegram_uid} on {today}")
             continue
 
-        has_subscription = Subscription.objects.filter(
-            user_telegram_uid=profile.user_telegram_uid,
-            status=SubscriptionStatus.ACTIVE,
-        ).exists()
+        has_subscription = subscription_repo.has_active_subscription(
+            telegram_uid=profile.user_telegram_uid,
+        )
 
         if has_subscription:
             text = horoscope.full_text
