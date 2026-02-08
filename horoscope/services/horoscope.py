@@ -5,17 +5,12 @@ from datetime import date
 from asgiref.sync import sync_to_async
 
 from core.containers import container
+from horoscope.config import TEASER_LINE_COUNT
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
 from horoscope.enums import HoroscopeType
+from horoscope.utils import get_zodiac_sign
 
 logger = logging.getLogger(__name__)
-
-ZODIAC_SIGNS = {
-    (1, 20): "Aquarius", (2, 19): "Pisces", (3, 21): "Aries",
-    (4, 20): "Taurus", (5, 21): "Gemini", (6, 21): "Cancer",
-    (7, 23): "Leo", (8, 23): "Virgo", (9, 23): "Libra",
-    (10, 23): "Scorpio", (11, 22): "Sagittarius", (12, 22): "Capricorn",
-}
 
 THEMES = [
     "love and relationships", "career and finances", "health and wellness",
@@ -65,23 +60,6 @@ CLOSING_PHRASES = [
     "Let the starlight illuminate your path forward.",
     "Trust in the cosmic plan unfolding before you.",
 ]
-
-TEASER_LINE_COUNT = 3
-
-
-def get_zodiac_sign(date_of_birth: date) -> str:
-    month = date_of_birth.month
-    day = date_of_birth.day
-
-    boundaries = sorted(ZODIAC_SIGNS.keys())
-    for i, (m, d) in enumerate(boundaries):
-        if month == m and day < d:
-            prev_idx = (i - 1) % len(boundaries)
-            return ZODIAC_SIGNS[boundaries[prev_idx]]
-        elif month == m and day >= d:
-            return ZODIAC_SIGNS[(m, d)]
-
-    return "Capricorn"
 
 
 def generate_horoscope_text(profile: UserProfileEntity, target_date: date) -> tuple[str, str]:

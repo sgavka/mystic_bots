@@ -3,11 +3,12 @@ from datetime import date
 
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message
 from asgiref.sync import sync_to_async
 
 from core.containers import container
 from core.entities import UserEntity
+from horoscope.keyboards import subscribe_keyboard
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +51,8 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     if has_subscription:
         await message.answer(horoscope.full_text)
     else:
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(
-                text="Subscribe for full horoscope",
-                callback_data="subscribe",
-            )]
-        ])
         await message.answer(
             horoscope.teaser_text
             + "\n\nSubscribe to see your full daily horoscope!",
-            reply_markup=keyboard,
+            reply_markup=subscribe_keyboard(),
         )

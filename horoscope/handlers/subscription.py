@@ -10,17 +10,16 @@ from aiogram.types import (
 from asgiref.sync import sync_to_async
 
 from core.entities import UserEntity
+from horoscope import callbacks
+from horoscope.config import SUBSCRIPTION_DURATION_DAYS, SUBSCRIPTION_PRICE_STARS
 from horoscope.services.subscription import SubscriptionService
 
 logger = logging.getLogger(__name__)
 
 router = Router()
 
-SUBSCRIPTION_PRICE_STARS = 100
-SUBSCRIPTION_DURATION_DAYS = 30
 
-
-@router.callback_query(F.data == "subscribe")
+@router.callback_query(F.data == callbacks.SUBSCRIBE)
 async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs):
     await callback.answer()
 
@@ -52,8 +51,6 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
 
     @sync_to_async
     def _activate():
-        from django.db import close_old_connections
-        close_old_connections()
         return service.activate_subscription(
             telegram_uid=user.telegram_uid,
             duration_days=SUBSCRIPTION_DURATION_DAYS,

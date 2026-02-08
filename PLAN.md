@@ -7,7 +7,7 @@
 ## Tasks
 
 - [x] **TASK_011** (complete) — Refactor: fix repository pattern violations
-- [ ] **TASK_012** (new) — Refactor: extract config, keyboards, callbacks per project structure
+- [x] **TASK_012** (complete) — Refactor: extract config, keyboards, callbacks per project structure
 - [ ] **TASK_013** (new) — Improvement: error handling and Celery retry logic
 - [ ] **TASK_014** (new) — Feature: subscription expiry reminders
 - [ ] **TASK_015** (new) — Feature: Django admin interface

@@ -120,8 +120,6 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
 
     @sync_to_async
     def _create_profile():
-        from django.db import close_old_connections
-        close_old_connections()
         return user_profile_repo.create_profile(
             telegram_uid=user.telegram_uid,
             name=name,
