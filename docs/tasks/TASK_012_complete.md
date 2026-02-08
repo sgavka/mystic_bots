@@ -1,5 +1,9 @@
 # TASK_012 — Refactor: extract config, keyboards, callbacks per project structure
 
+## Commit ID
+
+48ce660
+
 ## Summary
 
 CLAUDE.md documents horoscope/config.py, horoscope/keyboards.py, and horoscope/callbacks.py as separate files, but they don't exist. Keyboards and callbacks are inline in handlers, and config values (subscription price/duration, teaser line count) are hardcoded as module-level constants. Extract them to proper files following the documented structure.
