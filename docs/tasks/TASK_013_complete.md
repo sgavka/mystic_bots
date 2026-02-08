@@ -1,5 +1,9 @@
 # TASK_013 — Improvement: error handling and Celery retry logic
 
+## Commit ID
+
+1b7d5ad
+
 ## Summary
 
 Celery tasks have no retry mechanism, send_daily_horoscope creates a new Bot instance per message (no session reuse), and asyncio.run() inside Celery is fragile. Add retry decorators, fix bot session management, and improve error handling throughout.
