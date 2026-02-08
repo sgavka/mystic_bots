@@ -4,12 +4,11 @@
 
 **Step 7** — Start task implementation
 
-Current status: Implementing TASK_008 — Daily horoscope: Celery beat + teaser wall.
+Current status: Implementing TASK_009 — Subscription system.
 
 ## Tasks
 
-- [ ] TASK_008 — Daily horoscope: Celery beat schedule, teaser + subscription wall — `docs/tasks/TASK_008_processing.md` **[IN PROGRESS]**
-- [ ] TASK_009 — Subscription system: payment, access control, subscription management — `docs/tasks/TASK_009.md`
+- [ ] TASK_009 — Subscription system: payment, access control, subscription management — `docs/tasks/TASK_009_processing.md` **[IN PROGRESS]**
 
 ---
 
