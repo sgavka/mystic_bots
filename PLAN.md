@@ -4,12 +4,11 @@
 
 **Step 7** — Start task implementation
 
-Current status: Implementing TASK_004 — Horoscope app: models (UserProfile, Horoscope, Subscription).
+Current status: Implementing TASK_005 — Wizard flow: name → birth date → birth place → living place.
 
 ## Tasks
 
-- [ ] TASK_004 — Horoscope app: models (UserProfile, Horoscope, Subscription) — `docs/tasks/TASK_004_processing.md` **[IN PROGRESS]**
-- [ ] TASK_005 — Wizard flow: name → birth date → birth place → living place — `docs/tasks/TASK_005.md`
+- [ ] TASK_005 — Wizard flow: name → birth date → birth place → living place — `docs/tasks/TASK_005_processing.md` **[IN PROGRESS]**
 - [ ] TASK_006 — Horoscope generation service (AI/template-based) — `docs/tasks/TASK_006.md`
 - [ ] TASK_007 — Celery setup: broker, worker, task queue for horoscope generation — `docs/tasks/TASK_007.md`
 - [ ] TASK_008 — Daily horoscope: Celery beat schedule, teaser + subscription wall — `docs/tasks/TASK_008.md`

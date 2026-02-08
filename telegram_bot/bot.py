@@ -53,10 +53,10 @@ def setup_middlewares(dispatcher: Dispatcher) -> None:
 
 def setup_handlers(dispatcher: Dispatcher) -> None:
     from telegram_bot.handlers import errors
-    from telegram_bot.handlers import start
+    from horoscope.handlers.wizard import router as wizard_router
 
     dispatcher.errors.register(errors.error_handler)
-    dispatcher.include_router(start.router)
+    dispatcher.include_router(wizard_router)
 
 
 def setup_dispatcher(dispatcher: Dispatcher, bot_instance: Bot) -> Dispatcher:
