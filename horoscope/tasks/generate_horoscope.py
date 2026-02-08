@@ -6,7 +6,14 @@ from celery import shared_task
 logger = logging.getLogger(__name__)
 
 
-@shared_task(name='horoscope.generate_for_user')
+@shared_task(
+    name='horoscope.generate_for_user',
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_backoff_max=600,
+    max_retries=3,
+    retry_jitter=True,
+)
 def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type: str = 'daily'):
     """
     Celery task to generate a horoscope for a specific user and date.
@@ -35,6 +42,3 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
     except ValueError as e:
         logger.error(f"Failed to generate horoscope for user {telegram_uid}: {e}")
         return None
-    except Exception as e:
-        logger.exception(f"Unexpected error generating horoscope for user {telegram_uid}: {e}")
-        raise

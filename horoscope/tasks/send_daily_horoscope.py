@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import date
 
@@ -6,7 +7,14 @@ from celery import shared_task
 logger = logging.getLogger(__name__)
 
 
-@shared_task(name='horoscope.generate_daily_for_all_users')
+@shared_task(
+    name='horoscope.generate_daily_for_all_users',
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_backoff_max=600,
+    max_retries=3,
+    retry_jitter=True,
+)
 def generate_daily_for_all_users_task():
     """
     Celery beat task: generate daily horoscopes for all users with profiles.
@@ -32,7 +40,14 @@ def generate_daily_for_all_users_task():
     return count
 
 
-@shared_task(name='horoscope.send_daily_horoscope_notifications')
+@shared_task(
+    name='horoscope.send_daily_horoscope_notifications',
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_backoff_max=600,
+    max_retries=3,
+    retry_jitter=True,
+)
 def send_daily_horoscope_notifications_task():
     """
     Celery beat task: send daily horoscope notifications to all users.
@@ -47,7 +62,7 @@ def send_daily_horoscope_notifications_task():
 
     profiles = user_profile_repo.all()
 
-    count = 0
+    messages = []
     for profile in profiles:
         horoscope = horoscope_repo.get_by_user_and_date(
             telegram_uid=profile.user_telegram_uid,
@@ -69,34 +84,35 @@ def send_daily_horoscope_notifications_task():
                 + "\n\nSubscribe to see your full horoscope!"
             )
 
-        _send_message_sync(
-            telegram_uid=profile.user_telegram_uid,
-            text=text,
-        )
-        count += 1
+        messages.append((profile.user_telegram_uid, text))
 
+    count = _send_messages_sync(messages)
     logger.info(f"Sent daily horoscope to {count} users on {today}")
     return count
 
 
-def _send_message_sync(telegram_uid: int, text: str):
-    """Send a Telegram message synchronously (for Celery tasks)."""
-    import asyncio
+def _send_messages_sync(messages: list[tuple[int, str]]) -> int:
+    """Send multiple Telegram messages reusing a single Bot session."""
     from aiogram import Bot
     from aiogram.client.default import DefaultBotProperties
     from aiogram.enums import ParseMode
     from config import settings
 
-    async def _send():
+    async def _send_all():
         bot = Bot(
             token=settings.CURRENT_BOT_TOKEN,
             default=DefaultBotProperties(parse_mode=ParseMode.HTML),
         )
+        sent = 0
         try:
-            await bot.send_message(chat_id=telegram_uid, text=text)
-        except Exception as e:
-            logger.error(f"Failed to send message to user {telegram_uid}: {e}")
+            for telegram_uid, text in messages:
+                try:
+                    await bot.send_message(chat_id=telegram_uid, text=text)
+                    sent += 1
+                except Exception as e:
+                    logger.error(f"Failed to send message to user {telegram_uid}: {e}")
         finally:
             await bot.session.close()
+        return sent
 
-    asyncio.run(_send())
+    return asyncio.run(_send_all())

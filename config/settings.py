@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = ['*']
 
@@ -191,3 +191,16 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+
+# Startup validation
+
+import logging as _logging
+
+_startup_logger = _logging.getLogger(__name__)
+
+if not CURRENT_BOT_TOKEN:
+    _startup_logger.warning("BOT token is not set. Set BOT_HOROSCOPE_TOKEN environment variable.")
+
+if DATABASES['default']['PASSWORD'] == 'postgres' and not DEBUG:
+    _startup_logger.warning("Database password is using default value in non-debug mode.")
