@@ -19,7 +19,7 @@ mystic_bots/
 ├── docker/
 │   ├── Dockerfile
 │   └── entrypoint.sh
-├── pyproject.toml             # Poetry dependencies
+├── pyproject.toml             # uv dependencies (PEP 621)
 ├── manage.py                  # Django management entry point
 ├── config/
 │   ├── settings.py            # Django settings
@@ -91,7 +91,7 @@ mystic_bots/
 - **Celery** — task queue for horoscope generation
 - **dependency-injector** — DI container
 - **Docker** + **docker-compose** — containerized dev/prod
-- **Poetry** — dependency management
+- **uv** — dependency management
 
 ## Development Rules
 
@@ -117,20 +117,24 @@ make celery-beat        # Start Celery beat
 
 ### Architecture Patterns
 
-1. **Repository Pattern** — all data access through repositories returning Pydantic entities (NEVER return Django models directly)
+1. **DRY (Don't Repeat Yourself)** — no code duplication; extract shared logic into services/utils. Every piece of knowledge must have a single, unambiguous representation.
+
+2. **DDD (Domain-Driven Design)** — organize code by domain (horoscope, core, telegram_bot). Keep domain logic in services, use entities as value objects, repositories as data access boundaries.
+
+3. **Repository Pattern** — all data access through repositories returning Pydantic entities (NEVER return Django models directly)
    - Sync methods: `get_by_id`, `create`, `update`, `filter`, `delete`
    - Async methods: `aget_by_id`, `acreate`, `aupdate`, `afilter`, `adelete`
 
-2. **Entity Pattern** — every Django model has a corresponding Pydantic entity with `model_config = ConfigDict(from_attributes=True)`
+4. **Entity Pattern** — every Django model has a corresponding Pydantic entity with `model_config = ConfigDict(from_attributes=True)`
 
-3. **Dependency Injection** — use `dependency-injector` framework
+5. **Dependency Injection** — use `dependency-injector` framework
    - Inject only in: method/function parameters or class `__init__`
    - NEVER inject as class attributes
 
-4. **Middleware Pattern** — auto-apply to all handlers (NO per-handler decorators)
+6. **Middleware Pattern** — auto-apply to all handlers (NO per-handler decorators)
    - BotMiddleware → UserMiddleware → AppContextMiddleware
 
-5. **Service Layer** — business logic lives in services, never in handlers or repositories
+7. **Service Layer** — business logic lives in services, never in handlers or repositories
 
 ### Coding Rules
 
@@ -164,8 +168,19 @@ Bot-specific settings are loaded from environment variables: `BOT_HOROSCOPE_TOKE
 ### Git & Commits
 
 - Feature branches from `main`
-- Conventional commit messages
 - One logical change per commit
+- Commit message format:
+  ```
+  type: short description
+
+  - Detailed point 1;
+  - Detailed point 2;
+  - More details as needed.
+  ```
+- Types: `feat`, `improvement`, `fix`, `refactor`, `docs`, `test`, `chore`
+- **IMPORTANT**: Do NOT add "Generated with Claude Code" or similar attribution
+- **IMPORTANT**: Do NOT add "Co-Authored-By" lines
+- Keep commit messages clean and focused on changes only
 
 ### Background Tasks (Celery)
 

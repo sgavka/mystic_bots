@@ -23,20 +23,13 @@ RUN apt-get update && \
     apt-get install -y gettext && \
     rm -rf /var/lib/apt/lists/*
 
-# install Poetry
-ENV POETRY_VERSION=2.2.1
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_NO_INTERACTION=1
-ENV POETRY_VIRTUALENVS_IN_PROJECT=false
-ENV POETRY_VIRTUALENVS_CREATE=false
-ENV PATH="$POETRY_HOME/bin:$PATH"
-
+# install uv
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir poetry==${POETRY_VERSION}
+    pip install --no-cache-dir uv
 
 # install dependencies
-COPY pyproject.toml poetry.lock /code/
-RUN poetry install --no-root --no-cache
+COPY pyproject.toml uv.lock /code/
+RUN uv sync --frozen --no-dev --no-install-project
 
 # entrypoint setup
 COPY ./docker/entrypoint.sh /entrypoint.sh

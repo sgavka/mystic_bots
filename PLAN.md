@@ -2,13 +2,11 @@
 
 ## Next step
 
-**Step 11** — Analyze plan to create new tasks if needed
-
-Current status: All 9 initial tasks complete. Project skeleton and core features implemented.
+**Step 7** — Start task implementation (TASK_010)
 
 ## Tasks
 
-*(No pending tasks — all initial tasks complete)*
+- [x] TASK_010 — Project standards: uv, DRY/DDD, commit rules *(in progress)*
 
 ---
 
@@ -29,3 +27,31 @@ Current status: All 9 initial tasks complete. Project skeleton and core features
 2. **Summary** — short summary of task
 3. **Checkboxes** — task checkboxes (subtasks)
 4. **Investigation** — result of investigation how to implement task
+
+## Commit rules
+
+### Format
+
+```
+type: short description
+
+- Detailed point 1;
+- Detailed point 2;
+- More details as needed.
+```
+
+### Types
+
+1. `feat` — New feature or functionality
+2. `improvement` — Enhancement to existing feature
+3. `fix` — Bug fix
+4. `refactor` — Code refactoring without behavior change
+5. `docs` — Documentation changes
+6. `test` — Adding or updating tests
+7. `chore` — Maintenance tasks, dependencies, configs
+
+### IMPORTANT
+
+1. Do NOT add "Generated with Claude Code" or similar attribution
+2. Do NOT add "Co-Authored-By" lines
+3. Keep the commit message clean and focused on the changes only

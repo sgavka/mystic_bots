@@ -34,8 +34,8 @@ data/redis/*
 staticfiles/
 media/
 
-# Poetry
-# poetry.lock is committed for reproducible builds
+# uv
+# uv.lock is committed for reproducible builds
 
 # Celery
 celerybeat-schedule

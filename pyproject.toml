@@ -4,39 +4,27 @@ version = "0.1.0"
 description = "Telegram bots for personalized horoscopes"
 readme = "README.md"
 requires-python = ">=3.12"
-
-[tool.poetry]
-name = "mystic-bots"
-version = "0.1.0"
-description = "Telegram bots for personalized horoscopes"
-authors = []
-readme = "README.md"
-packages = [
-    { include = "core" },
-    { include = "telegram_bot" },
-    { include = "horoscope" },
-    { include = "config" },
+dependencies = [
+    "django>=5.2,<6",
+    "aiogram>=3.3,<4",
+    "redis>=5.0,<6",
+    "psycopg2-binary>=2.9,<3",
+    "pydantic>=2.5,<3",
+    "dependency-injector>=4.41,<5",
+    "asgiref>=3.7,<4",
+    "aiohttp>=3.9,<4",
+    "aiofiles>=23.2",
+    "celery[redis]>=5.4,<6",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-django = "^5.2"
-aiogram = "^3.3"
-redis = "^5.0"
-psycopg2-binary = "^2.9"
-pydantic = "^2.5"
-dependency-injector = "^4.41"
-asgiref = "^3.7"
-aiohttp = "^3.9"
-aiofiles = "^23.2"
-celery = {version = "^5.4", extras = ["redis"]}
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4"
-pytest-django = "^4.5"
-pytest-asyncio = "^0.21"
-aiogram-test-framework = "^1.0.1"
-ruff = "^0.4"
+[dependency-groups]
+dev = [
+    "pytest>=7.4,<8",
+    "pytest-django>=4.5,<5",
+    "pytest-asyncio>=0.21,<1",
+    "aiogram-test-framework>=1.0.1,<2",
+    "ruff>=0.4",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -49,7 +37,3 @@ filterwarnings = [
     "ignore::DeprecationWarning",
 ]
 DJANGO_SETTINGS_MODULE = "config.settings_test"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

@@ -123,21 +123,21 @@ install: build migrate start
 .PHONY: rebuild
 rebuild: stop build start
 
-.PHONY: poetry-install
-poetry-install:
-	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) poetry install
+.PHONY: uv-install
+uv-install:
+	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) uv sync
 
-.PHONY: poetry-add
-poetry-add:
-	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) poetry add $(RUN_ARGS)
+.PHONY: uv-add
+uv-add:
+	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) uv add $(RUN_ARGS)
 
-.PHONY: poetry-update
-poetry-update:
-	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) poetry update
+.PHONY: uv-update
+uv-update:
+	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) uv lock --upgrade
 
-.PHONY: poetry-lock
-poetry-lock:
-	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) poetry lock
+.PHONY: uv-lock
+uv-lock:
+	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) uv lock
 
 # =============================================================================
 # Celery
@@ -266,10 +266,10 @@ help:
 	@echo "Development:"
 	@echo "  make install        - Full setup: build, migrate, start"
 	@echo "  make rebuild        - Stop, build and start"
-	@echo "  make poetry-install - Install dependencies"
-	@echo "  make poetry-add     - Add new dependency"
-	@echo "  make poetry-update  - Update dependencies"
-	@echo "  make poetry-lock    - Regenerate lock file"
+	@echo "  make uv-install     - Install dependencies"
+	@echo "  make uv-add         - Add new dependency"
+	@echo "  make uv-update      - Update dependencies (upgrade all)"
+	@echo "  make uv-lock        - Regenerate lock file"
 	@echo ""
 	@echo "Celery:"
 	@echo "  make celery-worker  - Start Celery worker"
