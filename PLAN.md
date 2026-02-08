@@ -4,12 +4,11 @@
 
 **Step 7** — Start task implementation
 
-Current status: Implementing TASK_005 — Wizard flow: name → birth date → birth place → living place.
+Current status: Implementing TASK_006 — Horoscope generation service.
 
 ## Tasks
 
-- [ ] TASK_005 — Wizard flow: name → birth date → birth place → living place — `docs/tasks/TASK_005_processing.md` **[IN PROGRESS]**
-- [ ] TASK_006 — Horoscope generation service (AI/template-based) — `docs/tasks/TASK_006.md`
+- [ ] TASK_006 — Horoscope generation service (AI/template-based) — `docs/tasks/TASK_006_processing.md` **[IN PROGRESS]**
 - [ ] TASK_007 — Celery setup: broker, worker, task queue for horoscope generation — `docs/tasks/TASK_007.md`
 - [ ] TASK_008 — Daily horoscope: Celery beat schedule, teaser + subscription wall — `docs/tasks/TASK_008.md`
 - [ ] TASK_009 — Subscription system: payment, access control, subscription management — `docs/tasks/TASK_009.md`
