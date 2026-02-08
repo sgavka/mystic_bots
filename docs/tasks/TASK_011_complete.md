@@ -1,5 +1,9 @@
 # TASK_011 — Refactor: fix repository pattern violations
 
+## Commit ID
+
+32c7221
+
 ## Summary
 
 SubscriptionService and send_daily_horoscope Celery task bypass the repository layer by using Django ORM directly. Fix all direct model access to go through repositories, following DDD boundaries.
