@@ -10,7 +10,7 @@
 - [x] **TASK_012** (complete) — Refactor: extract config, keyboards, callbacks per project structure
 - [x] **TASK_013** (complete) — Improvement: error handling and Celery retry logic
 - [x] **TASK_014** (complete) — Feature: subscription expiry reminders
-- [ ] **TASK_015** (new) — Feature: Django admin interface
+- [x] **TASK_015** (complete) — Feature: Django admin interface
 - [ ] **TASK_016** (new) — Testing: unit tests for services and repositories
 - [ ] **TASK_017** (new) — Feature: LLM-based horoscope generation
 
