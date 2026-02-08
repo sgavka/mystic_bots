@@ -1,17 +1,21 @@
 # TASK_010 — Project standards: uv, DRY/DDD, commit rules
 
+## Commit ID
+
+61bf2a2
+
 ## Summary
 
 Switch package manager from Poetry to uv. Add DRY and DDD principles to CLAUDE.md. Add commit message rules to PLAN.md. Remove Co-Authored-By and attribution from commit practices.
 
 ## Checkboxes
 
-- [ ] Migrate from Poetry to uv (pyproject.toml, Dockerfile, Makefile, .gitignore)
-- [ ] Remove poetry.lock, generate uv.lock
-- [ ] Update CLAUDE.md: add DRY and DDD principles to architecture patterns
-- [ ] Update CLAUDE.md: change "Poetry" references to "uv" throughout
-- [ ] Add commit rules section to PLAN.md with format, types, and important notes
-- [ ] Update CLAUDE.md Git & Commits section to match new commit rules
+- [x] Migrate from Poetry to uv (pyproject.toml, Dockerfile, Makefile, .gitignore)
+- [x] Remove poetry.lock, generate uv.lock
+- [x] Update CLAUDE.md: add DRY and DDD principles to architecture patterns
+- [x] Update CLAUDE.md: change "Poetry" references to "uv" throughout
+- [x] Add commit rules section to PLAN.md with format, types, and important notes
+- [x] Update CLAUDE.md Git & Commits section to match new commit rules
 
 ## Investigation
 
