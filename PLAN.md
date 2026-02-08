@@ -2,7 +2,9 @@
 
 ## Next step
 
-**Step 2-3** — Pick next task and start implementing
+**Step 11** — Analyze plan to create new tasks if needed
+
+Current status: All 17 tasks complete.
 
 ## Tasks
 
@@ -12,7 +14,7 @@
 - [x] **TASK_014** (complete) — Feature: subscription expiry reminders
 - [x] **TASK_015** (complete) — Feature: Django admin interface
 - [x] **TASK_016** (complete) — Testing: unit tests for services and repositories
-- [ ] **TASK_017** (new) — Feature: LLM-based horoscope generation
+- [x] **TASK_017** (complete) — Feature: LLM-based horoscope generation
 
 ---
 

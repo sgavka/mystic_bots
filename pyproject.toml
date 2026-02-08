@@ -15,6 +15,7 @@ dependencies = [
     "aiohttp>=3.9,<4",
     "aiofiles>=23.2",
     "celery[redis]>=5.4,<6",
+    "litellm>=1.40,<2",
 ]
 
 [dependency-groups]

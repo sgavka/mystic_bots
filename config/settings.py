@@ -175,6 +175,14 @@ _reports_chat_id = os.environ.get('REPORTS_CHAT_ID', '')
 REPORTS_CHAT_ID = int(_reports_chat_id) if _reports_chat_id and _reports_chat_id.lstrip('-').isdigit() else None
 
 
+# LLM configuration
+
+LLM_API_KEY = os.environ.get('LLM_API_KEY', '')
+LLM_MODEL = os.environ.get('LLM_MODEL', 'gpt-4o-mini')
+LLM_BASE_URL = os.environ.get('LLM_BASE_URL', '')
+LLM_TIMEOUT = int(os.environ.get('LLM_TIMEOUT', '30'))
+
+
 # Logging configuration
 
 LOGGING = {
