@@ -1,0 +1,60 @@
+from typing import Optional
+
+from asgiref.sync import sync_to_async
+
+from core.repositories.base import BaseRepository
+from horoscope.entities import UserProfileEntity
+from horoscope.exceptions import UserProfileNotFoundException
+from horoscope.models import UserProfile
+
+
+class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
+    def __init__(self):
+        super().__init__(
+            model=UserProfile,
+            entity=UserProfileEntity,
+            not_found_exception=UserProfileNotFoundException,
+        )
+
+    def get_by_telegram_uid(self, telegram_uid: int) -> Optional[UserProfileEntity]:
+        try:
+            profile = UserProfile.objects.get(user_telegram_uid=telegram_uid)
+            return UserProfileEntity.from_model(profile)
+        except UserProfile.DoesNotExist:
+            return None
+
+    async def aget_by_telegram_uid(self, telegram_uid: int) -> Optional[UserProfileEntity]:
+        return await sync_to_async(self.get_by_telegram_uid)(telegram_uid)
+
+    def create_profile(
+        self,
+        telegram_uid: int,
+        name: str,
+        date_of_birth: str,
+        place_of_birth: str,
+        place_of_living: str,
+    ) -> UserProfileEntity:
+        profile = UserProfile.objects.create(
+            user_telegram_uid=telegram_uid,
+            name=name,
+            date_of_birth=date_of_birth,
+            place_of_birth=place_of_birth,
+            place_of_living=place_of_living,
+        )
+        return UserProfileEntity.from_model(profile)
+
+    async def acreate_profile(
+        self,
+        telegram_uid: int,
+        name: str,
+        date_of_birth: str,
+        place_of_birth: str,
+        place_of_living: str,
+    ) -> UserProfileEntity:
+        return await sync_to_async(self.create_profile)(
+            telegram_uid,
+            name,
+            date_of_birth,
+            place_of_birth,
+            place_of_living,
+        )
