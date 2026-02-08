@@ -4,12 +4,11 @@
 
 **Step 7** — Start task implementation
 
-Current status: Implementing TASK_006 — Horoscope generation service.
+Current status: Implementing TASK_007 — Celery setup: broker, worker, task queue.
 
 ## Tasks
 
-- [ ] TASK_006 — Horoscope generation service (AI/template-based) — `docs/tasks/TASK_006_processing.md` **[IN PROGRESS]**
-- [ ] TASK_007 — Celery setup: broker, worker, task queue for horoscope generation — `docs/tasks/TASK_007.md`
+- [ ] TASK_007 — Celery setup: broker, worker, task queue for horoscope generation — `docs/tasks/TASK_007_processing.md` **[IN PROGRESS]**
 - [ ] TASK_008 — Daily horoscope: Celery beat schedule, teaser + subscription wall — `docs/tasks/TASK_008.md`
 - [ ] TASK_009 — Subscription system: payment, access control, subscription management — `docs/tasks/TASK_009.md`
 

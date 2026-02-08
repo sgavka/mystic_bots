@@ -142,8 +142,12 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
         "Generating your first horoscope... Please wait a moment."
     )
 
-    # TODO: Trigger Celery task to generate first horoscope
-    logger.info(
-        f"Profile created for user {user.telegram_uid}. "
-        f"First horoscope generation should be triggered here."
+    # Trigger Celery task to generate first horoscope
+    from horoscope.tasks import generate_horoscope_task
+    today = datetime.now().date()
+    generate_horoscope_task.delay(
+        telegram_uid=user.telegram_uid,
+        target_date=today.isoformat(),
+        horoscope_type='first',
     )
+    logger.info(f"First horoscope generation task queued for user {user.telegram_uid}")
