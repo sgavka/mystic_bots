@@ -31,6 +31,7 @@ class SubscriptionEntity(BaseEntity):
     started_at: datetime
     expires_at: Optional[datetime] = None
     telegram_payment_charge_id: Optional[str] = None
+    reminder_sent_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
 

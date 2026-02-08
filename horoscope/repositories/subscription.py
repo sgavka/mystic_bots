@@ -105,3 +105,24 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
 
     async def aexpire_overdue(self) -> int:
         return await sync_to_async(self.expire_overdue)()
+
+    def get_expiring_soon(self, days: int) -> list[SubscriptionEntity]:
+        deadline = timezone.now() + timedelta(days=days)
+        subs = Subscription.objects.filter(
+            status=SubscriptionStatus.ACTIVE,
+            expires_at__lte=deadline,
+            reminder_sent_at__isnull=True,
+        )
+        return [SubscriptionEntity.from_model(s) for s in subs]
+
+    def get_recently_expired_unnotified(self) -> list[SubscriptionEntity]:
+        subs = Subscription.objects.filter(
+            status=SubscriptionStatus.EXPIRED,
+            reminder_sent_at__isnull=True,
+        )
+        return [SubscriptionEntity.from_model(s) for s in subs]
+
+    def mark_reminded(self, subscription_ids: list[int]) -> int:
+        return Subscription.objects.filter(
+            id__in=subscription_ids,
+        ).update(reminder_sent_at=timezone.now())

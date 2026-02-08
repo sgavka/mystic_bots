@@ -132,6 +132,16 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 60 * 60 * 24,  # every 24 hours (offset by crontab in prod)
         'options': {'queue': 'default'},
     },
+    'send-expiry-reminders': {
+        'task': 'horoscope.send_expiry_reminders',
+        'schedule': 60 * 60 * 24,  # every 24 hours
+        'options': {'queue': 'default'},
+    },
+    'send-expired-notifications': {
+        'task': 'horoscope.send_expired_notifications',
+        'schedule': 60 * 60 * 24,  # every 24 hours
+        'options': {'queue': 'default'},
+    },
 }
 
 
