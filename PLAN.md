@@ -11,7 +11,7 @@
 - [x] **TASK_013** (complete) — Improvement: error handling and Celery retry logic
 - [x] **TASK_014** (complete) — Feature: subscription expiry reminders
 - [x] **TASK_015** (complete) — Feature: Django admin interface
-- [ ] **TASK_016** (new) — Testing: unit tests for services and repositories
+- [x] **TASK_016** (complete) — Testing: unit tests for services and repositories
 - [ ] **TASK_017** (new) — Feature: LLM-based horoscope generation
 
 ---
