@@ -1,5 +1,9 @@
 # TASK_017 — Feature: LLM-based horoscope generation
 
+## Commit ID
+
+00cc561
+
 ## Summary
 
 Replace template-based horoscope generation with actual AI-powered text generation via LLM API. Keep template as fallback. Use user's zodiac sign, birth info, and current date for personalized horoscopes.
