@@ -4,12 +4,11 @@
 
 **Step 7** — Start task implementation
 
-Current status: Implementing TASK_002 — Core app: User model, base repository, DI container.
+Current status: Implementing TASK_003 — Telegram bot app: bot factory, middlewares, /start handler.
 
 ## Tasks
 
-- [ ] TASK_002 — Core app: User model, base repository, DI container — `docs/tasks/TASK_002_processing.md` **[IN PROGRESS]**
-- [ ] TASK_003 — Telegram bot app: bot factory, middlewares, /start handler — `docs/tasks/TASK_003.md`
+- [ ] TASK_003 — Telegram bot app: bot factory, middlewares, /start handler — `docs/tasks/TASK_003_processing.md` **[IN PROGRESS]**
 - [ ] TASK_004 — Horoscope app: models (UserProfile, Horoscope, Subscription) — `docs/tasks/TASK_004.md`
 - [ ] TASK_005 — Wizard flow: name → birth date → birth place → living place — `docs/tasks/TASK_005.md`
 - [ ] TASK_006 — Horoscope generation service (AI/template-based) — `docs/tasks/TASK_006.md`

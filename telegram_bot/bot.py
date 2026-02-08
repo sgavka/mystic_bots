@@ -1,0 +1,65 @@
+from typing import Union
+
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from aiogram.fsm.storage.base import BaseStorage
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage
+from redis.asyncio import Redis
+
+from config import settings
+from telegram_bot.middlewares.bot import BotMiddleware
+from telegram_bot.middlewares.user import AppContextMiddleware, UserMiddleware
+
+
+def create_bot(bot_token: str) -> Bot:
+    return Bot(
+        token=bot_token,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+    )
+
+
+def create_storage() -> Union[RedisStorage, MemoryStorage]:
+    if settings.REDIS_HOST and settings.REDIS_PORT:
+        redis = Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB,
+            decode_responses=True,
+        )
+        return RedisStorage(redis=redis)
+    else:
+        return MemoryStorage()
+
+
+def create_dispatcher(storage: BaseStorage) -> Dispatcher:
+    return Dispatcher(storage=storage)
+
+
+def setup_middlewares(dispatcher: Dispatcher) -> None:
+    bot_middleware = BotMiddleware(settings.CURRENT_BOT_SLUG)
+    dispatcher.message.middleware(bot_middleware)
+    dispatcher.callback_query.middleware(bot_middleware)
+
+    user_middleware = UserMiddleware()
+    dispatcher.message.middleware(user_middleware)
+    dispatcher.callback_query.middleware(user_middleware)
+
+    app_context_middleware = AppContextMiddleware()
+    dispatcher.message.middleware(app_context_middleware)
+    dispatcher.callback_query.middleware(app_context_middleware)
+
+
+def setup_handlers(dispatcher: Dispatcher) -> None:
+    from telegram_bot.handlers import errors
+    from telegram_bot.handlers import start
+
+    dispatcher.errors.register(errors.error_handler)
+    dispatcher.include_router(start.router)
+
+
+def setup_dispatcher(dispatcher: Dispatcher, bot_instance: Bot) -> Dispatcher:
+    setup_middlewares(dispatcher=dispatcher)
+    setup_handlers(dispatcher=dispatcher)
+    return dispatcher
