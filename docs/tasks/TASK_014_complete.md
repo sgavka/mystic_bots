@@ -1,5 +1,9 @@
 # TASK_014 — Feature: subscription expiry reminders
 
+## Commit ID
+
+d832ed8
+
 ## Summary
 
 Users are not notified when their subscription is about to expire or has expired. Add a Celery beat task that sends reminders before expiry and a notification after expiry.
