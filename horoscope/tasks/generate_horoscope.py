@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import date
 
@@ -38,7 +39,41 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
             f"Generated horoscope {horoscope.id} for user {telegram_uid} "
             f"on {target_date} (type={horoscope_type})"
         )
+
+        if horoscope_type == 'first':
+            _send_first_horoscope(
+                telegram_uid=telegram_uid,
+                full_text=horoscope.full_text,
+            )
+
         return horoscope.id
     except ValueError as e:
         logger.error(f"Failed to generate horoscope for user {telegram_uid}: {e}")
         return None
+
+
+def _send_first_horoscope(telegram_uid: int, full_text: str) -> None:
+    """Send the first horoscope to the user after profile setup."""
+    from aiogram import Bot
+    from aiogram.client.default import DefaultBotProperties
+    from aiogram.enums import ParseMode
+    from config import settings
+
+    text = (
+        "Your first horoscope is ready!\n\n"
+        f"{full_text}"
+    )
+
+    async def _send():
+        bot = Bot(
+            token=settings.CURRENT_BOT_TOKEN,
+            default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+        )
+        try:
+            await bot.send_message(chat_id=telegram_uid, text=text)
+        except Exception as e:
+            logger.error(f"Failed to send first horoscope to user {telegram_uid}: {e}")
+        finally:
+            await bot.session.close()
+
+    asyncio.run(_send())
