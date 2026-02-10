@@ -2,9 +2,7 @@
 
 ## Next step
 
-**Step 11** — Analyze plan to create new tasks if needed
-
-Current status: All 17 tasks complete.
+**Step 7** — Implement TASK_020
 
 ## Tasks
 
@@ -15,6 +13,9 @@ Current status: All 17 tasks complete.
 - [x] **TASK_015** (complete) — Feature: Django admin interface
 - [x] **TASK_016** (complete) — Testing: unit tests for services and repositories
 - [x] **TASK_017** (complete) — Feature: LLM-based horoscope generation
+- [ ] **TASK_018** (new) — Testing: add aiogram tests covering all user flows
+- [ ] **TASK_019** (new) — Improvement: add more emojis to bot messages and AI-generated text
+- [x] **TASK_020** (complete) — Feature: send first horoscope to user after profile setup
 
 ---
 
