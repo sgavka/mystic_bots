@@ -34,8 +34,8 @@ def send_expiry_reminders_task():
     for sub in expiring:
         days_left = (sub.expires_at - now).days
         text = (
-            f"Your horoscope subscription expires in <b>{days_left} day(s)</b>.\n\n"
-            "Renew now to keep receiving your full daily horoscope!"
+            f"⏰ Your horoscope subscription expires in <b>{days_left} day(s)</b>.\n\n"
+            "Renew now to keep receiving your full daily horoscope! ✨"
         )
         messages.append((sub.user_telegram_uid, text))
 
@@ -78,9 +78,9 @@ def send_expired_notifications_task():
     messages = []
     for sub in expired:
         text = (
-            "Your horoscope subscription has <b>expired</b>.\n\n"
+            "⚠️ Your horoscope subscription has <b>expired</b>.\n\n"
             "You'll now see a preview of your daily horoscope. "
-            "Subscribe again to get full access!"
+            "Subscribe again to get full access! ⭐"
         )
         messages.append((sub.user_telegram_uid, text))
 

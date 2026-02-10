@@ -22,7 +22,8 @@ Guidelines:
 - Write 8-12 lines of horoscope content covering love, career, health, and personal growth
 - End with an inspiring closing thought
 - Keep the tone warm, positive, and mystical
-- Do NOT use markdown formatting, just plain text
+- Use emojis throughout the text to make it more engaging (stars, zodiac symbols, hearts, sparkles, etc.)
+- Do NOT use markdown formatting, just plain text with emojis
 - Each section should be a separate line"""
 
 

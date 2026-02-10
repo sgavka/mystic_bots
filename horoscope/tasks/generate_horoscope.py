@@ -60,7 +60,7 @@ def _send_first_horoscope(telegram_uid: int, full_text: str) -> None:
     from config import settings
 
     text = (
-        "Your first horoscope is ready!\n\n"
+        "🔮 Your first horoscope is ready!\n\n"
         f"{full_text}"
     )
 

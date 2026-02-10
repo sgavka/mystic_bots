@@ -81,7 +81,7 @@ def send_daily_horoscope_notifications_task():
         else:
             text = (
                 horoscope.teaser_text
-                + "\n\nSubscribe to see your full horoscope!"
+                + "\n\n🔒 Subscribe to see your full horoscope!"
             )
 
         messages.append((profile.user_telegram_uid, text))

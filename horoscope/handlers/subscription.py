@@ -24,9 +24,9 @@ async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs
     await callback.answer()
 
     await callback.message.answer(
-        f"Subscribe for <b>{SUBSCRIPTION_DURATION_DAYS} days</b> "
+        f"⭐ Subscribe for <b>{SUBSCRIPTION_DURATION_DAYS} days</b> "
         f"of full daily horoscope access.\n\n"
-        f"Price: <b>{SUBSCRIPTION_PRICE_STARS} Telegram Stars</b>\n\n"
+        f"💰 Price: <b>{SUBSCRIPTION_PRICE_STARS} Telegram Stars</b>\n\n"
         "Tap the button below to pay.",
     )
 
@@ -65,7 +65,7 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
     )
 
     await message.answer(
-        "Payment successful! Your subscription is now active.\n\n"
-        f"Expires: {subscription.expires_at.strftime('%B %d, %Y')}\n\n"
-        "Use /horoscope to see your full daily horoscope."
+        "✅ Payment successful! Your subscription is now active.\n\n"
+        f"📅 Expires: {subscription.expires_at.strftime('%B %d, %Y')}\n\n"
+        "Use /horoscope to see your full daily horoscope ✨"
     )

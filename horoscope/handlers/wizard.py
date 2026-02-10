@@ -25,16 +25,16 @@ async def start_handler(message: Message, state: FSMContext, user: UserEntity, *
 
     if profile:
         await message.answer(
-            f"Welcome back, <b>{profile.name}</b>!\n\n"
+            f"👋 Welcome back, <b>{profile.name}</b>!\n\n"
             "Your profile is already set up. "
-            "You'll receive your daily horoscope soon."
+            "You'll receive your daily horoscope soon ✨"
         )
         await state.clear()
         return
 
     await message.answer(
-        "Welcome to <b>Mystic Horoscope</b>!\n\n"
-        "I'll create a personalized horoscope just for you. "
+        "✨ Welcome to <b>Mystic Horoscope</b>! ✨\n\n"
+        "🔮 I'll create a personalized horoscope just for you. "
         "Let's set up your profile first.\n\n"
         "What is your <b>name</b>?"
     )
@@ -50,8 +50,8 @@ async def process_name(message: Message, state: FSMContext, **kwargs):
 
     await state.update_data(name=name)
     await message.answer(
-        f"Nice to meet you, <b>{name}</b>!\n\n"
-        "Now, please enter your <b>full date of birth</b>\n"
+        f"😊 Nice to meet you, <b>{name}</b>!\n\n"
+        "📅 Now, please enter your <b>full date of birth</b>\n"
         "in format: <code>DD.MM.YYYY</code>\n\n"
         "Example: <code>15.03.1990</code>"
     )
@@ -82,7 +82,7 @@ async def process_date_of_birth(message: Message, state: FSMContext, **kwargs):
 
     await state.update_data(date_of_birth=text)
     await message.answer(
-        "Great! Now, please enter your <b>place of birth</b> (city).\n\n"
+        "🎯 Great! Now, please enter your <b>place of birth</b> (city).\n\n"
         "Example: <code>London</code>"
     )
     await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
@@ -97,7 +97,7 @@ async def process_place_of_birth(message: Message, state: FSMContext, **kwargs):
 
     await state.update_data(place_of_birth=place)
     await message.answer(
-        "Almost done! Please enter your <b>current place of living</b> (city).\n\n"
+        "📍 Almost done! Please enter your <b>current place of living</b> (city).\n\n"
         "Example: <code>New York</code>"
     )
     await state.set_state(WizardStates.WAITING_PLACE_OF_LIVING)
@@ -133,11 +133,11 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
     await state.clear()
 
     await message.answer(
-        f"Your profile is ready, <b>{profile.name}</b>!\n\n"
-        f"Date of birth: {profile.date_of_birth.strftime('%d.%m.%Y')}\n"
-        f"Born in: {profile.place_of_birth}\n"
-        f"Living in: {profile.place_of_living}\n\n"
-        "Generating your first horoscope... Please wait a moment."
+        f"✅ Your profile is ready, <b>{profile.name}</b>!\n\n"
+        f"📅 Date of birth: {profile.date_of_birth.strftime('%d.%m.%Y')}\n"
+        f"🏠 Born in: {profile.place_of_birth}\n"
+        f"📍 Living in: {profile.place_of_living}\n\n"
+        "🔮 Generating your first horoscope... Please wait a moment."
     )
 
     # Trigger Celery task to generate first horoscope

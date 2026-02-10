@@ -24,7 +24,7 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
     if not profile:
         await message.answer(
-            "You haven't set up your profile yet.\n"
+            "⚠️ You haven't set up your profile yet.\n"
             "Send /start to begin the onboarding wizard."
         )
         return
@@ -37,7 +37,7 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
 
     if not horoscope:
         await message.answer(
-            "Your horoscope for today is not ready yet.\n"
+            "⏳ Your horoscope for today is not ready yet.\n"
             "It will be generated soon. Please check back later."
         )
         return
@@ -53,6 +53,6 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     else:
         await message.answer(
             horoscope.teaser_text
-            + "\n\nSubscribe to see your full daily horoscope!",
+            + "\n\n🔒 Subscribe to see your full daily horoscope!",
             reply_markup=subscribe_keyboard(),
         )
