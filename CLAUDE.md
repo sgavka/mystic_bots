@@ -2,7 +2,7 @@
 
 <overview>
   Project name, concept, stack, and detailed structure are in PROJECT_INFO.md.
-  <stack>Python 3.12+, Aiogram 3.x, Django 6.0, Pydantic 2.x, PostgreSQL 17, Redis 7, Celery, dependency-injector, Docker, uv</stack>
+  <stack>Python 3.12+, Aiogram 3.x, Django 6.0, Pydantic 2.x, PostgreSQL 18, Redis 7, Celery, dependency-injector, Docker, uv</stack>
 </overview>
 
 <principles>
@@ -404,6 +404,10 @@ pass
       - Provide sensible defaults for optional variables
       - NEVER commit .env file to version control
       - Use .env.example as template
+      - ALL service ports (DB, Redis, etc.) MUST be configured via environment variables, NEVER hardcoded in docker-compose files
+      - Use Docker Compose variable substitution with defaults: "${VAR:-default}"
+      - Internal ports (inside containers) use: DB_PORT, REDIS_PORT
+      - External ports (host-mapped) use: DB_EXTERNAL_PORT, REDIS_EXTERNAL_PORT
     </environment>
   </configuration>
 

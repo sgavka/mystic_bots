@@ -1,6 +1,8 @@
 services:
   db:
     image: postgres:17
+    ports:
+      - "${DB_EXTERNAL_PORT:-5435}:5432"
     env_file:
       - .env
     volumes:

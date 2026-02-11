@@ -12,7 +12,9 @@ Main file to keep summary of the developing process.
 0. Look at "Next step" section in [docs/PLAN.md](PLAN.md)
 1. Look at `docs/tasks/` if any new tasks appeared and add them to docs/PLAN.md (with file name status "new"; just created
    tasks will be without file status)
-2. Get task to implement (if exists in progress — take it to continue implementing)
+2. Get task to implement
+2.1. If exists in progress — take it to continue implementing
+2.2. Check tasks with status "waiting_for_clarification" if questions were asked already, if so start implementing
 3. In docs/PLAN.md mark task as in progress
 4. In task file first need to add all information how to implement task, investigation result
    4.1. If "Is task investigated" is "no", investigate it and fill task file
