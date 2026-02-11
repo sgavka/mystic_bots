@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
 
-from horoscope.config import TEASER_LINE_COUNT
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
 from horoscope.enums import HoroscopeType
 from horoscope.translations import t
@@ -248,8 +247,10 @@ def generate_horoscope_text(
     ]
 
     full_text = "\n".join(lines)
-    teaser_lines = lines[:TEASER_LINE_COUNT]
-    teaser_text = "\n".join(teaser_lines) + "\n\n..."
+
+    # Teaser uses content lines (skip header, greeting, empty lines at start)
+    content_lines = [positive, "", details[0]]
+    teaser_text = "\n".join(content_lines) + "\n..."
 
     return full_text, teaser_text
 

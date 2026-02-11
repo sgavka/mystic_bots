@@ -1,11 +1,11 @@
 **Is task investigated** — yes
-**Commit ID** —
+**Commit ID** — ee3a2cb
 **Summary** — `generate_horoscope_task` should also send the daily horoscope (teaser part only) after generating
 
 **Checkboxes**
-- [ ] Update `generate_horoscope_task` to send teaser after generating daily horoscope
-- [ ] Update tests
-- [ ] Run tests
+- [x] Update `generate_horoscope_task` to send teaser after generating daily horoscope
+- [x] Update tests
+- [x] Run tests
 
 **Investigation**
 

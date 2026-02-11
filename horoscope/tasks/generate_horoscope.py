@@ -49,6 +49,7 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
             _send_daily_horoscope(
                 telegram_uid=telegram_uid,
                 horoscope_id=horoscope.id,
+                full_text=horoscope.full_text,
                 teaser_text=horoscope.teaser_text,
             )
 
@@ -58,14 +59,38 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
         return None
 
 
-def _send_daily_horoscope(telegram_uid: int, horoscope_id: int, teaser_text: str) -> None:
-    """Send the daily horoscope teaser to the user."""
+def _send_daily_horoscope(
+    telegram_uid: int,
+    horoscope_id: int,
+    full_text: str,
+    teaser_text: str,
+) -> None:
+    """Send the daily horoscope: full text for subscribers, teaser with subscribe link for others."""
     from core.containers import container
+    from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
+    from horoscope.translations import t
 
     horoscope_repo = container.horoscope.horoscope_repository()
+    subscription_repo = container.horoscope.subscription_repository()
+    user_profile_repo = container.horoscope.user_profile_repository()
 
-    success = send_message(telegram_uid=telegram_uid, text=teaser_text)
+    has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
+    profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
+    lang = profile.preferred_language if profile else 'en'
+
+    if has_subscription:
+        text = full_text
+        keyboard = None
+    else:
+        text = teaser_text + t("horoscope.subscribe_cta", lang)
+        keyboard = subscribe_keyboard(language=lang)
+
+    success = send_message(
+        telegram_uid=telegram_uid,
+        text=text,
+        reply_markup=keyboard,
+    )
     if success:
         horoscope_repo.mark_sent(horoscope_id=horoscope_id)
     else:

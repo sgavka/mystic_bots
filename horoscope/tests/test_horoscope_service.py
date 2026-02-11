@@ -4,7 +4,6 @@ import pytest
 
 from horoscope.utils import get_zodiac_sign
 from horoscope.services.horoscope import generate_horoscope_text
-from horoscope.config import TEASER_LINE_COUNT
 from horoscope.entities import UserProfileEntity
 
 
@@ -104,19 +103,19 @@ class TestGenerateHoroscopeText:
 
         assert len(teaser_text) < len(full_text)
 
-    def test_teaser_line_count(self):
+    def test_teaser_does_not_contain_header(self):
         profile = self._make_profile()
-        _, teaser_text = generate_horoscope_text(
+        full_text, teaser_text = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
         )
 
-        # Teaser is first N lines + "\n\n..."
-        teaser_lines = teaser_text.split("\n")
-        # Remove trailing "..." and empty line
-        content_lines = [line for line in teaser_lines if line != "..."]
-        # First TEASER_LINE_COUNT lines + blank line + "..."
-        assert len(content_lines) <= TEASER_LINE_COUNT + 1
+        # Teaser should not contain header or greeting
+        assert "Horoscope for" not in teaser_text
+        assert "Dear " not in teaser_text
+        # Teaser should contain actual horoscope content
+        assert "..." in teaser_text
+        assert len(teaser_text) > 10
 
     def test_full_text_contains_zodiac_sign(self):
         profile = self._make_profile()

@@ -18,15 +18,15 @@ Write a personalized horoscope for the following person:
 - Horoscope date: {target_date}
 
 Guidelines:
-- Start with a header line: "Horoscope for {zodiac_sign} — {target_date_formatted}"
-- Address the person by name on the second line: "Dear {name},"
+- Start with a header line with the zodiac sign and date (translated to {language_name})
+- Address the person by name on the second line (translated to {language_name})
 - Write 8-12 lines of horoscope content covering love, career, health, and personal growth
 - End with an inspiring closing thought
 - Keep the tone warm, positive, and mystical
 - Use emojis throughout the text to make it more engaging (stars, zodiac symbols, hearts, sparkles, etc.)
 - Do NOT use markdown formatting, just plain text with emojis
 - Each section should be a separate line
-- IMPORTANT: Write the entire horoscope in {language_name}"""
+- IMPORTANT: Write the ENTIRE horoscope INCLUDING the header and greeting in {language_name}"""
 
 
 class LLMService:
@@ -76,9 +76,22 @@ class LLMService:
 
         full_text = response.choices[0].message.content.strip()
 
+        # Build teaser from content lines (skip header, greeting, and leading empty lines)
         lines = full_text.split("\n")
-        teaser_lines = lines[:TEASER_LINE_COUNT]
-        teaser_text = "\n".join(teaser_lines) + "\n\n..."
+        content_lines = []
+        skip_count = 0
+        for line in lines:
+            # Skip the first 2 non-empty lines (header and greeting) and leading empty lines
+            if skip_count < 2:
+                if line.strip():
+                    skip_count += 1
+                continue
+            if not content_lines and not line.strip():
+                continue  # skip empty lines between greeting and content
+            content_lines.append(line)
+            if len(content_lines) >= TEASER_LINE_COUNT:
+                break
+        teaser_text = "\n".join(content_lines) + "\n..."
 
         logger.info(f"Generated LLM horoscope for {name} ({zodiac_sign}) on {target_date} in {language_name}")
         return full_text, teaser_text

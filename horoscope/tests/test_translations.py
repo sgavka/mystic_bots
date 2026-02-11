@@ -152,6 +152,7 @@ class TestCeleryTasks:
         mock_send.assert_called_once_with(
             telegram_uid=12345,
             horoscope_id=42,
+            full_text="Your horoscope text",
             teaser_text="Teaser text",
         )
 
