@@ -9,9 +9,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
-
-# Patch target: container is imported at module level in horoscope.services.horoscope
-CONTAINER_PATCH = 'horoscope.services.horoscope.container'
+from horoscope.services.horoscope import HoroscopeService
 
 
 def _make_profile(telegram_uid: int = 12345) -> UserProfileEntity:
@@ -41,15 +39,10 @@ def _make_horoscope(telegram_uid: int = 12345) -> HoroscopeEntity:
 
 class TestHoroscopeServiceGenerateForUser:
     def _make_service(self, horoscope_repo=None, user_profile_repo=None):
-        with patch(CONTAINER_PATCH) as mock_container:
-            mock_container.horoscope.horoscope_repository.return_value = (
-                horoscope_repo or MagicMock()
-            )
-            mock_container.horoscope.user_profile_repository.return_value = (
-                user_profile_repo or MagicMock()
-            )
-            from horoscope.services.horoscope import HoroscopeService
-            return HoroscopeService()
+        return HoroscopeService(
+            horoscope_repo=horoscope_repo or MagicMock(),
+            user_profile_repo=user_profile_repo or MagicMock(),
+        )
 
     def test_returns_existing_horoscope(self):
         existing = _make_horoscope()
@@ -179,11 +172,10 @@ class TestHoroscopeServiceGenerateForUser:
 
 class TestHoroscopeServiceGenerateText:
     def _make_service(self):
-        with patch(CONTAINER_PATCH) as mock_container:
-            mock_container.horoscope.horoscope_repository.return_value = MagicMock()
-            mock_container.horoscope.user_profile_repository.return_value = MagicMock()
-            from horoscope.services.horoscope import HoroscopeService
-            return HoroscopeService()
+        return HoroscopeService(
+            horoscope_repo=MagicMock(),
+            user_profile_repo=MagicMock(),
+        )
 
     def test_uses_llm_when_configured(self):
         service = self._make_service()
@@ -265,12 +257,10 @@ class TestHoroscopeServiceAsync:
         horoscope_repo = MagicMock()
         horoscope_repo.get_by_user_and_date.return_value = existing
 
-        with patch(CONTAINER_PATCH) as mock_container:
-            mock_container.horoscope.horoscope_repository.return_value = horoscope_repo
-            mock_container.horoscope.user_profile_repository.return_value = MagicMock()
-
-            from horoscope.services.horoscope import HoroscopeService
-            service = HoroscopeService()
+        service = HoroscopeService(
+            horoscope_repo=horoscope_repo,
+            user_profile_repo=MagicMock(),
+        )
 
         result = await service.agenerate_for_user(
             telegram_uid=12345,

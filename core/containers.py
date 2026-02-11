@@ -9,6 +9,8 @@ if TYPE_CHECKING:
         SubscriptionRepository,
         UserProfileRepository,
     )
+    from horoscope.services.horoscope import HoroscopeService
+    from horoscope.services.subscription import SubscriptionService
 
 
 def _create_user_repository() -> "UserRepository":
@@ -41,6 +43,28 @@ class HoroscopeContainer(containers.DeclarativeContainer):
     user_profile_repository = providers.Singleton(_create_user_profile_repository)
     horoscope_repository = providers.Singleton(_create_horoscope_repository)
     subscription_repository = providers.Singleton(_create_subscription_repository)
+
+    horoscope_service = providers.Singleton(
+        lambda: _create_horoscope_service(),
+    )
+    subscription_service = providers.Singleton(
+        lambda: _create_subscription_service(),
+    )
+
+
+def _create_horoscope_service() -> "HoroscopeService":
+    from horoscope.services.horoscope import HoroscopeService
+    return HoroscopeService(
+        horoscope_repo=container.horoscope.horoscope_repository(),
+        user_profile_repo=container.horoscope.user_profile_repository(),
+    )
+
+
+def _create_subscription_service() -> "SubscriptionService":
+    from horoscope.services.subscription import SubscriptionService
+    return SubscriptionService(
+        subscription_repo=container.horoscope.subscription_repository(),
+    )
 
 
 class ApplicationContainer(containers.DeclarativeContainer):

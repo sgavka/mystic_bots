@@ -23,10 +23,10 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
         target_date: ISO format date string (YYYY-MM-DD)
         horoscope_type: Type of horoscope ('daily' or 'first')
     """
-    from horoscope.services.horoscope import HoroscopeService
+    from core.containers import container
 
     parsed_date = date.fromisoformat(target_date)
-    service = HoroscopeService()
+    service = container.horoscope.horoscope_service()
 
     try:
         horoscope = service.generate_for_user(

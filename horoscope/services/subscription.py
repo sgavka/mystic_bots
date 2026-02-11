@@ -1,17 +1,19 @@
 import logging
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from asgiref.sync import sync_to_async
 
-from core.containers import container
 from horoscope.entities import SubscriptionEntity
+
+if TYPE_CHECKING:
+    from horoscope.repositories import SubscriptionRepository
 
 logger = logging.getLogger(__name__)
 
 
 class SubscriptionService:
-    def __init__(self):
-        self.subscription_repo = container.horoscope.subscription_repository()
+    def __init__(self, subscription_repo: "SubscriptionRepository"):
+        self.subscription_repo = subscription_repo
 
     def activate_subscription(
         self,

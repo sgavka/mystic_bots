@@ -5,13 +5,16 @@ from django.utils import timezone
 
 from horoscope.enums import SubscriptionStatus
 from horoscope.models import Subscription
+from horoscope.repositories import SubscriptionRepository
 from horoscope.services.subscription import SubscriptionService
 
 
 @pytest.mark.django_db
 class TestSubscriptionService:
     def setup_method(self):
-        self.service = SubscriptionService()
+        self.service = SubscriptionService(
+            subscription_repo=SubscriptionRepository(),
+        )
 
     def test_activate_new_subscription(self):
         sub = self.service.activate_subscription(

@@ -154,9 +154,10 @@ class TestCeleryTasks:
         mock_service.generate_for_user.side_effect = ValueError("No profile")
 
         with patch(
-            'horoscope.services.horoscope.HoroscopeService',
-            return_value=mock_service,
-        ):
+            'core.containers.container'
+        ) as mock_container:
+            mock_container.horoscope.horoscope_service.return_value = mock_service
+
             result = generate_horoscope_task(
                 telegram_uid=12345,
                 target_date="2024-06-15",
@@ -176,11 +177,12 @@ class TestCeleryTasks:
         mock_service.generate_for_user.return_value = mock_horoscope
 
         with patch(
-            'horoscope.services.horoscope.HoroscopeService',
-            return_value=mock_service,
-        ), patch(
+            'core.containers.container'
+        ) as mock_container, patch(
             'horoscope.tasks.generate_horoscope._send_first_horoscope',
         ) as mock_send:
+            mock_container.horoscope.horoscope_service.return_value = mock_service
+
             result = generate_horoscope_task(
                 telegram_uid=12345,
                 target_date="2024-06-15",
@@ -405,12 +407,10 @@ class TestCeleryTasks:
 
         with patch(
             'core.containers.container'
-        ) as mock_container, patch(
-            'horoscope.services.subscription.SubscriptionService',
-            return_value=mock_service,
-        ):
+        ) as mock_container:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.subscription_service.return_value = mock_service
 
             result = send_expired_notifications_task()
 
@@ -456,14 +456,12 @@ class TestCeleryTasks:
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.services.subscription.SubscriptionService',
-            return_value=mock_service,
-        ), patch(
             'horoscope.tasks.messaging.send_messages_batch',
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.subscription_service.return_value = mock_service
 
             result = send_expired_notifications_task()
 

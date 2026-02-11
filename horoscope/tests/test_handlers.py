@@ -671,9 +671,9 @@ class TestErrorHandling:
         )
 
         with patch(
-            'horoscope.handlers.subscription.SubscriptionService',
-            return_value=mock_service,
-        ):
+            'horoscope.handlers.subscription.container'
+        ) as mock_container:
+            mock_container.horoscope.subscription_service.return_value = mock_service
             await successful_payment_handler(message=mock_message, user=user)
 
         mock_message.answer.assert_called_once()

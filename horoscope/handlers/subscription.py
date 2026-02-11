@@ -8,11 +8,11 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
+from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.config import SUBSCRIPTION_DURATION_DAYS, SUBSCRIPTION_PRICE_STARS
 from horoscope.handlers.utils import aget_user_language
-from horoscope.services.subscription import SubscriptionService
 from horoscope.translations import t
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery, **kwargs):
 @router.message(F.successful_payment)
 async def successful_payment_handler(message: Message, user: UserEntity, **kwargs):
     payment = message.successful_payment
-    service = SubscriptionService()
+    service = container.horoscope.subscription_service()
     lang = await aget_user_language(user)
 
     try:

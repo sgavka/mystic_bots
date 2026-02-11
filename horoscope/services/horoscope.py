@@ -1,15 +1,18 @@
 import logging
 import random
 from datetime import date
+from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
 
-from core.containers import container
 from horoscope.config import TEASER_LINE_COUNT
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
 from horoscope.enums import HoroscopeType
 from horoscope.translations import t
 from horoscope.utils import get_zodiac_sign
+
+if TYPE_CHECKING:
+    from horoscope.repositories import HoroscopeRepository, UserProfileRepository
 
 logger = logging.getLogger(__name__)
 
@@ -252,9 +255,13 @@ def generate_horoscope_text(
 
 
 class HoroscopeService:
-    def __init__(self):
-        self.horoscope_repo = container.horoscope.horoscope_repository()
-        self.user_profile_repo = container.horoscope.user_profile_repository()
+    def __init__(
+        self,
+        horoscope_repo: "HoroscopeRepository",
+        user_profile_repo: "UserProfileRepository",
+    ):
+        self.horoscope_repo = horoscope_repo
+        self.user_profile_repo = user_profile_repo
 
     def generate_for_user(
         self,

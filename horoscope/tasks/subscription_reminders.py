@@ -25,6 +25,7 @@ def send_expiry_reminders_task():
 
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
+
     expiring = subscription_repo.get_expiring_soon(days=SUBSCRIPTION_REMINDER_DAYS)
 
     if not expiring:
@@ -72,8 +73,7 @@ def send_expired_notifications_task():
     user_profile_repo = container.horoscope.user_profile_repository()
 
     # First expire overdue subscriptions
-    from horoscope.services.subscription import SubscriptionService
-    service = SubscriptionService()
+    service = container.horoscope.subscription_service()
     service.expire_overdue_subscriptions()
 
     expired = subscription_repo.get_recently_expired_unnotified()
