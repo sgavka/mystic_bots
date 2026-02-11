@@ -1,4 +1,14 @@
+from typing import TYPE_CHECKING
+
 from dependency_injector import containers, providers
+
+if TYPE_CHECKING:
+    from core.repositories import UserRepository
+    from horoscope.repositories import (
+        HoroscopeRepository,
+        SubscriptionRepository,
+        UserProfileRepository,
+    )
 
 
 def _create_user_repository() -> "UserRepository":

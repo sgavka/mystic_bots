@@ -219,7 +219,7 @@ class TestWizardLanguageToName:
         return user
 
     async def test_language_en_then_welcome(self, client):
-        user = await self._start_wizard_and_pick_language(client, "en")
+        await self._start_wizard_and_pick_language(client, "en")
 
         # After picking language, the bot should send the welcome message
         sent = client.capture.get_sent_messages()
@@ -227,7 +227,7 @@ class TestWizardLanguageToName:
         assert "name" in last_text.lower() or "Mystic Horoscope" in last_text
 
     async def test_language_ru_then_welcome_in_russian(self, client):
-        user = await self._start_wizard_and_pick_language(client, "ru")
+        await self._start_wizard_and_pick_language(client, "ru")
 
         sent = client.capture.get_sent_messages()
         last_text = sent[-1].text if sent else ""
@@ -551,7 +551,7 @@ class TestSubscription:
         )
 
         user = client.create_user(first_name="John")
-        responses = await user.click_button("subscribe")
+        await user.click_button("subscribe")
 
         # Handler calls callback.answer() and then sends messages
         callback_answers = client.capture.get_callback_answers()
@@ -610,7 +610,7 @@ class TestLanguageCommand:
         await user.send_command("language")
 
         # Then click on Russian
-        responses = await user.click_button("lang_ru")
+        await user.click_button("lang_ru")
 
         callback_answers = client.capture.get_callback_answers()
         assert len(callback_answers) >= 1

@@ -6,7 +6,6 @@ from asgiref.sync import sync_to_async
 
 from core.containers import container
 from core.entities import UserEntity
-from core.enums import BotSlug
 
 
 class UserMiddleware(BaseMiddleware):

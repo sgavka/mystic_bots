@@ -27,7 +27,8 @@ RUN apt-get update && \
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir uv
 
-# install dependencies
+# install dependencies into /opt/venv (outside /code so volume mount doesn't hide it)
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 COPY pyproject.toml uv.lock /code/
 RUN uv sync --frozen --no-dev --no-install-project
 

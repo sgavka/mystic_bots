@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import Field
-
 from core.base_entity import BaseEntity
 
 

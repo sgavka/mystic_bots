@@ -2,6 +2,7 @@
 Django settings for Mystic Bots project.
 """
 
+import logging as _logging
 import os
 from pathlib import Path
 
@@ -212,9 +213,6 @@ LOGGING = {
 
 
 # Startup validation
-
-import logging as _logging
-
 _startup_logger = _logging.getLogger(__name__)
 
 if not CURRENT_BOT_TOKEN:

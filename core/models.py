@@ -2,7 +2,7 @@ import json
 
 from django.db import models
 
-from core.enums import BotSlug, SettingType
+from core.enums import SettingType
 
 
 class Setting(models.Model):

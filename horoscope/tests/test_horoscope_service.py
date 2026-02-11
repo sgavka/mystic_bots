@@ -114,7 +114,7 @@ class TestGenerateHoroscopeText:
         # Teaser is first N lines + "\n\n..."
         teaser_lines = teaser_text.split("\n")
         # Remove trailing "..." and empty line
-        content_lines = [l for l in teaser_lines if l != "..."]
+        content_lines = [line for line in teaser_lines if line != "..."]
         # First TEASER_LINE_COUNT lines + blank line + "..."
         assert len(content_lines) <= TEASER_LINE_COUNT + 1
 
