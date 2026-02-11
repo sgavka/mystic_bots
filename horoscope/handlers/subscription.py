@@ -53,19 +53,26 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery, **kwargs):
 async def successful_payment_handler(message: Message, user: UserEntity, **kwargs):
     payment = message.successful_payment
     service = SubscriptionService()
+    lang = await aget_user_language(user)
 
-    subscription = await service.aactivate_subscription(
-        telegram_uid=user.telegram_uid,
-        duration_days=SUBSCRIPTION_DURATION_DAYS,
-        payment_charge_id=payment.telegram_payment_charge_id,
-    )
+    try:
+        subscription = await service.aactivate_subscription(
+            telegram_uid=user.telegram_uid,
+            duration_days=SUBSCRIPTION_DURATION_DAYS,
+            payment_charge_id=payment.telegram_payment_charge_id,
+        )
+    except Exception:
+        logger.exception(
+            f"Failed to activate subscription for user {user.telegram_uid} "
+            f"after payment {payment.telegram_payment_charge_id}"
+        )
+        await message.answer(t("error.payment_failed", lang))
+        return
 
     logger.info(
         f"Subscription activated for user {user.telegram_uid} "
         f"until {subscription.expires_at}"
     )
-
-    lang = await aget_user_language(user)
 
     await message.answer(
         t(

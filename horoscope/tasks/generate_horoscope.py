@@ -62,4 +62,6 @@ def _send_first_horoscope(telegram_uid: int, full_text: str) -> None:
     lang = profile.preferred_language if profile else 'en'
 
     text = t("task.first_horoscope_ready", lang, text=full_text)
-    send_message(telegram_uid=telegram_uid, text=text)
+    success = send_message(telegram_uid=telegram_uid, text=text)
+    if not success:
+        logger.error(f"Failed to deliver first horoscope to user {telegram_uid}")

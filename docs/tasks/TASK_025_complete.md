@@ -1,7 +1,7 @@
 # TASK_025 — Refactor: consistent language retrieval across handlers
 
 **Is task investigated**: yes
-**Commit ID**: (pending)
+**Commit ID**: fcf9e7b
 **Summary**: Language retrieval was inconsistent across handlers. Some used inline lookups with hardcoded 'en' fallback, subscription.py had a private `_aget_user_language()` helper. Created shared `aget_user_language()` utility and replaced hardcoded 'en' fallbacks with `map_telegram_language(user.language_code)`.
 
 ## Checkboxes

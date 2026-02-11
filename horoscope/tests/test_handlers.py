@@ -621,3 +621,61 @@ class TestLanguageCommand:
             for m in sent_messages
         )
         assert has_language_changed
+
+
+# ---------------------------------------------------------------------------
+# Error handling tests
+# ---------------------------------------------------------------------------
+
+class TestErrorHandling:
+
+    async def test_wizard_profile_creation_failure(self, client):
+        profile_repo = _mock_profile_repo(profile=None)
+        profile_repo.create_profile = MagicMock(side_effect=Exception("DB error"))
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = client.create_user(first_name="John")
+        await user.send_command("start")
+        await _select_language(user, "en")
+        await user.send_message("Alice")
+        await user.send_message("15.03.1990")
+        await user.send_message("London")
+
+        with patch('horoscope.tasks.generate_horoscope_task') as mock_task:
+            responses = await user.send_message("Berlin")
+
+            assert len(responses) == 1
+            assert "went wrong" in responses[0].text.lower() or "/start" in responses[0].text
+            mock_task.delay.assert_not_called()
+
+    async def test_subscription_activation_failure(self):
+        from horoscope.handlers.subscription import successful_payment_handler
+
+        mock_message = AsyncMock()
+        mock_payment = MagicMock()
+        mock_payment.telegram_payment_charge_id = "charge_123"
+        mock_message.successful_payment = mock_payment
+
+        user = UserEntity(telegram_uid=12345, language_code="en")
+
+        profile_repo = _mock_profile_repo(profile=_make_profile())
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        mock_service = MagicMock()
+        mock_service.aactivate_subscription = AsyncMock(
+            side_effect=Exception("DB error")
+        )
+
+        with patch(
+            'horoscope.handlers.subscription.SubscriptionService',
+            return_value=mock_service,
+        ):
+            await successful_payment_handler(message=mock_message, user=user)
+
+        mock_message.answer.assert_called_once()
+        call_text = mock_message.answer.call_args[0][0]
+        assert "went wrong" in call_text.lower() or "support" in call_text.lower()

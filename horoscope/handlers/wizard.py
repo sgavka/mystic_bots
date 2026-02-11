@@ -136,7 +136,13 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
             preferred_language=lang,
         )
 
-    profile = await _create_profile()
+    try:
+        profile = await _create_profile()
+    except Exception:
+        logger.exception(f"Failed to create profile for user {user.telegram_uid}")
+        await state.clear()
+        await message.answer(t("error.profile_creation_failed", lang))
+        return
 
     await state.clear()
 

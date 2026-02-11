@@ -2,16 +2,16 @@
 
 ## Next step
 
-**Post-completion analysis done** — Coverage improved to 87%, Docker dev deps fixed, pytest-cov added.
+**All tasks complete** — All 25 tasks implemented and verified.
 
-Current status: All 21 tasks complete. 4 improvement tasks waiting for clarification. Lint: 0 errors. Coverage: 87%. 190 tests.
+Current status: All 25 tasks complete. Lint: 0 errors. 192 tests passing.
 
 ## Tasks
 
-- [ ] **TASK_022** (waiting_for_clarification) — Refactor: use async repo methods instead of inline sync_to_async wrappers
-- [ ] **TASK_023** (waiting_for_clarification) — Improvement: add error handling to critical user paths
-- [ ] **TASK_024** (waiting_for_clarification) — Refactor: extract shared message-sending utility for Celery tasks
-- [ ] **TASK_025** (waiting_for_clarification) — Refactor: consistent language retrieval across handlers
+- [x] **TASK_022** (complete) — Refactor: use async repo methods instead of inline sync_to_async wrappers
+- [x] **TASK_023** (complete) — Improvement: add error handling to critical user paths
+- [x] **TASK_024** (complete) — Refactor: extract shared message-sending utility for Celery tasks
+- [x] **TASK_025** (complete) — Refactor: consistent language retrieval across handlers
 - [x] **TASK_021** (complete) — Feature: add language selection for users
 - [x] **TASK_011** (complete) — Refactor: fix repository pattern violations
 - [x] **TASK_012** (complete) — Refactor: extract config, keyboards, callbacks per project structure

@@ -1,7 +1,7 @@
 # TASK_024 — Refactor: extract shared message-sending utility for Celery tasks
 
 **Is task investigated**: yes
-**Commit ID**: (pending)
+**Commit ID**: a900461
 **Summary**: Three Celery task files (`generate_horoscope.py`, `send_daily_horoscope.py`, `subscription_reminders.py`) each had their own message-sending function that creates a Bot instance, sends messages, and closes the session. Extracted into a shared `horoscope/tasks/messaging.py` utility.
 
 ## Checkboxes

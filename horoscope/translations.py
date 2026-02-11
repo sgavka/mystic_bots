@@ -248,6 +248,20 @@ TRANSLATIONS = {
         "uk": "Дорогий(а) {name},",
         "de": "Liebe(r) {name},",
     },
+
+    # --- Error messages ---
+    "error.profile_creation_failed": {
+        "en": "😔 Something went wrong while creating your profile. Please try again with /start",
+        "ru": "😔 Что-то пошло не так при создании профиля. Попробуйте снова с /start",
+        "uk": "😔 Щось пішло не так при створенні профілю. Спробуйте знову з /start",
+        "de": "😔 Beim Erstellen Ihres Profils ist ein Fehler aufgetreten. Versuchen Sie es erneut mit /start",
+    },
+    "error.payment_failed": {
+        "en": "😔 Something went wrong while activating your subscription. Please contact support if the issue persists.",
+        "ru": "😔 Что-то пошло не так при активации подписки. Пожалуйста, обратитесь в поддержку, если проблема сохранится.",
+        "uk": "😔 Щось пішло не так при активації підписки. Будь ласка, зверніться до підтримки, якщо проблема залишиться.",
+        "de": "😔 Beim Aktivieren Ihres Abonnements ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Support, wenn das Problem weiterhin besteht.",
+    },
 }
 
 
