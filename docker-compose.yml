@@ -21,6 +21,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      args:
+        INSTALL_DEV: "true"
     command: "python manage.py start_bot"
     env_file:
       - .env

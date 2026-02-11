@@ -2,9 +2,9 @@
 
 ## Next step
 
-**Post-completion analysis done** — All tasks complete, lint clean, 82% coverage, improvement tasks created.
+**Post-completion analysis done** — Coverage improved to 87%, Docker dev deps fixed, pytest-cov added.
 
-Current status: All 21 tasks complete. 4 improvement tasks waiting for clarification. Lint: 0 errors. Coverage: 82%. 140 tests.
+Current status: All 21 tasks complete. 4 improvement tasks waiting for clarification. Lint: 0 errors. Coverage: 87%. 190 tests.
 
 ## Tasks
 

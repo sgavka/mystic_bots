@@ -23,6 +23,7 @@ dev = [
     "pytest>=7.4,<8",
     "pytest-django>=4.5,<5",
     "pytest-asyncio>=0.21,<1",
+    "pytest-cov>=4.1,<6",
     "aiogram-test-framework>=1.0.1,<2",
     "ruff>=0.4",
 ]
