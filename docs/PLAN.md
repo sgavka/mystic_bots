@@ -2,13 +2,13 @@
 
 ## Next step
 
-**TASK_027 in progress** — Add "sent at" / "failed to send at" fields to horoscopes table.
+**TASK_028 in progress** — Daily horoscope task sends teaser part after generating.
 
 ## Tasks
 
 - [ ] **TASK_026** (new) — Refactor: use Django/aiogram i18n for translations instead of dict
-- [ ] **TASK_027** (processing) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
-- [ ] **TASK_028** (new) — Improvement: daily horoscope task sends only teaser part
+- [x] **TASK_027** (complete) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
+- [ ] **TASK_028** (processing) — Improvement: daily horoscope task sends only teaser part
 - [ ] **TASK_029** (new) — Improvement: horoscope generation changes (translate header, teaser logic, subscribe link)
 - [x] **TASK_030** (complete) — Refactor: inject services/repos in Celery tasks via DI
 - [x] **TASK_022** (complete) — Refactor: use async repo methods instead of inline sync_to_async wrappers

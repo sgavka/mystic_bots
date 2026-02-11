@@ -1,16 +1,16 @@
 **Is task investigated** — yes
-**Commit ID** —
+**Commit ID** — 4e22509
 **Summary** — Add `sent_at` and `failed_to_send_at` fields to Horoscope model, fill them in daily/first horoscope tasks
 
 **Checkboxes**
-- [ ] Add `sent_at` and `failed_to_send_at` fields to Horoscope model
-- [ ] Add fields to HoroscopeEntity
-- [ ] Create migration
-- [ ] Add repository methods `mark_sent` / `mark_failed_to_send`
-- [ ] Update `send_daily_horoscope_notifications_task` to mark sent/failed
-- [ ] Update `_send_first_horoscope` to mark sent/failed
-- [ ] Add tests
-- [ ] Run tests
+- [x] Add `sent_at` and `failed_to_send_at` fields to Horoscope model
+- [x] Add fields to HoroscopeEntity
+- [x] Create migration
+- [x] Add repository methods `mark_sent` / `mark_failed_to_send`
+- [x] Update `send_daily_horoscope_notifications_task` to mark sent/failed
+- [x] Update `_send_first_horoscope` to mark sent/failed
+- [x] Add tests
+- [x] Run tests
 
 **Investigation**
 

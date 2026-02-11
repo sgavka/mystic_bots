@@ -1,5 +1,5 @@
 **Is task investigated** — yes
-**Commit ID** —
+**Commit ID** — e22c2de
 **Summary** — Refactor Celery tasks and services to use DI via container instead of direct instantiation
 
 **Checkboxes**

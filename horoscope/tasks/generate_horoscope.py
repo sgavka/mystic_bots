@@ -45,11 +45,32 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
                 horoscope_id=horoscope.id,
                 full_text=horoscope.full_text,
             )
+        else:
+            _send_daily_horoscope(
+                telegram_uid=telegram_uid,
+                horoscope_id=horoscope.id,
+                teaser_text=horoscope.teaser_text,
+            )
 
         return horoscope.id
     except ValueError as e:
         logger.error(f"Failed to generate horoscope for user {telegram_uid}: {e}")
         return None
+
+
+def _send_daily_horoscope(telegram_uid: int, horoscope_id: int, teaser_text: str) -> None:
+    """Send the daily horoscope teaser to the user."""
+    from core.containers import container
+    from horoscope.tasks.messaging import send_message
+
+    horoscope_repo = container.horoscope.horoscope_repository()
+
+    success = send_message(telegram_uid=telegram_uid, text=teaser_text)
+    if success:
+        horoscope_repo.mark_sent(horoscope_id=horoscope_id)
+    else:
+        horoscope_repo.mark_failed_to_send(horoscope_id=horoscope_id)
+        logger.error(f"Failed to deliver daily horoscope to user {telegram_uid}")
 
 
 def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) -> None:

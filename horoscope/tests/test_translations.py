@@ -125,14 +125,18 @@ class TestCeleryTasks:
         mock_horoscope = MagicMock()
         mock_horoscope.id = 42
         mock_horoscope.full_text = "Your horoscope text"
+        mock_horoscope.teaser_text = "Teaser text"
 
         mock_service = MagicMock()
         mock_service.generate_for_user.return_value = mock_horoscope
 
         with patch(
-            'horoscope.services.horoscope.HoroscopeService',
-            return_value=mock_service,
-        ):
+            'core.containers.container'
+        ) as mock_container, patch(
+            'horoscope.tasks.generate_horoscope._send_daily_horoscope',
+        ) as mock_send:
+            mock_container.horoscope.horoscope_service.return_value = mock_service
+
             result = generate_horoscope_task(
                 telegram_uid=12345,
                 target_date="2024-06-15",
@@ -144,6 +148,11 @@ class TestCeleryTasks:
             telegram_uid=12345,
             target_date=date(2024, 6, 15),
             horoscope_type="daily",
+        )
+        mock_send.assert_called_once_with(
+            telegram_uid=12345,
+            horoscope_id=42,
+            teaser_text="Teaser text",
         )
 
     @pytest.mark.django_db
