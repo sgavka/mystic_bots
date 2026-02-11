@@ -2,13 +2,13 @@
 
 ## Next step
 
-**Step 7** — Mark TASK_021 complete, commit
+**Step 11** — Analyze plan to create new tasks if needed
 
-Current status: TASK_021 implementation done, all tests pass (76/76).
+Current status: All 21 tasks complete.
 
 ## Tasks
 
-- [ ] **TASK_021** (new) — Feature: add language selection for users
+- [x] **TASK_021** (complete) — Feature: add language selection for users
 - [x] **TASK_011** (complete) — Refactor: fix repository pattern violations
 - [x] **TASK_012** (complete) — Refactor: extract config, keyboards, callbacks per project structure
 - [x] **TASK_013** (complete) — Improvement: error handling and Celery retry logic

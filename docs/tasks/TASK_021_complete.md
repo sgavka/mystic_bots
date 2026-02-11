@@ -1,7 +1,7 @@
 # TASK_021 — Add language selection for user
 
 **Is task investigated**: yes
-**Commit ID**: —
+**Commit ID**: 6c88345
 **Summary**: Add language selection to the bot. Users choose a language after /start (before the wizard). Supported: English, Russian, Ukrainian, German. All bot messages and horoscope content are translated. A /language command allows changing language later.
 
 ## Checkboxes
