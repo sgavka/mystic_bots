@@ -1,14 +1,14 @@
 **Is task investigated** — yes
-**Commit ID** —
+**Commit ID** — 859d393
 **Summary** — Fix horoscope generation: translate header in LLM prompt, teaser shows content (not header), subscription-based sending, subscribe link in teaser
 
 **Checkboxes**
-- [ ] Fix LLM prompt to translate header/greeting
-- [ ] Fix teaser generation to skip header/greeting and use actual horoscope content
-- [ ] Update `_send_daily_horoscope` to check subscription and send full text or teaser
-- [ ] Add subscribe link/CTA to teaser in daily send
-- [ ] Update tests
-- [ ] Run tests
+- [x] Fix LLM prompt to translate header/greeting
+- [x] Fix teaser generation to skip header/greeting and use actual horoscope content
+- [x] Update `_send_daily_horoscope` to check subscription and send full text or teaser
+- [x] Add subscribe link/CTA to teaser in daily send
+- [x] Update tests
+- [x] Run tests
 
 **Investigation**
 

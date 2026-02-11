@@ -1,0 +1,186 @@
+# Django translations for Mystic Bots
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+#. wizard.choose_language
+msgid "🌍 Please choose your language:"
+msgstr ""
+
+#. wizard.welcome_back
+msgid ""
+"👋 Welcome back, <b>{name}</b>!\n"
+"\n"
+"Your profile is already set up. You'll receive your daily horoscope soon ✨"
+msgstr ""
+
+#. wizard.welcome
+msgid ""
+"✨ Welcome to <b>Mystic Horoscope</b>! ✨\n"
+"\n"
+"🔮 I'll create a personalized horoscope just for you. Let's set up your profile first.\n"
+"\n"
+"What is your <b>name</b>?"
+msgstr ""
+
+#. wizard.invalid_name
+msgid "Please enter a valid name (2-100 characters)."
+msgstr ""
+
+#. wizard.ask_dob
+msgid ""
+"😊 Nice to meet you, <b>{name}</b>!\n"
+"\n"
+"📅 Now, please enter your <b>full date of birth</b>\n"
+"in format: <code>DD.MM.YYYY</code>\n"
+"\n"
+"Example: <code>15.03.1990</code>"
+msgstr ""
+
+#. wizard.invalid_date_format
+msgid ""
+"Invalid date format. Please use <code>DD.MM.YYYY</code>\n"
+"\n"
+"Example: <code>15.03.1990</code>"
+msgstr ""
+
+#. wizard.dob_in_future
+msgid "Date of birth must be in the past. Please try again."
+msgstr ""
+
+#. wizard.dob_too_old
+msgid "Please enter a valid date of birth."
+msgstr ""
+
+#. wizard.ask_place_of_birth
+msgid ""
+"🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
+"\n"
+"Example: <code>London</code>"
+msgstr ""
+
+#. wizard.invalid_city
+msgid "Please enter a valid city name (2-200 characters)."
+msgstr ""
+
+#. wizard.ask_place_of_living
+msgid ""
+"📍 Almost done! Please enter your <b>current place of living</b> (city).\n"
+"\n"
+"Example: <code>New York</code>"
+msgstr ""
+
+#. wizard.profile_ready
+msgid ""
+"✅ Your profile is ready, <b>{name}</b>!\n"
+"\n"
+"📅 Date of birth: {dob}\n"
+"🏠 Born in: {place_of_birth}\n"
+"📍 Living in: {place_of_living}\n"
+"\n"
+"🔮 Generating your first horoscope... Please wait a moment."
+msgstr ""
+
+#. horoscope.no_profile
+msgid ""
+"⚠️ You haven't set up your profile yet.\n"
+"Send /start to begin the onboarding wizard."
+msgstr ""
+
+#. horoscope.not_ready
+msgid ""
+"⏳ Your horoscope for today is not ready yet.\n"
+"It will be generated soon. Please check back later."
+msgstr ""
+
+#. horoscope.subscribe_cta
+msgid ""
+"\n"
+"\n"
+"🔒 Subscribe to see your full daily horoscope!"
+msgstr ""
+
+#. subscription.offer
+msgid ""
+"⭐ Subscribe for <b>{days} days</b> of full daily horoscope access.\n"
+"\n"
+"💰 Price: <b>{price} Telegram Stars</b>\n"
+"\n"
+"Tap the button below to pay."
+msgstr ""
+
+#. subscription.invoice_title
+msgid "Horoscope Subscription"
+msgstr ""
+
+#. subscription.invoice_description
+msgid "{days}-day access to full daily horoscope"
+msgstr ""
+
+#. subscription.payment_success
+msgid ""
+"✅ Payment successful! Your subscription is now active.\n"
+"\n"
+"📅 Expires: {expires}\n"
+"\n"
+"Use /horoscope to see your full daily horoscope ✨"
+msgstr ""
+
+#. keyboard.subscribe
+msgid "⭐ Subscribe for full horoscope"
+msgstr ""
+
+#. task.first_horoscope_ready
+msgid ""
+"🔮 Your first horoscope is ready!\n"
+"\n"
+"{text}"
+msgstr ""
+
+#. task.expiry_reminder
+msgid ""
+"⏰ Your horoscope subscription expires in <b>{days} day(s)</b>.\n"
+"\n"
+"Renew now to keep receiving your full daily horoscope! ✨"
+msgstr ""
+
+#. task.subscription_expired
+msgid ""
+"⚠️ Your horoscope subscription has <b>expired</b>.\n"
+"\n"
+"You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐"
+msgstr ""
+
+#. language.current
+msgid ""
+"🌍 Your current language: <b>{lang_name}</b>\n"
+"\n"
+"Choose a new language:"
+msgstr ""
+
+#. language.changed
+msgid "✅ Language changed to <b>English</b> 🇬🇧"
+msgstr ""
+
+#. language.no_profile
+msgid ""
+"⚠️ You haven't set up your profile yet.\n"
+"Send /start to begin."
+msgstr ""
+
+#. horoscope.header
+msgid "Horoscope for {sign} — {date}"
+msgstr ""
+
+#. horoscope.greeting
+msgid "Dear {name},"
+msgstr ""
+
+#. error.profile_creation_failed
+msgid "😔 Something went wrong while creating your profile. Please try again with /start"
+msgstr ""
+
+#. error.payment_failed
+msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
+msgstr ""

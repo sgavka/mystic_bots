@@ -12,7 +12,7 @@ from horoscope.translations import (
     LANGUAGE_FLAGS,
     LANGUAGE_NAMES,
     SUPPORTED_LANGUAGE_CODES,
-    TRANSLATIONS,
+    _KEY_TO_MSGID,
     map_telegram_language,
     t,
 )
@@ -97,12 +97,13 @@ class TestTranslationCompleteness:
     """Verify all translation keys have all 4 languages."""
 
     def test_all_keys_have_all_languages(self):
-        for key, translations in TRANSLATIONS.items():
+        for key in _KEY_TO_MSGID:
             for lang in SUPPORTED_LANGUAGE_CODES:
-                assert lang in translations, (
-                    f"Translation key '{key}' missing language '{lang}'"
+                result = t(key, lang)
+                assert result != key, (
+                    f"Translation key '{key}' returned key itself for '{lang}'"
                 )
-                assert translations[lang], (
+                assert result, (
                     f"Translation key '{key}' has empty value for '{lang}'"
                 )
 

@@ -2,14 +2,14 @@
 
 ## Next step
 
-**TASK_029 in progress** — Horoscope generation changes (translate header, teaser logic, subscribe link).
+**TASK_026 in progress** — Replace custom translations with Django gettext.
 
 ## Tasks
 
-- [ ] **TASK_026** (new) — Refactor: use Django/aiogram i18n for translations instead of dict
+- [ ] **TASK_026** (processing) — Refactor: use Django/aiogram i18n for translations instead of dict
 - [x] **TASK_027** (complete) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
 - [x] **TASK_028** (complete) — Improvement: daily horoscope task sends only teaser part
-- [ ] **TASK_029** (processing) — Improvement: horoscope generation changes (translate header, teaser logic, subscribe link)
+- [x] **TASK_029** (complete) — Improvement: horoscope generation changes (translate header, teaser logic, subscribe link)
 - [x] **TASK_030** (complete) — Refactor: inject services/repos in Celery tasks via DI
 - [x] **TASK_022** (complete) — Refactor: use async repo methods instead of inline sync_to_async wrappers
 - [x] **TASK_023** (complete) — Improvement: add error handling to critical user paths
