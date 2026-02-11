@@ -172,6 +172,36 @@ class TestHoroscopeRepository:
         assert result.teaser_text == "Preview..."
         assert Horoscope.objects.filter(user_telegram_uid=12345).exists()
 
+    def test_mark_sent(self):
+        horoscope = Horoscope.objects.create(
+            user_telegram_uid=12345,
+            horoscope_type="daily",
+            date=date(2024, 6, 15),
+            full_text="Full text",
+            teaser_text="Teaser",
+        )
+        assert horoscope.sent_at is None
+
+        self.repo.mark_sent(horoscope_id=horoscope.id)
+
+        horoscope.refresh_from_db()
+        assert horoscope.sent_at is not None
+
+    def test_mark_failed_to_send(self):
+        horoscope = Horoscope.objects.create(
+            user_telegram_uid=12345,
+            horoscope_type="daily",
+            date=date(2024, 6, 15),
+            full_text="Full text",
+            teaser_text="Teaser",
+        )
+        assert horoscope.failed_to_send_at is None
+
+        self.repo.mark_failed_to_send(horoscope_id=horoscope.id)
+
+        horoscope.refresh_from_db()
+        assert horoscope.failed_to_send_at is not None
+
 
 @pytest.mark.django_db
 class TestSubscriptionRepository:

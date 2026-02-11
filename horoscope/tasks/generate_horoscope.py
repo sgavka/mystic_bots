@@ -42,6 +42,7 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
         if horoscope_type == 'first':
             _send_first_horoscope(
                 telegram_uid=telegram_uid,
+                horoscope_id=horoscope.id,
                 full_text=horoscope.full_text,
             )
 
@@ -51,17 +52,21 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
         return None
 
 
-def _send_first_horoscope(telegram_uid: int, full_text: str) -> None:
+def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) -> None:
     """Send the first horoscope to the user after profile setup."""
     from core.containers import container
     from horoscope.tasks.messaging import send_message
     from horoscope.translations import t
 
     user_profile_repo = container.horoscope.user_profile_repository()
+    horoscope_repo = container.horoscope.horoscope_repository()
     profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
     lang = profile.preferred_language if profile else 'en'
 
     text = t("task.first_horoscope_ready", lang, text=full_text)
     success = send_message(telegram_uid=telegram_uid, text=text)
-    if not success:
+    if success:
+        horoscope_repo.mark_sent(horoscope_id=horoscope_id)
+    else:
+        horoscope_repo.mark_failed_to_send(horoscope_id=horoscope_id)
         logger.error(f"Failed to deliver first horoscope to user {telegram_uid}")

@@ -2,15 +2,15 @@
 
 ## Next step
 
-**TASK_030 in progress** — Refactoring services and Celery tasks to use DI via container.
+**TASK_027 in progress** — Add "sent at" / "failed to send at" fields to horoscopes table.
 
 ## Tasks
 
 - [ ] **TASK_026** (new) — Refactor: use Django/aiogram i18n for translations instead of dict
-- [ ] **TASK_027** (new) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
+- [ ] **TASK_027** (processing) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
 - [ ] **TASK_028** (new) — Improvement: daily horoscope task sends only teaser part
 - [ ] **TASK_029** (new) — Improvement: horoscope generation changes (translate header, teaser logic, subscribe link)
-- [ ] **TASK_030** (processing) — Refactor: inject services/repos in Celery tasks via DI
+- [x] **TASK_030** (complete) — Refactor: inject services/repos in Celery tasks via DI
 - [x] **TASK_022** (complete) — Refactor: use async repo methods instead of inline sync_to_async wrappers
 - [x] **TASK_023** (complete) — Improvement: add error handling to critical user paths
 - [x] **TASK_024** (complete) — Refactor: extract shared message-sending utility for Celery tasks

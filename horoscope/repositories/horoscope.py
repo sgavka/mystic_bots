@@ -2,6 +2,7 @@ from datetime import date
 from typing import Optional
 
 from asgiref.sync import sync_to_async
+from django.utils import timezone
 
 from core.repositories.base import BaseRepository
 from horoscope.entities import HoroscopeEntity
@@ -70,3 +71,15 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
             full_text,
             teaser_text,
         )
+
+    def mark_sent(self, horoscope_id: int) -> None:
+        Horoscope.objects.filter(id=horoscope_id).update(sent_at=timezone.now())
+
+    async def amark_sent(self, horoscope_id: int) -> None:
+        return await sync_to_async(self.mark_sent)(horoscope_id)
+
+    def mark_failed_to_send(self, horoscope_id: int) -> None:
+        Horoscope.objects.filter(id=horoscope_id).update(failed_to_send_at=timezone.now())
+
+    async def amark_failed_to_send(self, horoscope_id: int) -> None:
+        return await sync_to_async(self.mark_failed_to_send)(horoscope_id)

@@ -36,6 +36,8 @@ class Horoscope(models.Model):
     date = models.DateField()
     full_text = models.TextField()
     teaser_text = models.TextField()
+    sent_at = models.DateTimeField(null=True, blank=True)
+    failed_to_send_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

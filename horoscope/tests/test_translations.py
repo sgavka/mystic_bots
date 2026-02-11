@@ -192,6 +192,7 @@ class TestCeleryTasks:
         assert result == 42
         mock_send.assert_called_once_with(
             telegram_uid=12345,
+            horoscope_id=42,
             full_text="First horoscope",
         )
 
@@ -255,8 +256,8 @@ class TestCeleryTasks:
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.tasks.messaging.send_messages_batch',
-            return_value=1,
+            'horoscope.tasks.messaging.send_message',
+            return_value=True,
         ) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
@@ -265,10 +266,12 @@ class TestCeleryTasks:
             result = send_daily_horoscope_notifications_task()
 
         assert result == 1
-        mock_send.assert_called_once()
-        # Subscriber gets full text, no keyboard
-        args = mock_send.call_args[0][0]
-        assert args[0] == (12345, "Full text", None)
+        mock_send.assert_called_once_with(
+            telegram_uid=12345,
+            text="Full text",
+            reply_markup=None,
+        )
+        mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
 
     @pytest.mark.django_db
     def test_send_daily_horoscope_non_subscriber_gets_teaser(self):
@@ -309,8 +312,8 @@ class TestCeleryTasks:
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.tasks.messaging.send_messages_batch',
-            return_value=1,
+            'horoscope.tasks.messaging.send_message',
+            return_value=True,
         ) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
@@ -319,10 +322,10 @@ class TestCeleryTasks:
             result = send_daily_horoscope_notifications_task()
 
         assert result == 1
-        args = mock_send.call_args[0][0]
-        text = args[0][1]
+        text = mock_send.call_args[1]['text']
         assert "Teaser" in text
         assert "Subscribe" in text or "🔒" in text
+        mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
 
     @pytest.mark.django_db
     def test_send_expiry_reminders_task_no_expiring(self):

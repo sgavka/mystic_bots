@@ -54,7 +54,7 @@ def send_daily_horoscope_notifications_task():
     """
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
-    from horoscope.tasks.messaging import send_messages_batch
+    from horoscope.tasks.messaging import send_message
     from horoscope.translations import t
 
     today = date.today()
@@ -64,7 +64,7 @@ def send_daily_horoscope_notifications_task():
 
     profiles = user_profile_repo.all()
 
-    messages = []
+    count = 0
     for profile in profiles:
         horoscope = horoscope_repo.get_by_user_and_date(
             telegram_uid=profile.user_telegram_uid,
@@ -87,8 +87,16 @@ def send_daily_horoscope_notifications_task():
             text = horoscope.teaser_text + t("horoscope.subscribe_cta", lang)
             keyboard = subscribe_keyboard(language=lang)
 
-        messages.append((profile.user_telegram_uid, text, keyboard))
+        success = send_message(
+            telegram_uid=profile.user_telegram_uid,
+            text=text,
+            reply_markup=keyboard,
+        )
+        if success:
+            horoscope_repo.mark_sent(horoscope_id=horoscope.id)
+            count += 1
+        else:
+            horoscope_repo.mark_failed_to_send(horoscope_id=horoscope.id)
 
-    count = send_messages_batch(messages)
     logger.info(f"Sent daily horoscope to {count} users on {today}")
     return count
