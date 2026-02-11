@@ -2,11 +2,11 @@
 
 ## Next step
 
-**TASK_026 in progress** — Replace custom translations with Django gettext.
+All tasks complete.
 
 ## Tasks
 
-- [ ] **TASK_026** (processing) — Refactor: use Django/aiogram i18n for translations instead of dict
+- [x] **TASK_026** (complete) — Refactor: use Django/aiogram i18n for translations instead of dict
 - [x] **TASK_027** (complete) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
 - [x] **TASK_028** (complete) — Improvement: daily horoscope task sends only teaser part
 - [x] **TASK_029** (complete) — Improvement: horoscope generation changes (translate header, teaser logic, subscribe link)

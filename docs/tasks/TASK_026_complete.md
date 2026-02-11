@@ -1,5 +1,5 @@
 **Is task investigated** — yes
-**Commit ID** — (pending)
+**Commit ID** — dfc6c1f
 **Summary** — Replace custom dict-based translations with Django gettext (.po/.mo files)
 
 **Checkboxes**
