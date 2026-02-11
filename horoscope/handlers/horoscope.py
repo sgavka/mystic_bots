@@ -4,7 +4,6 @@ from datetime import date
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from asgiref.sync import sync_to_async
 
 from core.containers import container
 from core.entities import UserEntity
@@ -39,11 +38,7 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
         await message.answer(t("horoscope.not_ready", lang))
         return
 
-    @sync_to_async
-    def _check_subscription():
-        return subscription_repo.has_active_subscription(user.telegram_uid)
-
-    has_subscription = await _check_subscription()
+    has_subscription = await subscription_repo.ahas_active_subscription(user.telegram_uid)
 
     if has_subscription:
         await message.answer(horoscope.full_text)

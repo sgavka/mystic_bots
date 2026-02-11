@@ -4,7 +4,6 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-from asgiref.sync import sync_to_async
 
 from core.containers import container
 from core.entities import UserEntity
@@ -44,14 +43,10 @@ async def change_language_callback(callback: CallbackQuery, state: FSMContext, u
 
     user_profile_repo = container.horoscope.user_profile_repository()
 
-    @sync_to_async
-    def _update_lang():
-        return user_profile_repo.update_language(
-            telegram_uid=user.telegram_uid,
-            language=new_lang,
-        )
-
-    profile = await _update_lang()
+    profile = await user_profile_repo.aupdate_language(
+        telegram_uid=user.telegram_uid,
+        language=new_lang,
+    )
 
     if not profile:
         await callback.message.answer(t("language.no_profile", 'en'))

@@ -7,7 +7,6 @@ from aiogram.types import (
     Message,
     PreCheckoutQuery,
 )
-from asgiref.sync import sync_to_async
 
 from core.containers import container
 from core.entities import UserEntity
@@ -21,10 +20,10 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
-def _get_user_language(user: UserEntity) -> str:
+async def _aget_user_language(user: UserEntity) -> str:
     """Get user's preferred language from profile, fallback to 'en'."""
     user_profile_repo = container.horoscope.user_profile_repository()
-    profile = user_profile_repo.get_by_telegram_uid(user.telegram_uid)
+    profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
     return profile.preferred_language if profile else 'en'
 
 
@@ -32,11 +31,7 @@ def _get_user_language(user: UserEntity) -> str:
 async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs):
     await callback.answer()
 
-    @sync_to_async
-    def _get_lang():
-        return _get_user_language(user)
-
-    lang = await _get_lang()
+    lang = await _aget_user_language(user)
 
     await callback.message.answer(
         t(
@@ -66,26 +61,18 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
     payment = message.successful_payment
     service = SubscriptionService()
 
-    @sync_to_async
-    def _activate():
-        return service.activate_subscription(
-            telegram_uid=user.telegram_uid,
-            duration_days=SUBSCRIPTION_DURATION_DAYS,
-            payment_charge_id=payment.telegram_payment_charge_id,
-        )
-
-    subscription = await _activate()
+    subscription = await service.aactivate_subscription(
+        telegram_uid=user.telegram_uid,
+        duration_days=SUBSCRIPTION_DURATION_DAYS,
+        payment_charge_id=payment.telegram_payment_charge_id,
+    )
 
     logger.info(
         f"Subscription activated for user {user.telegram_uid} "
         f"until {subscription.expires_at}"
     )
 
-    @sync_to_async
-    def _get_lang():
-        return _get_user_language(user)
-
-    lang = await _get_lang()
+    lang = await _aget_user_language(user)
 
     await message.answer(
         t(
