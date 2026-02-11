@@ -2,12 +2,16 @@
 
 ## Next step
 
-**Post-completion Step 1** — Look at tests coverage and add more tests to increase coverage
+**Post-completion analysis done** — All tasks complete, lint clean, 82% coverage, improvement tasks created.
 
-Current status: All 21 tasks complete. Running post-completion analysis.
+Current status: All 21 tasks complete. 4 improvement tasks waiting for clarification. Lint: 0 errors. Coverage: 82%. 140 tests.
 
 ## Tasks
 
+- [ ] **TASK_022** (waiting_for_clarification) — Refactor: use async repo methods instead of inline sync_to_async wrappers
+- [ ] **TASK_023** (waiting_for_clarification) — Improvement: add error handling to critical user paths
+- [ ] **TASK_024** (waiting_for_clarification) — Refactor: extract shared message-sending utility for Celery tasks
+- [ ] **TASK_025** (waiting_for_clarification) — Refactor: consistent language retrieval across handlers
 - [x] **TASK_021** (complete) — Feature: add language selection for users
 - [x] **TASK_011** (complete) — Refactor: fix repository pattern violations
 - [x] **TASK_012** (complete) — Refactor: extract config, keyboards, callbacks per project structure
