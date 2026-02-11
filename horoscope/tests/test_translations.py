@@ -253,7 +253,7 @@ class TestCeleryTasks:
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.tasks.send_daily_horoscope._send_messages_sync',
+            'horoscope.tasks.messaging.send_messages_batch',
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
@@ -307,7 +307,7 @@ class TestCeleryTasks:
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.tasks.send_daily_horoscope._send_messages_sync',
+            'horoscope.tasks.messaging.send_messages_batch',
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
@@ -376,7 +376,7 @@ class TestCeleryTasks:
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.tasks.subscription_reminders._send_messages_with_keyboard',
+            'horoscope.tasks.messaging.send_messages_batch',
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
@@ -459,7 +459,7 @@ class TestCeleryTasks:
             'horoscope.services.subscription.SubscriptionService',
             return_value=mock_service,
         ), patch(
-            'horoscope.tasks.subscription_reminders._send_messages_with_keyboard',
+            'horoscope.tasks.messaging.send_messages_batch',
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from celery import shared_task
@@ -20,6 +19,8 @@ def send_expiry_reminders_task():
     """
     from core.containers import container
     from horoscope.config import SUBSCRIPTION_REMINDER_DAYS
+    from horoscope.keyboards import subscribe_keyboard
+    from horoscope.tasks.messaging import send_messages_batch
     from horoscope.translations import t
 
     subscription_repo = container.horoscope.subscription_repository()
@@ -38,9 +39,9 @@ def send_expiry_reminders_task():
         profile = user_profile_repo.get_by_telegram_uid(sub.user_telegram_uid)
         lang = profile.preferred_language if profile else 'en'
         text = t("task.expiry_reminder", lang, days=days_left)
-        messages.append((sub.user_telegram_uid, text, lang))
+        messages.append((sub.user_telegram_uid, text, subscribe_keyboard(language=lang)))
 
-    count = _send_messages_with_keyboard(messages)
+    count = send_messages_batch(messages)
 
     subscription_ids = [sub.id for sub in expiring]
     subscription_repo.mark_reminded(subscription_ids=subscription_ids)
@@ -63,6 +64,8 @@ def send_expired_notifications_task():
     Should run after expire_overdue_subscriptions.
     """
     from core.containers import container
+    from horoscope.keyboards import subscribe_keyboard
+    from horoscope.tasks.messaging import send_messages_batch
     from horoscope.translations import t
 
     subscription_repo = container.horoscope.subscription_repository()
@@ -83,44 +86,12 @@ def send_expired_notifications_task():
         profile = user_profile_repo.get_by_telegram_uid(sub.user_telegram_uid)
         lang = profile.preferred_language if profile else 'en'
         text = t("task.subscription_expired", lang)
-        messages.append((sub.user_telegram_uid, text, lang))
+        messages.append((sub.user_telegram_uid, text, subscribe_keyboard(language=lang)))
 
-    count = _send_messages_with_keyboard(messages)
+    count = send_messages_batch(messages)
 
     subscription_ids = [sub.id for sub in expired]
     subscription_repo.mark_reminded(subscription_ids=subscription_ids)
 
     logger.info(f"Sent expired notifications to {count} users")
     return count
-
-
-def _send_messages_with_keyboard(messages: list[tuple[int, str, str]]) -> int:
-    """Send Telegram messages with subscribe keyboard, reusing a single Bot session."""
-    from aiogram import Bot
-    from aiogram.client.default import DefaultBotProperties
-    from aiogram.enums import ParseMode
-    from config import settings
-    from horoscope.keyboards import subscribe_keyboard
-
-    async def _send_all():
-        bot = Bot(
-            token=settings.CURRENT_BOT_TOKEN,
-            default=DefaultBotProperties(parse_mode=ParseMode.HTML),
-        )
-        sent = 0
-        try:
-            for telegram_uid, text, lang in messages:
-                try:
-                    await bot.send_message(
-                        chat_id=telegram_uid,
-                        text=text,
-                        reply_markup=subscribe_keyboard(language=lang),
-                    )
-                    sent += 1
-                except Exception as e:
-                    logger.error(f"Failed to send reminder to user {telegram_uid}: {e}")
-        finally:
-            await bot.session.close()
-        return sent
-
-    return asyncio.run(_send_all())

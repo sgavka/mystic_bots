@@ -1,6 +1,7 @@
 # TASK_022 — Refactor: use async repository methods instead of inline sync_to_async wrappers
 
 **Is task investigated**: yes
+**Commit ID**: 84be9b0
 **Summary**: Multiple handlers create redundant inline `sync_to_async` wrappers for repository calls, even though all repositories already have async variants (`aget_by_telegram_uid`, `ahas_active_subscription`, etc.). Replace these with direct async method calls to simplify code and reduce overhead.
 
 ## Checkboxes

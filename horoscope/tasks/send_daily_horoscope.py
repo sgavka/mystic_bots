@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from datetime import date
 
@@ -55,6 +54,7 @@ def send_daily_horoscope_notifications_task():
     """
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
+    from horoscope.tasks.messaging import send_messages_batch
     from horoscope.translations import t
 
     today = date.today()
@@ -89,37 +89,6 @@ def send_daily_horoscope_notifications_task():
 
         messages.append((profile.user_telegram_uid, text, keyboard))
 
-    count = _send_messages_sync(messages)
+    count = send_messages_batch(messages)
     logger.info(f"Sent daily horoscope to {count} users on {today}")
     return count
-
-
-def _send_messages_sync(messages: list[tuple[int, str, any]]) -> int:
-    """Send multiple Telegram messages reusing a single Bot session."""
-    from aiogram import Bot
-    from aiogram.client.default import DefaultBotProperties
-    from aiogram.enums import ParseMode
-    from config import settings
-
-    async def _send_all():
-        bot = Bot(
-            token=settings.CURRENT_BOT_TOKEN,
-            default=DefaultBotProperties(parse_mode=ParseMode.HTML),
-        )
-        sent = 0
-        try:
-            for telegram_uid, text, keyboard in messages:
-                try:
-                    await bot.send_message(
-                        chat_id=telegram_uid,
-                        text=text,
-                        reply_markup=keyboard,
-                    )
-                    sent += 1
-                except Exception as e:
-                    logger.error(f"Failed to send message to user {telegram_uid}: {e}")
-        finally:
-            await bot.session.close()
-        return sent
-
-    return asyncio.run(_send_all())
