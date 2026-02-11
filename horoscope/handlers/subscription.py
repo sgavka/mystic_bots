@@ -8,10 +8,10 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
-from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.config import SUBSCRIPTION_DURATION_DAYS, SUBSCRIPTION_PRICE_STARS
+from horoscope.handlers.utils import aget_user_language
 from horoscope.services.subscription import SubscriptionService
 from horoscope.translations import t
 
@@ -20,18 +20,11 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
-async def _aget_user_language(user: UserEntity) -> str:
-    """Get user's preferred language from profile, fallback to 'en'."""
-    user_profile_repo = container.horoscope.user_profile_repository()
-    profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
-    return profile.preferred_language if profile else 'en'
-
-
 @router.callback_query(F.data == callbacks.SUBSCRIBE)
 async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs):
     await callback.answer()
 
-    lang = await _aget_user_language(user)
+    lang = await aget_user_language(user)
 
     await callback.message.answer(
         t(
@@ -72,7 +65,7 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
         f"until {subscription.expires_at}"
     )
 
-    lang = await _aget_user_language(user)
+    lang = await aget_user_language(user)
 
     await message.answer(
         t(

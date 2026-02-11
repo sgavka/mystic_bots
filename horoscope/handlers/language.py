@@ -9,7 +9,7 @@ from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
-from horoscope.translations import LANGUAGE_NAMES, t
+from horoscope.translations import LANGUAGE_NAMES, map_telegram_language, t
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,8 @@ async def language_command_handler(message: Message, state: FSMContext, user: Us
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
 
     if not profile:
-        await message.answer(t("language.no_profile", 'en'))
+        lang = map_telegram_language(user.language_code)
+        await message.answer(t("language.no_profile", lang))
         return
 
     lang = profile.preferred_language
@@ -49,7 +50,8 @@ async def change_language_callback(callback: CallbackQuery, state: FSMContext, u
     )
 
     if not profile:
-        await callback.message.answer(t("language.no_profile", 'en'))
+        lang = map_telegram_language(user.language_code)
+        await callback.message.answer(t("language.no_profile", lang))
         return
 
     await callback.message.edit_reply_markup(reply_markup=None)

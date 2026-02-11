@@ -8,7 +8,7 @@ from aiogram.types import Message
 from core.containers import container
 from core.entities import UserEntity
 from horoscope.keyboards import subscribe_keyboard
-from horoscope.translations import t
+from horoscope.translations import map_telegram_language, t
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,8 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
 
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
     if not profile:
-        await message.answer(t("horoscope.no_profile", 'en'))
+        lang = map_telegram_language(user.language_code)
+        await message.answer(t("horoscope.no_profile", lang))
         return
 
     lang = profile.preferred_language
