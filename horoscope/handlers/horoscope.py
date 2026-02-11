@@ -9,6 +9,7 @@ from asgiref.sync import sync_to_async
 from core.containers import container
 from core.entities import UserEntity
 from horoscope.keyboards import subscribe_keyboard
+from horoscope.translations import t
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +24,10 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
 
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
     if not profile:
-        await message.answer(
-            "⚠️ You haven't set up your profile yet.\n"
-            "Send /start to begin the onboarding wizard."
-        )
+        await message.answer(t("horoscope.no_profile", 'en'))
         return
+
+    lang = profile.preferred_language
 
     today = date.today()
     horoscope = await horoscope_repo.aget_by_user_and_date(
@@ -36,10 +36,7 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     )
 
     if not horoscope:
-        await message.answer(
-            "⏳ Your horoscope for today is not ready yet.\n"
-            "It will be generated soon. Please check back later."
-        )
+        await message.answer(t("horoscope.not_ready", lang))
         return
 
     @sync_to_async
@@ -52,7 +49,6 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
         await message.answer(horoscope.full_text)
     else:
         await message.answer(
-            horoscope.teaser_text
-            + "\n\n🔒 Subscribe to see your full daily horoscope!",
-            reply_markup=subscribe_keyboard(),
+            horoscope.teaser_text + t("horoscope.subscribe_cta", lang),
+            reply_markup=subscribe_keyboard(language=lang),
         )

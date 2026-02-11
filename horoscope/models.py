@@ -1,6 +1,6 @@
 from django.db import models
 
-from horoscope.enums import HoroscopeType, SubscriptionStatus
+from horoscope.enums import HoroscopeType, Language, SubscriptionStatus
 
 
 class UserProfile(models.Model):
@@ -9,6 +9,11 @@ class UserProfile(models.Model):
     date_of_birth = models.DateField()
     place_of_birth = models.CharField(max_length=255)
     place_of_living = models.CharField(max_length=255)
+    preferred_language = models.CharField(
+        max_length=5,
+        choices=Language.choices,
+        default=Language.EN,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

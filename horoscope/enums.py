@@ -10,3 +10,10 @@ class SubscriptionStatus(models.TextChoices):
 class HoroscopeType(models.TextChoices):
     DAILY = 'daily', 'Daily'
     FIRST = 'first', 'First (onboarding)'
+
+
+class Language(models.TextChoices):
+    EN = 'en', 'English'
+    RU = 'ru', 'Russian'
+    UK = 'uk', 'Ukrainian'
+    DE = 'de', 'German'

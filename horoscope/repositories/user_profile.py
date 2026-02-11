@@ -33,6 +33,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
         date_of_birth: str,
         place_of_birth: str,
         place_of_living: str,
+        preferred_language: str = 'en',
     ) -> UserProfileEntity:
         profile = UserProfile.objects.create(
             user_telegram_uid=telegram_uid,
@@ -40,6 +41,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
             date_of_birth=date_of_birth,
             place_of_birth=place_of_birth,
             place_of_living=place_of_living,
+            preferred_language=preferred_language,
         )
         return UserProfileEntity.from_model(profile)
 
@@ -50,6 +52,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
         date_of_birth: str,
         place_of_birth: str,
         place_of_living: str,
+        preferred_language: str = 'en',
     ) -> UserProfileEntity:
         return await sync_to_async(self.create_profile)(
             telegram_uid,
@@ -57,7 +60,20 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
             date_of_birth,
             place_of_birth,
             place_of_living,
+            preferred_language,
         )
+
+    def update_language(self, telegram_uid: int, language: str) -> Optional[UserProfileEntity]:
+        try:
+            profile = UserProfile.objects.get(user_telegram_uid=telegram_uid)
+            profile.preferred_language = language
+            profile.save(update_fields=['preferred_language', 'updated_at'])
+            return UserProfileEntity.from_model(profile)
+        except UserProfile.DoesNotExist:
+            return None
+
+    async def aupdate_language(self, telegram_uid: int, language: str) -> Optional[UserProfileEntity]:
+        return await sync_to_async(self.update_language)(telegram_uid, language)
 
     def get_all_telegram_uids(self) -> list[int]:
         return list(

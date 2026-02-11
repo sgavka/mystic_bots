@@ -3,6 +3,7 @@ from datetime import date
 
 from config import settings
 from horoscope.config import TEASER_LINE_COUNT
+from horoscope.translations import LANGUAGE_NAMES
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,8 @@ Guidelines:
 - Keep the tone warm, positive, and mystical
 - Use emojis throughout the text to make it more engaging (stars, zodiac symbols, hearts, sparkles, etc.)
 - Do NOT use markdown formatting, just plain text with emojis
-- Each section should be a separate line"""
+- Each section should be a separate line
+- IMPORTANT: Write the entire horoscope in {language_name}"""
 
 
 class LLMService:
@@ -46,8 +48,11 @@ class LLMService:
         place_of_birth: str,
         place_of_living: str,
         target_date: date,
+        language: str = 'en',
     ) -> tuple[str, str]:
         import litellm
+
+        language_name = LANGUAGE_NAMES.get(language, 'English')
 
         prompt = HOROSCOPE_PROMPT.format(
             name=name,
@@ -57,6 +62,7 @@ class LLMService:
             place_of_living=place_of_living,
             target_date=target_date.isoformat(),
             target_date_formatted=target_date.strftime('%B %d, %Y'),
+            language_name=language_name,
         )
 
         response = litellm.completion(
@@ -74,5 +80,5 @@ class LLMService:
         teaser_lines = lines[:TEASER_LINE_COUNT]
         teaser_text = "\n".join(teaser_lines) + "\n\n..."
 
-        logger.info(f"Generated LLM horoscope for {name} ({zodiac_sign}) on {target_date}")
+        logger.info(f"Generated LLM horoscope for {name} ({zodiac_sign}) on {target_date} in {language_name}")
         return full_text, teaser_text

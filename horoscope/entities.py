@@ -10,6 +10,7 @@ class UserProfileEntity(BaseEntity):
     date_of_birth: date
     place_of_birth: str
     place_of_living: str
+    preferred_language: str = 'en'
     created_at: datetime
     updated_at: datetime
 

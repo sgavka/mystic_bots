@@ -20,8 +20,10 @@ def send_expiry_reminders_task():
     """
     from core.containers import container
     from horoscope.config import SUBSCRIPTION_REMINDER_DAYS
+    from horoscope.translations import t
 
     subscription_repo = container.horoscope.subscription_repository()
+    user_profile_repo = container.horoscope.user_profile_repository()
     expiring = subscription_repo.get_expiring_soon(days=SUBSCRIPTION_REMINDER_DAYS)
 
     if not expiring:
@@ -33,11 +35,10 @@ def send_expiry_reminders_task():
     now = timezone.now()
     for sub in expiring:
         days_left = (sub.expires_at - now).days
-        text = (
-            f"⏰ Your horoscope subscription expires in <b>{days_left} day(s)</b>.\n\n"
-            "Renew now to keep receiving your full daily horoscope! ✨"
-        )
-        messages.append((sub.user_telegram_uid, text))
+        profile = user_profile_repo.get_by_telegram_uid(sub.user_telegram_uid)
+        lang = profile.preferred_language if profile else 'en'
+        text = t("task.expiry_reminder", lang, days=days_left)
+        messages.append((sub.user_telegram_uid, text, lang))
 
     count = _send_messages_with_keyboard(messages)
 
@@ -62,8 +63,10 @@ def send_expired_notifications_task():
     Should run after expire_overdue_subscriptions.
     """
     from core.containers import container
+    from horoscope.translations import t
 
     subscription_repo = container.horoscope.subscription_repository()
+    user_profile_repo = container.horoscope.user_profile_repository()
 
     # First expire overdue subscriptions
     from horoscope.services.subscription import SubscriptionService
@@ -77,12 +80,10 @@ def send_expired_notifications_task():
 
     messages = []
     for sub in expired:
-        text = (
-            "⚠️ Your horoscope subscription has <b>expired</b>.\n\n"
-            "You'll now see a preview of your daily horoscope. "
-            "Subscribe again to get full access! ⭐"
-        )
-        messages.append((sub.user_telegram_uid, text))
+        profile = user_profile_repo.get_by_telegram_uid(sub.user_telegram_uid)
+        lang = profile.preferred_language if profile else 'en'
+        text = t("task.subscription_expired", lang)
+        messages.append((sub.user_telegram_uid, text, lang))
 
     count = _send_messages_with_keyboard(messages)
 
@@ -93,15 +94,13 @@ def send_expired_notifications_task():
     return count
 
 
-def _send_messages_with_keyboard(messages: list[tuple[int, str]]) -> int:
+def _send_messages_with_keyboard(messages: list[tuple[int, str, str]]) -> int:
     """Send Telegram messages with subscribe keyboard, reusing a single Bot session."""
     from aiogram import Bot
     from aiogram.client.default import DefaultBotProperties
     from aiogram.enums import ParseMode
     from config import settings
     from horoscope.keyboards import subscribe_keyboard
-
-    keyboard = subscribe_keyboard()
 
     async def _send_all():
         bot = Bot(
@@ -110,12 +109,12 @@ def _send_messages_with_keyboard(messages: list[tuple[int, str]]) -> int:
         )
         sent = 0
         try:
-            for telegram_uid, text in messages:
+            for telegram_uid, text, lang in messages:
                 try:
                     await bot.send_message(
                         chat_id=telegram_uid,
                         text=text,
-                        reply_markup=keyboard,
+                        reply_markup=subscribe_keyboard(language=lang),
                     )
                     sent += 1
                 except Exception as e:

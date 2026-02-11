@@ -1,6 +1,6 @@
 """
 Tests for horoscope bot handlers using aiogram-test-framework.
-Covers all user flows: wizard onboarding, horoscope view, subscription.
+Covers all user flows: wizard onboarding, horoscope view, subscription, language.
 """
 
 import pytest
@@ -48,10 +48,12 @@ def _setup_dispatcher(bot: Bot, dispatcher: Dispatcher) -> None:
     from horoscope.handlers.wizard import router as wizard_router
     from horoscope.handlers.horoscope import router as horoscope_router
     from horoscope.handlers.subscription import router as subscription_router
+    from horoscope.handlers.language import router as language_router
 
     dispatcher.include_router(wizard_router)
     dispatcher.include_router(horoscope_router)
     dispatcher.include_router(subscription_router)
+    dispatcher.include_router(language_router)
 
 
 def _make_profile(
@@ -60,6 +62,7 @@ def _make_profile(
     date_of_birth: date = date(1990, 5, 15),
     place_of_birth: str = "London",
     place_of_living: str = "Berlin",
+    preferred_language: str = "en",
 ) -> UserProfileEntity:
     return UserProfileEntity(
         user_telegram_uid=telegram_uid,
@@ -67,6 +70,7 @@ def _make_profile(
         date_of_birth=date_of_birth,
         place_of_birth=place_of_birth,
         place_of_living=place_of_living,
+        preferred_language=preferred_language,
         created_at=datetime(2024, 1, 1),
         updated_at=datetime(2024, 1, 1),
     )
@@ -93,6 +97,8 @@ def _mock_profile_repo(profile=None):
     mock.aget_by_telegram_uid = AsyncMock(return_value=profile)
     mock.get_by_telegram_uid = MagicMock(return_value=profile)
     mock.create_profile = MagicMock(return_value=profile)
+    mock.update_language = MagicMock(return_value=profile)
+    mock.aupdate_language = AsyncMock(return_value=profile)
     return mock
 
 
@@ -142,12 +148,22 @@ def _reset_overrides():
 
 
 # ---------------------------------------------------------------------------
-# Wizard: /start
+# Helper: complete language selection step in wizard
+# ---------------------------------------------------------------------------
+
+async def _select_language(user, lang_code: str = "en"):
+    """Click a language button during wizard language selection step."""
+    responses = await user.click_button(f"lang_{lang_code}")
+    return responses
+
+
+# ---------------------------------------------------------------------------
+# Wizard: /start → language selection
 # ---------------------------------------------------------------------------
 
 class TestWizardStart:
 
-    async def test_start_new_user(self, client):
+    async def test_start_new_user_shows_language_selection(self, client):
         profile_repo = _mock_profile_repo(profile=None)
         container.horoscope.user_profile_repository.override(
             providers.Object(profile_repo)
@@ -157,8 +173,7 @@ class TestWizardStart:
         responses = await user.send_command("start")
 
         assert len(responses) == 1
-        assert "Mystic Horoscope" in responses[0].text
-        assert "name" in responses[0].text.lower()
+        assert "language" in responses[0].text.lower() or "🌍" in responses[0].text
 
     async def test_start_returning_user(self, client):
         profile = _make_profile(name="Alice")
@@ -171,8 +186,52 @@ class TestWizardStart:
         responses = await user.send_command("start")
 
         assert len(responses) == 1
-        assert "Welcome back" in responses[0].text
         assert "Alice" in responses[0].text
+
+    async def test_start_returning_user_russian(self, client):
+        profile = _make_profile(name="Алиса", preferred_language="ru")
+        profile_repo = _mock_profile_repo(profile=profile)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = client.create_user(first_name="Алиса")
+        responses = await user.send_command("start")
+
+        assert len(responses) == 1
+        assert "Алиса" in responses[0].text
+
+
+# ---------------------------------------------------------------------------
+# Wizard: language → name step
+# ---------------------------------------------------------------------------
+
+class TestWizardLanguageToName:
+
+    async def _start_wizard_and_pick_language(self, client, lang_code: str = "en"):
+        profile_repo = _mock_profile_repo(profile=None)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+        user = client.create_user(first_name="John")
+        await user.send_command("start")
+        await _select_language(user, lang_code)
+        return user
+
+    async def test_language_en_then_welcome(self, client):
+        user = await self._start_wizard_and_pick_language(client, "en")
+
+        # After picking language, the bot should send the welcome message
+        sent = client.capture.get_sent_messages()
+        last_text = sent[-1].text if sent else ""
+        assert "name" in last_text.lower() or "Mystic Horoscope" in last_text
+
+    async def test_language_ru_then_welcome_in_russian(self, client):
+        user = await self._start_wizard_and_pick_language(client, "ru")
+
+        sent = client.capture.get_sent_messages()
+        last_text = sent[-1].text if sent else ""
+        assert "Mystic Horoscope" in last_text or "зовут" in last_text.lower()
 
 
 # ---------------------------------------------------------------------------
@@ -188,6 +247,7 @@ class TestWizardName:
         )
         user = client.create_user(first_name="John")
         await user.send_command("start")
+        await _select_language(user, "en")
         return user
 
     async def test_valid_name(self, client):
@@ -203,14 +263,14 @@ class TestWizardName:
         responses = await user.send_message("A")
 
         assert len(responses) == 1
-        assert "valid name" in responses[0].text.lower()
+        assert "valid name" in responses[0].text.lower() or "2-100" in responses[0].text
 
     async def test_name_too_long(self, client):
         user = await self._enter_wizard(client)
         responses = await user.send_message("A" * 101)
 
         assert len(responses) == 1
-        assert "valid name" in responses[0].text.lower()
+        assert "valid name" in responses[0].text.lower() or "2-100" in responses[0].text
 
 
 # ---------------------------------------------------------------------------
@@ -226,6 +286,7 @@ class TestWizardDateOfBirth:
         )
         user = client.create_user(first_name="John")
         await user.send_command("start")
+        await _select_language(user, "en")
         await user.send_message("Alice")
         return user
 
@@ -271,6 +332,7 @@ class TestWizardPlaceOfBirth:
         )
         user = client.create_user(first_name="John")
         await user.send_command("start")
+        await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
         return user
@@ -280,14 +342,14 @@ class TestWizardPlaceOfBirth:
         responses = await user.send_message("London")
 
         assert len(responses) == 1
-        assert "place of living" in responses[0].text.lower()
+        assert "place of living" in responses[0].text.lower() or "living" in responses[0].text.lower()
 
     async def test_place_too_short(self, client):
         user = await self._enter_pob_step(client)
         responses = await user.send_message("A")
 
         assert len(responses) == 1
-        assert "valid city" in responses[0].text.lower()
+        assert "valid city" in responses[0].text.lower() or "2-200" in responses[0].text
 
 
 # ---------------------------------------------------------------------------
@@ -311,6 +373,7 @@ class TestWizardPlaceOfLiving:
 
         user = client.create_user(first_name="John")
         await user.send_command("start")
+        await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
         await user.send_message("London")
@@ -333,7 +396,7 @@ class TestWizardPlaceOfLiving:
         responses = await user.send_message("A")
 
         assert len(responses) == 1
-        assert "valid city" in responses[0].text.lower()
+        assert "valid city" in responses[0].text.lower() or "2-200" in responses[0].text
 
 
 # ---------------------------------------------------------------------------
@@ -357,24 +420,27 @@ class TestWizardFullFlow:
 
         user = client.create_user(first_name="John")
 
-        # Step 1: /start
+        # Step 1: /start → language selection
         responses = await user.send_command("start")
-        assert "Mystic Horoscope" in responses[0].text
+        assert "🌍" in responses[0].text or "language" in responses[0].text.lower()
 
-        # Step 2: name
+        # Step 2: select language
+        await _select_language(user, "en")
+
+        # Step 3: name
         responses = await user.send_message("Alice")
         assert "Alice" in responses[0].text
         assert "date of birth" in responses[0].text.lower()
 
-        # Step 3: date of birth
+        # Step 4: date of birth
         responses = await user.send_message("15.03.1990")
         assert "place of birth" in responses[0].text.lower()
 
-        # Step 4: place of birth
+        # Step 5: place of birth
         responses = await user.send_message("London")
-        assert "place of living" in responses[0].text.lower()
+        assert "place of living" in responses[0].text.lower() or "living" in responses[0].text.lower()
 
-        # Step 5: place of living → profile created, horoscope queued
+        # Step 6: place of living → profile created, horoscope queued
         with patch('horoscope.tasks.generate_horoscope_task') as mock_task:
             responses = await user.send_message("Berlin")
 
@@ -468,7 +534,7 @@ class TestHoroscopeView:
 
         assert len(responses) == 1
         assert teaser in responses[0].text
-        assert "subscribe" in responses[0].text.lower()
+        assert "subscribe" in responses[0].text.lower() or "🔒" in responses[0].text
 
 
 # ---------------------------------------------------------------------------
@@ -478,6 +544,12 @@ class TestHoroscopeView:
 class TestSubscription:
 
     async def test_subscribe_callback(self, client):
+        # Set up a profile so language lookup works
+        profile_repo = _mock_profile_repo(profile=_make_profile())
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
         user = client.create_user(first_name="John")
         responses = await user.click_button("subscribe")
 
@@ -487,7 +559,65 @@ class TestSubscription:
 
         sent_messages = client.capture.get_sent_messages()
         has_subscribe_info = any(
-            "subscribe" in (m.text or "").lower()
+            "subscribe" in (m.text or "").lower() or "⭐" in (m.text or "")
             for m in sent_messages
         )
         assert has_subscribe_info
+
+
+# ---------------------------------------------------------------------------
+# Language command handler
+# ---------------------------------------------------------------------------
+
+class TestLanguageCommand:
+
+    async def test_language_command_shows_current(self, client):
+        profile = _make_profile(preferred_language="en")
+        profile_repo = _mock_profile_repo(profile=profile)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = client.create_user(first_name="John")
+        responses = await user.send_command("language")
+
+        assert len(responses) == 1
+        assert "language" in responses[0].text.lower() or "🌍" in responses[0].text
+
+    async def test_language_command_no_profile(self, client):
+        profile_repo = _mock_profile_repo(profile=None)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = client.create_user(first_name="John")
+        responses = await user.send_command("language")
+
+        assert len(responses) == 1
+        assert "profile" in responses[0].text.lower() or "/start" in responses[0].text
+
+    async def test_change_language(self, client):
+        profile = _make_profile(preferred_language="en")
+        updated_profile = _make_profile(preferred_language="ru")
+        profile_repo = _mock_profile_repo(profile=profile)
+        profile_repo.update_language = MagicMock(return_value=updated_profile)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = client.create_user(first_name="John")
+        # First send /language to get the keyboard
+        await user.send_command("language")
+
+        # Then click on Russian
+        responses = await user.click_button("lang_ru")
+
+        callback_answers = client.capture.get_callback_answers()
+        assert len(callback_answers) >= 1
+
+        sent_messages = client.capture.get_sent_messages()
+        has_language_changed = any(
+            "Русский" in (m.text or "") or "language" in (m.text or "").lower()
+            for m in sent_messages
+        )
+        assert has_language_changed

@@ -54,6 +54,8 @@ def send_daily_horoscope_notifications_task():
     Runs after generation is expected to be complete.
     """
     from core.containers import container
+    from horoscope.keyboards import subscribe_keyboard
+    from horoscope.translations import t
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -76,22 +78,23 @@ def send_daily_horoscope_notifications_task():
             telegram_uid=profile.user_telegram_uid,
         )
 
+        lang = profile.preferred_language
+
         if has_subscription:
             text = horoscope.full_text
+            keyboard = None
         else:
-            text = (
-                horoscope.teaser_text
-                + "\n\n🔒 Subscribe to see your full horoscope!"
-            )
+            text = horoscope.teaser_text + t("horoscope.subscribe_cta", lang)
+            keyboard = subscribe_keyboard(language=lang)
 
-        messages.append((profile.user_telegram_uid, text))
+        messages.append((profile.user_telegram_uid, text, keyboard))
 
     count = _send_messages_sync(messages)
     logger.info(f"Sent daily horoscope to {count} users on {today}")
     return count
 
 
-def _send_messages_sync(messages: list[tuple[int, str]]) -> int:
+def _send_messages_sync(messages: list[tuple[int, str, any]]) -> int:
     """Send multiple Telegram messages reusing a single Bot session."""
     from aiogram import Bot
     from aiogram.client.default import DefaultBotProperties
@@ -105,9 +108,13 @@ def _send_messages_sync(messages: list[tuple[int, str]]) -> int:
         )
         sent = 0
         try:
-            for telegram_uid, text in messages:
+            for telegram_uid, text, keyboard in messages:
                 try:
-                    await bot.send_message(chat_id=telegram_uid, text=text)
+                    await bot.send_message(
+                        chat_id=telegram_uid,
+                        text=text,
+                        reply_markup=keyboard,
+                    )
                     sent += 1
                 except Exception as e:
                     logger.error(f"Failed to send message to user {telegram_uid}: {e}")

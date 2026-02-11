@@ -9,30 +9,47 @@ from aiogram.types import (
 )
 from asgiref.sync import sync_to_async
 
+from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.config import SUBSCRIPTION_DURATION_DAYS, SUBSCRIPTION_PRICE_STARS
 from horoscope.services.subscription import SubscriptionService
+from horoscope.translations import t
 
 logger = logging.getLogger(__name__)
 
 router = Router()
 
 
+def _get_user_language(user: UserEntity) -> str:
+    """Get user's preferred language from profile, fallback to 'en'."""
+    user_profile_repo = container.horoscope.user_profile_repository()
+    profile = user_profile_repo.get_by_telegram_uid(user.telegram_uid)
+    return profile.preferred_language if profile else 'en'
+
+
 @router.callback_query(F.data == callbacks.SUBSCRIBE)
 async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs):
     await callback.answer()
 
+    @sync_to_async
+    def _get_lang():
+        return _get_user_language(user)
+
+    lang = await _get_lang()
+
     await callback.message.answer(
-        f"⭐ Subscribe for <b>{SUBSCRIPTION_DURATION_DAYS} days</b> "
-        f"of full daily horoscope access.\n\n"
-        f"💰 Price: <b>{SUBSCRIPTION_PRICE_STARS} Telegram Stars</b>\n\n"
-        "Tap the button below to pay.",
+        t(
+            "subscription.offer",
+            lang,
+            days=SUBSCRIPTION_DURATION_DAYS,
+            price=SUBSCRIPTION_PRICE_STARS,
+        ),
     )
 
     await callback.message.answer_invoice(
-        title="Horoscope Subscription",
-        description=f"{SUBSCRIPTION_DURATION_DAYS}-day access to full daily horoscope",
+        title=t("subscription.invoice_title", lang),
+        description=t("subscription.invoice_description", lang, days=SUBSCRIPTION_DURATION_DAYS),
         payload=f"subscription_{user.telegram_uid}",
         currency="XTR",
         prices=[LabeledPrice(label="Subscription", amount=SUBSCRIPTION_PRICE_STARS)],
@@ -64,8 +81,16 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
         f"until {subscription.expires_at}"
     )
 
+    @sync_to_async
+    def _get_lang():
+        return _get_user_language(user)
+
+    lang = await _get_lang()
+
     await message.answer(
-        "✅ Payment successful! Your subscription is now active.\n\n"
-        f"📅 Expires: {subscription.expires_at.strftime('%B %d, %Y')}\n\n"
-        "Use /horoscope to see your full daily horoscope ✨"
+        t(
+            "subscription.payment_success",
+            lang,
+            expires=subscription.expires_at.strftime('%d.%m.%Y'),
+        )
     )

@@ -26,6 +26,7 @@ class TestUserProfileEntity:
         assert entity.date_of_birth == date(1990, 5, 15)
         assert entity.place_of_birth == "London"
         assert entity.place_of_living == "Berlin"
+        assert entity.preferred_language == "en"
         assert entity.created_at is not None
         assert entity.updated_at is not None
 

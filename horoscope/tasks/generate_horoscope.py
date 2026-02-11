@@ -58,11 +58,14 @@ def _send_first_horoscope(telegram_uid: int, full_text: str) -> None:
     from aiogram.client.default import DefaultBotProperties
     from aiogram.enums import ParseMode
     from config import settings
+    from core.containers import container
+    from horoscope.translations import t
 
-    text = (
-        "🔮 Your first horoscope is ready!\n\n"
-        f"{full_text}"
-    )
+    user_profile_repo = container.horoscope.user_profile_repository()
+    profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
+    lang = profile.preferred_language if profile else 'en'
+
+    text = t("task.first_horoscope_ready", lang, text=full_text)
 
     async def _send():
         bot = Bot(

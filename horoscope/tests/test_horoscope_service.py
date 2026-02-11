@@ -58,6 +58,7 @@ class TestGenerateHoroscopeText:
             date_of_birth=date(1990, 5, 15),
             place_of_birth="London",
             place_of_living="Berlin",
+            preferred_language="en",
             created_at=datetime(2024, 1, 1),
             updated_at=datetime(2024, 1, 1),
         )
@@ -134,3 +135,34 @@ class TestGenerateHoroscopeText:
         )
 
         assert "Test User" in full_text
+
+    def test_russian_language_output(self):
+        profile = self._make_profile()
+        full_text, _ = generate_horoscope_text(
+            profile=profile,
+            target_date=date(2024, 6, 15),
+            language="ru",
+        )
+
+        assert "Гороскоп" in full_text
+        assert "Test User" in full_text
+
+    def test_ukrainian_language_output(self):
+        profile = self._make_profile()
+        full_text, _ = generate_horoscope_text(
+            profile=profile,
+            target_date=date(2024, 6, 15),
+            language="uk",
+        )
+
+        assert "Гороскоп" in full_text
+
+    def test_german_language_output(self):
+        profile = self._make_profile()
+        full_text, _ = generate_horoscope_text(
+            profile=profile,
+            target_date=date(2024, 6, 15),
+            language="de",
+        )
+
+        assert "Horoskop" in full_text
