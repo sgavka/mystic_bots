@@ -115,7 +115,7 @@ class AppContextMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        from telegram_bot.utils.context import AppContext
+        from telegram_bot.app_context import AppContext
 
         bot = data.get('bot')
         chat_id = None

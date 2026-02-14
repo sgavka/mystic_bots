@@ -2,13 +2,13 @@
 
 ## Next step
 
-Template upgrade to v1.1.0. Start with TASK_042 (upgrade AppContext + helpers.py).
+TASK_042: Implementing AppContext upgrade with DB logging.
 
-Current status: New tasks created for template v1.1.0 upgrade
+Current status: TASK_042 in progress — creating helpers.py and new app_context.py
 
 ## Tasks
 
-- [ ] **TASK_042** (new) — Upgrade AppContext with DB logging and add helpers.py
+- [ ] **TASK_042** (processing) — Upgrade AppContext with DB logging and add helpers.py
 - [ ] **TASK_043** (new) — Extract LoggingMiddleware from UserMiddleware
 - [ ] **TASK_044** (new) — Migrate handlers to use AppContext instead of direct message methods
 - [ ] **TASK_045** (new) — Add UserLanguageMiddleware for i18n
