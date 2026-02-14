@@ -344,7 +344,8 @@ class HoroscopeService:
                 )
                 return result.full_text, result.teaser_text, result.extended_teaser_text, result
             except Exception as e:
-                logger.warning(f"LLM generation failed, falling back to template: {e}")
+                # LLM failure is non-critical — fall back to template-based generation
+                logger.warning("LLM generation failed, falling back to template", exc_info=e)
 
         full_text, teaser_text, extended_teaser_text = generate_horoscope_text(
             profile=profile,

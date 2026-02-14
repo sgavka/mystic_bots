@@ -63,7 +63,7 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
 
         return horoscope.id
     except ValueError as e:
-        logger.error(f"Failed to generate horoscope for user {telegram_uid}: {e}")
+        logger.error(f"Failed to generate horoscope for user {telegram_uid}", exc_info=e)
         return None
 
 

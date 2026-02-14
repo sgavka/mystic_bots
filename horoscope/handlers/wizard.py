@@ -213,6 +213,7 @@ async def process_place_of_living(
     try:
         profile = await _create_profile()
     except Exception:
+        # Profile creation failure must not crash the wizard — user needs error feedback
         logger.exception(f"Failed to create profile for user {user.telegram_uid}")
         await state.clear()
         await app_context.send_message(text=translate(ERROR_PROFILE_CREATION_FAILED, lang))

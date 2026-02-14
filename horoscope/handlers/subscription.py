@@ -87,6 +87,7 @@ async def successful_payment_handler(message: Message, user: UserEntity, app_con
             payment_charge_id=payment.telegram_payment_charge_id,
         )
     except Exception:
+        # Payment succeeded but DB activation failed — must not crash, user needs error feedback
         logger.exception(
             f"Failed to activate subscription for user {user.telegram_uid} "
             f"after payment {payment.telegram_payment_charge_id}"

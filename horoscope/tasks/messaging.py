@@ -34,7 +34,8 @@ def send_message(telegram_uid: int, text: str, reply_markup=None) -> bool:
             )
             return True
         except Exception as e:
-            logger.error(f"Failed to send message to user {telegram_uid}: {e}")
+            # Telegram API can raise various errors — must not crash the task
+            logger.error(f"Failed to send message to user {telegram_uid}", exc_info=e)
             return False
         finally:
             await bot.session.close()
@@ -79,7 +80,8 @@ def send_messages_batch(
                     )
                     sent += 1
                 except Exception as e:
-                    logger.error(f"Failed to send message to user {telegram_uid}: {e}")
+                    # Telegram API can raise various errors — must not crash the batch loop
+                    logger.error(f"Failed to send message to user {telegram_uid}", exc_info=e)
         finally:
             await bot.session.close()
         return sent
