@@ -1,1 +1,0 @@
-remove horoscope.translations and make whole code to use Django gettext translation system

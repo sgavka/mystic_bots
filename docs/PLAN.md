@@ -6,6 +6,12 @@ All tasks complete.
 
 ## Tasks
 
+- [x] **TASK_031** (complete) — Refactor: remove custom db_table from horoscope models, use Django defaults
+- [x] **TASK_032** (complete) — Refactor: move horoscope.config values to config.settings with env vars
+- [x] **TASK_033** (complete) — Feature: trigger horoscope generation when user runs /horoscope but horoscope not yet generated
+- [x] **TASK_034** (complete) — Refactor: remove horoscope.translations wrapper, use Django gettext directly
+- [x] **TASK_035** (complete) — Refactor: make bot languages list configurable via config.settings and env
+
 - [x] **TASK_026** (complete) — Refactor: use Django/aiogram i18n for translations instead of dict
 - [x] **TASK_027** (complete) — Improvement: add "sent at" / "failed to send at" fields to horoscopes table
 - [x] **TASK_028** (complete) — Improvement: daily horoscope task sends only teaser part
