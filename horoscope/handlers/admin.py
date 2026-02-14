@@ -20,7 +20,6 @@ async def refund_command_handler(
     message: Message,
     user: UserEntity,
     app_context: AppContext,
-    **kwargs,
 ):
     if user.telegram_uid not in settings.ADMIN_USERS_IDS:
         return
@@ -32,18 +31,9 @@ async def refund_command_handler(
 
     charge_id = args[1].strip()
 
-    subscription_repo = container.horoscope.subscription_repository()
-    subscription = await subscription_repo.aget_by_charge_id(charge_id)
-
-    if not subscription:
-        await app_context.send_message(
-            text=f"Subscription with charge ID {charge_id} not found.",
-        )
-        return
-
     try:
         await app_context.bot.refund_star_payment(
-            user_id=subscription.user_telegram_uid,
+            user_id=message.from_user.id,
             telegram_payment_charge_id=charge_id,
         )
     except Exception as e:
