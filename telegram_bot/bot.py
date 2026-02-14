@@ -10,7 +10,7 @@ from redis.asyncio import Redis
 
 from config import settings
 from telegram_bot.middlewares.bot import BotMiddleware
-from telegram_bot.middlewares.user import AppContextMiddleware, UserMiddleware
+from telegram_bot.middlewares.user import AppContextMiddleware, LoggingMiddleware, UserMiddleware
 
 
 def create_bot(bot_token: str) -> Bot:
@@ -37,7 +37,7 @@ def create_dispatcher(storage: BaseStorage) -> Dispatcher:
     return Dispatcher(storage=storage)
 
 
-def setup_middlewares(dispatcher: Dispatcher) -> None:
+def setup_middlewares(dispatcher: Dispatcher, bot_instance: Bot) -> None:
     bot_middleware = BotMiddleware(settings.CURRENT_BOT_SLUG)
     dispatcher.message.middleware(bot_middleware)
     dispatcher.callback_query.middleware(bot_middleware)
@@ -49,6 +49,10 @@ def setup_middlewares(dispatcher: Dispatcher) -> None:
     app_context_middleware = AppContextMiddleware()
     dispatcher.message.middleware(app_context_middleware)
     dispatcher.callback_query.middleware(app_context_middleware)
+
+    logging_middleware = LoggingMiddleware(bot_id=bot_instance.id)
+    dispatcher.message.middleware(logging_middleware)
+    dispatcher.callback_query.middleware(logging_middleware)
 
 
 def setup_handlers(dispatcher: Dispatcher) -> None:
@@ -66,6 +70,6 @@ def setup_handlers(dispatcher: Dispatcher) -> None:
 
 
 def setup_dispatcher(dispatcher: Dispatcher, bot_instance: Bot) -> Dispatcher:
-    setup_middlewares(dispatcher=dispatcher)
+    setup_middlewares(dispatcher=dispatcher, bot_instance=bot_instance)
     setup_handlers(dispatcher=dispatcher)
     return dispatcher

@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Awaitable, Callable, Dict, Optional
 
 from aiogram import BaseMiddleware
@@ -7,13 +8,15 @@ from django.utils import timezone
 
 from core.containers import container
 from core.entities import UserEntity
+from telegram_bot.helpers import fix_unserializable_values_in_raw
+
+logger = logging.getLogger(__name__)
 
 
 class UserMiddleware(BaseMiddleware):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.user_repository = container.core.user_repository()
-        self.message_history_repository = container.core.message_history_repository()
 
     async def __call__(
         self,
@@ -46,8 +49,6 @@ class UserMiddleware(BaseMiddleware):
 
         data['user'] = user
 
-        await self._log_message(event=event, user_uid=user_obj.id)
-
         return await handler(event, data)
 
     async def _update_or_create_user(
@@ -62,9 +63,9 @@ class UserMiddleware(BaseMiddleware):
         from django.db import close_old_connections
 
         @sync_to_async
-        def _db_update_or_create():
+        def _db_update_or_create() -> UserEntity:
             close_old_connections()
-            user, created = self.user_repository.update_or_create(
+            user, _created = self.user_repository.update_or_create(
                 telegram_uid=telegram_uid,
                 defaults={
                     'first_name': first_name,
@@ -80,32 +81,76 @@ class UserMiddleware(BaseMiddleware):
         return await _db_update_or_create()
 
 
-    async def _log_message(self, event: TelegramObject, user_uid: int) -> None:
-        import logging
+class LoggingMiddleware(BaseMiddleware):
+    def __init__(self, bot_id: int) -> None:
+        super().__init__()
+        self.bot_id = bot_id
+        self.message_history_repository = container.core.message_history_repository()
 
-        logger = logging.getLogger(__name__)
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: Dict[str, Any],
+    ) -> Any:
+        await self._log_message(event=event, data=data)
+        return await handler(event, data)
 
-        try:
-            text = None
-            callback_query = None
-            chat_id = user_uid
+    async def _log_message(
+        self,
+        event: TelegramObject,
+        data: Dict[str, Any],
+    ) -> None:
+        message = None
+        callback_query = None
 
-            if isinstance(event, Message):
-                text = event.text
-                chat_id = event.chat.id
-            elif isinstance(event, CallbackQuery):
-                callback_query = event.data
-                if event.message:
-                    chat_id = event.message.chat.id
+        if isinstance(event, Message):
+            message = event
+        elif isinstance(event, CallbackQuery):
+            callback_query = event
+            message = event.message
+        elif isinstance(event, Update):
+            if event.message:
+                message = event.message
+            elif event.callback_query:
+                callback_query = event.callback_query
+                message = event.callback_query.message
 
-            await self.message_history_repository.alog_message(
-                from_user_telegram_uid=user_uid,
+        if not message:
+            return
+
+        from_user_id = message.from_user.id if message.from_user else None
+        chat_id = message.chat.id
+        to_user_id = self.bot_id
+
+        text = None
+        callback_data = None
+
+        if callback_query:
+            callback_data = callback_query.data
+        elif message.dice:
+            dice_emoji = message.dice.emoji
+            dice_value = message.dice.value
+            text = f"{dice_emoji} Dice: {dice_value}"
+        else:
+            text = message.text or message.caption
+
+        @sync_to_async
+        def _db_insert() -> None:
+            from django.db import close_old_connections
+
+            close_old_connections()
+            self.message_history_repository.log_message(
+                from_user_telegram_uid=from_user_id,
+                to_user_telegram_uid=to_user_id,
                 chat_telegram_uid=chat_id,
                 text=text,
-                callback_query=callback_query,
+                callback_query=callback_data,
+                raw=fix_unserializable_values_in_raw(message.model_dump()),
+                context=None,
             )
-        except Exception:
-            logger.exception("Failed to log message history")
+
+        await _db_insert()
 
 
 class AppContextMiddleware(BaseMiddleware):

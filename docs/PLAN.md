@@ -2,20 +2,20 @@
 
 ## Next step
 
-TASK_042: Implementing AppContext upgrade with DB logging.
+TASK_043: Extract LoggingMiddleware from UserMiddleware.
 
-Current status: TASK_042 in progress — creating helpers.py and new app_context.py
+Current status: Starting TASK_043
 
 ## Tasks
 
-- [ ] **TASK_042** (processing) — Upgrade AppContext with DB logging and add helpers.py
-- [ ] **TASK_043** (new) — Extract LoggingMiddleware from UserMiddleware
+- [ ] **TASK_043** (processing) — Extract LoggingMiddleware from UserMiddleware
 - [ ] **TASK_044** (new) — Migrate handlers to use AppContext instead of direct message methods
 - [ ] **TASK_045** (new) — Add UserLanguageMiddleware for i18n
 - [ ] **TASK_046** (new) — Exception handling and logging audit
 
 ## Completed
 
+- [x] **TASK_042** (complete) — Upgrade AppContext with DB logging and add helpers.py
 - [x] **TASK_038** (complete) — Refactor: inline remaining text constants in horoscope handlers
 - [x] **TASK_039** (complete) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals
 - [x] **TASK_040** (complete) — Feature: make bot understand dates in different formats
