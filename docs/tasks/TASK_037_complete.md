@@ -1,7 +1,7 @@
 # TASK_037
 
 **Is task investigated**: yes
-**Commit ID**: —
+**Commit ID**: 8e2494d
 **Summary**: Remove horoscope.messages module, move texts directly to where they are used
 
 ## Checkboxes
