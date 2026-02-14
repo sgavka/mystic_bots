@@ -10,6 +10,7 @@ from redis.asyncio import Redis
 
 from config import settings
 from telegram_bot.middlewares.bot import BotMiddleware
+from telegram_bot.middlewares.i18n import UserLanguageMiddleware
 from telegram_bot.middlewares.user import AppContextMiddleware, LoggingMiddleware, UserMiddleware
 
 
@@ -53,6 +54,10 @@ def setup_middlewares(dispatcher: Dispatcher, bot_instance: Bot) -> None:
     logging_middleware = LoggingMiddleware(bot_id=bot_instance.id)
     dispatcher.message.middleware(logging_middleware)
     dispatcher.callback_query.middleware(logging_middleware)
+
+    i18n_middleware = UserLanguageMiddleware()
+    dispatcher.message.middleware(i18n_middleware)
+    dispatcher.callback_query.middleware(i18n_middleware)
 
 
 def setup_handlers(dispatcher: Dispatcher) -> None:

@@ -2,17 +2,18 @@
 
 ## Next step
 
-TASK_044: Migrate handlers to use AppContext instead of direct message methods.
+TASK_045: Add UserLanguageMiddleware for i18n.
 
-Current status: Starting TASK_044
+Current status: Starting TASK_045
 
 ## Tasks
 
-- [ ] **TASK_044** (processing) — Migrate handlers to use AppContext instead of direct message methods
-- [ ] **TASK_045** (new) — Add UserLanguageMiddleware for i18n
+- [ ] **TASK_045** (processing) — Add UserLanguageMiddleware for i18n
 - [ ] **TASK_046** (new) — Exception handling and logging audit
 
 ## Completed
+
+- [x] **TASK_044** (complete) — Migrate handlers to use AppContext instead of direct message methods
 
 - [x] **TASK_043** (complete) — Extract LoggingMiddleware from UserMiddleware
 - [x] **TASK_042** (complete) — Upgrade AppContext with DB logging and add helpers.py
