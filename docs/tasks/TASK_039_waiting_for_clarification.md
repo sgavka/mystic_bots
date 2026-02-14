@@ -60,7 +60,13 @@
 ## Questions
 
 1. Should the daily horoscope still be **generated** for non-subscribers, or only generated when needed for periodic teasers? (Currently all users get horoscopes generated daily)
+daily must be generated next M days after last activity in bot of users without subscription
+for users with subscription, send daily horoscope
 2. For the periodic teaser: should it use the daily horoscope of that day, or should it generate a fresh one?
+use horoscope of that day
 3. What are good defaults for N (periodic interval) and M (activity window)?
+N = 10, M = 5
 4. Should we add an `extended_teaser_text` field to the Horoscope model, or generate the extended teaser on-the-fly from `full_text`?
+add field
 5. Should daily horoscope notifications be completely skipped for non-subscribers, or should they still get the small teaser daily?
+look at question 1
