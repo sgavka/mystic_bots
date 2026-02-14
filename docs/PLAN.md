@@ -2,14 +2,17 @@
 
 ## Next step
 
-All implementable tasks complete. Waiting for operator clarification on improvement tasks.
+Implement TASK_049 (remove template-based horoscope fallback).
 
-Current status: Waiting for clarification
+Current status: In progress
 
 ## Tasks
 
-- [ ] **TASK_047** (waiting_for_clarification) — Increase test coverage for Celery task helpers
-- [ ] **TASK_048** (waiting_for_clarification) — Increase test coverage for AppContext and middlewares
+- [ ] **TASK_047** (new) — Increase test coverage for Celery task helpers
+- [ ] **TASK_048** (new) — Increase test coverage for AppContext and middlewares
+- [ ] **TASK_049** (processing) — Remove fallback to template-based horoscope generation
+- [ ] **TASK_050** (new) — Fix direct User model access in Celery tasks
+- [ ] **TASK_051** (new) — Feature: allow subscribers to ask questions about horoscope theme
 
 ## Completed
 

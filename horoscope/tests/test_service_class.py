@@ -26,6 +26,21 @@ def _make_profile(telegram_uid: int = 12345) -> UserProfileEntity:
     )
 
 
+def _make_llm_result(
+    full_text: str = "Full text",
+    teaser_text: str = "Teaser",
+    extended_teaser_text: str = "Extended teaser",
+) -> LLMResult:
+    return LLMResult(
+        full_text=full_text,
+        teaser_text=teaser_text,
+        extended_teaser_text=extended_teaser_text,
+        model="gpt-4o-mini",
+        input_tokens=100,
+        output_tokens=200,
+    )
+
+
 def _make_horoscope(telegram_uid: int = 12345) -> HoroscopeEntity:
     return HoroscopeEntity(
         id=42,
@@ -95,7 +110,7 @@ class TestHoroscopeServiceGenerateForUser:
             user_profile_repo=user_profile_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", _make_llm_result()))
 
         result = service.generate_for_user(
             telegram_uid=12345,
@@ -121,7 +136,7 @@ class TestHoroscopeServiceGenerateForUser:
             user_profile_repo=user_profile_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", _make_llm_result()))
 
         result = service.generate_for_user(
             telegram_uid=12345,
@@ -174,9 +189,17 @@ class TestHoroscopeServiceGenerateForUser:
             output_tokens=200,
         )
 
-    def test_does_not_save_llm_usage_when_template_used(self):
+    def test_always_saves_llm_usage(self):
         profile = _make_profile()
         new_horoscope = _make_horoscope()
+        llm_result = LLMResult(
+            full_text="LLM full",
+            teaser_text="LLM teaser",
+            extended_teaser_text="LLM extended teaser",
+            model="gpt-4o-mini",
+            input_tokens=100,
+            output_tokens=200,
+        )
 
         horoscope_repo = MagicMock()
         horoscope_repo.get_by_user_and_date.return_value = None
@@ -193,14 +216,14 @@ class TestHoroscopeServiceGenerateForUser:
             llm_usage_repo=llm_usage_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
+        service._generate_text = MagicMock(return_value=("LLM full", "LLM teaser", "LLM extended teaser", llm_result))
 
         service.generate_for_user(
             telegram_uid=12345,
             target_date=date(2024, 6, 15),
         )
 
-        llm_usage_repo.create_usage.assert_not_called()
+        llm_usage_repo.create_usage.assert_called_once()
 
     def test_passes_profile_language_to_generate_text(self):
         profile_ru = UserProfileEntity(
@@ -227,7 +250,7 @@ class TestHoroscopeServiceGenerateForUser:
             user_profile_repo=user_profile_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", _make_llm_result()))
 
         service.generate_for_user(
             telegram_uid=12345,
@@ -280,61 +303,47 @@ class TestHoroscopeServiceGenerateText:
         assert result.input_tokens == 100
         assert result.output_tokens == 200
 
-    def test_falls_back_to_template_when_llm_fails(self):
+    def test_raises_when_llm_fails(self):
         service = self._make_service()
         profile = _make_profile()
 
         mock_llm = MagicMock()
-        mock_llm.is_configured = True
         mock_llm.generate_horoscope_text.side_effect = Exception("LLM error")
 
         with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, teaser, extended_teaser, result = service._generate_text(
-                profile=profile,
-                target_date=date(2024, 6, 15),
-                language="en",
-            )
+            with pytest.raises(Exception, match="LLM error"):
+                service._generate_text(
+                    profile=profile,
+                    target_date=date(2024, 6, 15),
+                    language="en",
+                )
 
-        assert len(full) > 0
-        assert len(teaser) > 0
-        assert "Taurus" in full
-        assert result is None
-
-    def test_falls_back_to_template_when_llm_not_configured(self):
+    def test_passes_language_to_llm(self):
         service = self._make_service()
         profile = _make_profile()
 
-        mock_llm = MagicMock()
-        mock_llm.is_configured = False
-
-        with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, _, _, result = service._generate_text(
-                profile=profile,
-                target_date=date(2024, 6, 15),
-                language="en",
-            )
-
-        assert len(full) > 0
-        assert "Taurus" in full
-        assert result is None
-        mock_llm.generate_horoscope_text.assert_not_called()
-
-    def test_respects_language_parameter(self):
-        service = self._make_service()
-        profile = _make_profile()
+        llm_result = LLMResult(
+            full_text="Гороскоп",
+            teaser_text="Тизер",
+            extended_teaser_text="Расширенный тизер",
+            model="gpt-4o-mini",
+            input_tokens=100,
+            output_tokens=200,
+        )
 
         mock_llm = MagicMock()
-        mock_llm.is_configured = False
+        mock_llm.generate_horoscope_text.return_value = llm_result
 
         with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, _, _, result = service._generate_text(
+            service._generate_text(
                 profile=profile,
                 target_date=date(2024, 6, 15),
                 language="ru",
             )
 
-        assert "Гороскоп" in full
-        assert result is None
+        mock_llm.generate_horoscope_text.assert_called_once()
+        call_kwargs = mock_llm.generate_horoscope_text.call_args[1]
+        assert call_kwargs['language'] == "ru"
 
 
 class TestHoroscopeServiceAsync:

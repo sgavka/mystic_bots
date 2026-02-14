@@ -1,1 +1,0 @@
-refactor: horoscope.services.horoscope.HoroscopeService must always use only LLM-based generation, remove fallback to old method

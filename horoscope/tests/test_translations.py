@@ -35,7 +35,6 @@ from horoscope.handlers.wizard import (
     WIZARD_WELCOME_BACK,
 )
 from horoscope.keyboards import KEYBOARD_SUBSCRIBE
-from horoscope.services.horoscope import HOROSCOPE_GREETING, HOROSCOPE_HEADER
 from horoscope.tasks.generate_horoscope import TASK_FIRST_HOROSCOPE_READY
 from horoscope.tasks.subscription_reminders import TASK_EXPIRY_REMINDER, TASK_SUBSCRIPTION_EXPIRED
 from horoscope.utils import map_telegram_language, parse_date, translate
@@ -66,7 +65,7 @@ _ALL_MESSAGE_CONSTANTS = [
     SUBSCRIPTION_INVOICE_DESCRIPTION, SUBSCRIPTION_PAYMENT_SUCCESS,
     KEYBOARD_SUBSCRIBE, TASK_FIRST_HOROSCOPE_READY, TASK_EXPIRY_REMINDER,
     TASK_SUBSCRIPTION_EXPIRED, LANGUAGE_CURRENT, LANGUAGE_CHANGED,
-    LANGUAGE_NO_PROFILE, HOROSCOPE_HEADER, HOROSCOPE_GREETING,
+    LANGUAGE_NO_PROFILE,
     ERROR_PROFILE_CREATION_FAILED, ERROR_PAYMENT_FAILED,
 ]
 
@@ -250,12 +249,11 @@ class TestCeleryTasks:
         ) as mock_container:
             mock_container.horoscope.horoscope_service.return_value = mock_service
 
-            result = generate_horoscope_task(
-                telegram_uid=12345,
-                target_date="2024-06-15",
-            )
-
-        assert result is None
+            with pytest.raises(ValueError, match="No profile"):
+                generate_horoscope_task(
+                    telegram_uid=12345,
+                    target_date="2024-06-15",
+                )
 
     @pytest.mark.django_db
     def test_generate_horoscope_task_first_sends_message(self):

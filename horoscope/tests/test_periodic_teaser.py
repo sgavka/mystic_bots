@@ -292,29 +292,3 @@ class TestSendPeriodicTeaserNotifications:
 
         assert result == 1
         mock_send.assert_called_once()
-
-
-class TestExtendedTeaserGeneration:
-    def test_template_generates_extended_teaser(self):
-        from horoscope.services.horoscope import generate_horoscope_text
-
-        profile = _make_profile()
-        full_text, teaser_text, extended_teaser_text = generate_horoscope_text(
-            profile=profile,
-            target_date=date(2024, 6, 15),
-        )
-
-        assert len(extended_teaser_text) > len(teaser_text)
-        assert extended_teaser_text.endswith("...")
-        assert teaser_text.endswith("...")
-
-    def test_extended_teaser_shorter_than_full_text(self):
-        from horoscope.services.horoscope import generate_horoscope_text
-
-        profile = _make_profile()
-        full_text, teaser_text, extended_teaser_text = generate_horoscope_text(
-            profile=profile,
-            target_date=date(2024, 6, 15),
-        )
-
-        assert len(extended_teaser_text) < len(full_text)
