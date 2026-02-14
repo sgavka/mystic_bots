@@ -18,8 +18,7 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = True
-        db_table = 'user_profiles'
+        pass
 
     def __str__(self):
         return f"UserProfile {self.user_telegram_uid} ({self.name})"
@@ -41,8 +40,6 @@ class Horoscope(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = True
-        db_table = 'horoscopes'
         indexes = [
             models.Index(fields=['user_telegram_uid', 'date']),
             models.Index(fields=['user_telegram_uid', 'horoscope_type', 'date']),
@@ -72,8 +69,6 @@ class Subscription(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = True
-        db_table = 'subscriptions'
         indexes = [
             models.Index(fields=['user_telegram_uid', 'status']),
             models.Index(fields=['status', 'expires_at']),
