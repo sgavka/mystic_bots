@@ -542,6 +542,9 @@ class TestLLMService:
             "Line 4\n"
             "Line 5"
         )
+        mock_response.model = "gpt-4"
+        mock_response.usage.prompt_tokens = 150
+        mock_response.usage.completion_tokens = 250
 
         with patch('horoscope.services.llm.settings') as mock_settings, \
              patch('litellm.completion', return_value=mock_response) as mock_llm:
@@ -552,7 +555,7 @@ class TestLLMService:
             mock_settings.HOROSCOPE_TEASER_LINE_COUNT = 3
 
             service = LLMService()
-            full_text, teaser_text = service.generate_horoscope_text(
+            result = service.generate_horoscope_text(
                 zodiac_sign="Taurus",
                 name="Alice",
                 date_of_birth=date(1990, 5, 15),
@@ -562,8 +565,11 @@ class TestLLMService:
                 language="en",
             )
 
-        assert "Horoscope for Taurus" in full_text
-        assert "..." in teaser_text
+        assert "Horoscope for Taurus" in result.full_text
+        assert "..." in result.teaser_text
+        assert result.model == "gpt-4"
+        assert result.input_tokens == 150
+        assert result.output_tokens == 250
         mock_llm.assert_called_once()
 
     def test_generate_horoscope_text_with_language(self):

@@ -1,10 +1,21 @@
 import logging
+from dataclasses import dataclass
 from datetime import date
 
 from django.conf import settings
 from horoscope.messages import LANGUAGE_NAMES
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class LLMResult:
+    full_text: str
+    teaser_text: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+
 
 HOROSCOPE_PROMPT = """You are a mystical astrologer who writes personalized daily horoscopes.
 
@@ -48,7 +59,7 @@ class LLMService:
         place_of_living: str,
         target_date: date,
         language: str = 'en',
-    ) -> tuple[str, str]:
+    ) -> LLMResult:
         import litellm
 
         language_name = LANGUAGE_NAMES.get(language, 'English')
@@ -92,5 +103,12 @@ class LLMService:
                 break
         teaser_text = "\n".join(content_lines) + "\n..."
 
+        usage = response.usage
         logger.info(f"Generated LLM horoscope for {name} ({zodiac_sign}) on {target_date} in {language_name}")
-        return full_text, teaser_text
+        return LLMResult(
+            full_text=full_text,
+            teaser_text=teaser_text,
+            model=response.model,
+            input_tokens=usage.prompt_tokens,
+            output_tokens=usage.completion_tokens,
+        )

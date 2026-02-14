@@ -2,9 +2,12 @@
 
 ## Next step
 
-All tasks complete.
+Implementing TASK_036: LLM usage tracking table and cost command.
 
 ## Tasks
+
+- [ ] **TASK_036** (processing) — Feature: add LLM usage tracking table (1-to-1 with horoscope) and cost calculation command
+- [ ] **TASK_037** (new) — Refactor: remove horoscope.messages module, inline texts where used
 
 - [x] **TASK_031** (complete) — Refactor: remove custom db_table from horoscope models, use Django defaults
 - [x] **TASK_032** (complete) — Refactor: move horoscope.config values to config.settings with env vars

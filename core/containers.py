@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from core.repositories import UserRepository
     from horoscope.repositories import (
         HoroscopeRepository,
+        LLMUsageRepository,
         SubscriptionRepository,
         UserProfileRepository,
     )
@@ -28,6 +29,11 @@ def _create_horoscope_repository() -> "HoroscopeRepository":
     return HoroscopeRepository()
 
 
+def _create_llm_usage_repository() -> "LLMUsageRepository":
+    from horoscope.repositories import LLMUsageRepository
+    return LLMUsageRepository()
+
+
 def _create_subscription_repository() -> "SubscriptionRepository":
     from horoscope.repositories import SubscriptionRepository
     return SubscriptionRepository()
@@ -42,6 +48,7 @@ class HoroscopeContainer(containers.DeclarativeContainer):
 
     user_profile_repository = providers.Singleton(_create_user_profile_repository)
     horoscope_repository = providers.Singleton(_create_horoscope_repository)
+    llm_usage_repository = providers.Singleton(_create_llm_usage_repository)
     subscription_repository = providers.Singleton(_create_subscription_repository)
 
     horoscope_service = providers.Singleton(
@@ -57,6 +64,7 @@ def _create_horoscope_service() -> "HoroscopeService":
     return HoroscopeService(
         horoscope_repo=container.horoscope.horoscope_repository(),
         user_profile_repo=container.horoscope.user_profile_repository(),
+        llm_usage_repo=container.horoscope.llm_usage_repository(),
     )
 
 

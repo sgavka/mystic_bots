@@ -11,7 +11,7 @@ from horoscope.messages import HOROSCOPE_GREETING, HOROSCOPE_HEADER, translate
 from horoscope.utils import get_zodiac_sign
 
 if TYPE_CHECKING:
-    from horoscope.repositories import HoroscopeRepository, UserProfileRepository
+    from horoscope.repositories import HoroscopeRepository, LLMUsageRepository, UserProfileRepository
 
 logger = logging.getLogger(__name__)
 
@@ -260,9 +260,11 @@ class HoroscopeService:
         self,
         horoscope_repo: "HoroscopeRepository",
         user_profile_repo: "UserProfileRepository",
+        llm_usage_repo: "LLMUsageRepository",
     ):
         self.horoscope_repo = horoscope_repo
         self.user_profile_repo = user_profile_repo
+        self.llm_usage_repo = llm_usage_repo
 
     def generate_for_user(
         self,
@@ -281,7 +283,7 @@ class HoroscopeService:
         if not profile:
             raise ValueError(f"No profile found for user {telegram_uid}")
 
-        full_text, teaser_text = self._generate_text(
+        full_text, teaser_text, llm_result = self._generate_text(
             profile=profile,
             target_date=target_date,
             language=profile.preferred_language,
@@ -295,6 +297,14 @@ class HoroscopeService:
             teaser_text=teaser_text,
         )
 
+        if llm_result:
+            self.llm_usage_repo.create_usage(
+                horoscope_id=horoscope.id,
+                model=llm_result.model,
+                input_tokens=llm_result.input_tokens,
+                output_tokens=llm_result.output_tokens,
+            )
+
         logger.info(f"Generated {horoscope_type} horoscope for user {telegram_uid} on {target_date}")
         return horoscope
 
@@ -303,14 +313,14 @@ class HoroscopeService:
         profile: UserProfileEntity,
         target_date: date,
         language: str = 'en',
-    ) -> tuple[str, str]:
+    ) -> tuple:
         from horoscope.services.llm import LLMService
 
         llm_service = LLMService()
         if llm_service.is_configured:
             try:
                 sign = get_zodiac_sign(profile.date_of_birth)
-                return llm_service.generate_horoscope_text(
+                result = llm_service.generate_horoscope_text(
                     zodiac_sign=sign,
                     name=profile.name,
                     date_of_birth=profile.date_of_birth,
@@ -319,14 +329,16 @@ class HoroscopeService:
                     target_date=target_date,
                     language=language,
                 )
+                return result.full_text, result.teaser_text, result
             except Exception as e:
                 logger.warning(f"LLM generation failed, falling back to template: {e}")
 
-        return generate_horoscope_text(
+        full_text, teaser_text = generate_horoscope_text(
             profile=profile,
             target_date=target_date,
             language=language,
         )
+        return full_text, teaser_text, None
 
     async def agenerate_for_user(
         self,

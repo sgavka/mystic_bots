@@ -1,6 +1,6 @@
 """
 Tests for horoscope repositories.
-Covers UserProfileRepository, HoroscopeRepository, SubscriptionRepository.
+Covers UserProfileRepository, HoroscopeRepository, LLMUsageRepository, SubscriptionRepository.
 """
 
 from datetime import date, timedelta
@@ -8,10 +8,11 @@ from datetime import date, timedelta
 import pytest
 from django.utils import timezone
 
-from horoscope.entities import HoroscopeEntity, SubscriptionEntity, UserProfileEntity
+from horoscope.entities import HoroscopeEntity, LLMUsageEntity, SubscriptionEntity, UserProfileEntity
 from horoscope.enums import SubscriptionStatus
-from horoscope.models import Horoscope, Subscription, UserProfile
+from horoscope.models import Horoscope, LLMUsage, Subscription, UserProfile
 from horoscope.repositories.horoscope import HoroscopeRepository
+from horoscope.repositories.llm_usage import LLMUsageRepository
 from horoscope.repositories.subscription import SubscriptionRepository
 from horoscope.repositories.user_profile import UserProfileRepository
 
@@ -201,6 +202,86 @@ class TestHoroscopeRepository:
 
         horoscope.refresh_from_db()
         assert horoscope.failed_to_send_at is not None
+
+
+@pytest.mark.django_db
+class TestLLMUsageRepository:
+    def setup_method(self):
+        self.repo = LLMUsageRepository()
+        self.profile = UserProfile.objects.create(
+            user_telegram_uid=12345,
+            name="Alice",
+            date_of_birth=date(1990, 5, 15),
+            place_of_birth="London",
+            place_of_living="Berlin",
+        )
+
+    def _create_horoscope(self, target_date=None):
+        return Horoscope.objects.create(
+            user_telegram_uid=12345,
+            horoscope_type="daily",
+            date=target_date or date(2024, 6, 15),
+            full_text="Full text",
+            teaser_text="Teaser...",
+        )
+
+    def test_create_usage(self):
+        horoscope = self._create_horoscope()
+        result = self.repo.create_usage(
+            horoscope_id=horoscope.id,
+            model="gpt-4o-mini",
+            input_tokens=100,
+            output_tokens=200,
+        )
+
+        assert isinstance(result, LLMUsageEntity)
+        assert result.horoscope_id == horoscope.id
+        assert result.model == "gpt-4o-mini"
+        assert result.input_tokens == 100
+        assert result.output_tokens == 200
+
+    def test_get_by_horoscope_id_found(self):
+        horoscope = self._create_horoscope()
+        LLMUsage.objects.create(
+            horoscope=horoscope,
+            model="gpt-4o-mini",
+            input_tokens=100,
+            output_tokens=200,
+        )
+
+        result = self.repo.get_by_horoscope_id(horoscope.id)
+
+        assert result is not None
+        assert isinstance(result, LLMUsageEntity)
+        assert result.model == "gpt-4o-mini"
+
+    def test_get_by_horoscope_id_not_found(self):
+        result = self.repo.get_by_horoscope_id(99999)
+        assert result is None
+
+    def test_get_usage_summary(self):
+        h1 = self._create_horoscope(target_date=date(2024, 6, 15))
+        h2 = self._create_horoscope(target_date=date(2024, 6, 16))
+        h3 = self._create_horoscope(target_date=date(2024, 6, 17))
+
+        LLMUsage.objects.create(horoscope=h1, model="gpt-4o-mini", input_tokens=100, output_tokens=200)
+        LLMUsage.objects.create(horoscope=h2, model="gpt-4o-mini", input_tokens=150, output_tokens=250)
+        LLMUsage.objects.create(horoscope=h3, model="gpt-4", input_tokens=300, output_tokens=400)
+
+        summary = self.repo.get_usage_summary()
+
+        assert len(summary) == 2
+        mini_row = next(r for r in summary if r['model'] == 'gpt-4o-mini')
+        assert mini_row['total_input_tokens'] == 250
+        assert mini_row['total_output_tokens'] == 450
+
+        gpt4_row = next(r for r in summary if r['model'] == 'gpt-4')
+        assert gpt4_row['total_input_tokens'] == 300
+        assert gpt4_row['total_output_tokens'] == 400
+
+    def test_get_usage_summary_empty(self):
+        summary = self.repo.get_usage_summary()
+        assert summary == []
 
 
 @pytest.mark.django_db

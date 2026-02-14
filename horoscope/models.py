@@ -49,6 +49,25 @@ class Horoscope(models.Model):
         return f"Horoscope {self.id} for user {self.user_telegram_uid} ({self.date})"
 
 
+class LLMUsage(models.Model):
+    id = models.AutoField(primary_key=True)
+    horoscope = models.OneToOneField(
+        Horoscope,
+        on_delete=models.CASCADE,
+        related_name='llm_usage',
+    )
+    model = models.CharField(max_length=256)
+    input_tokens = models.PositiveIntegerField()
+    output_tokens = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        pass
+
+    def __str__(self):
+        return f"LLMUsage {self.id} for horoscope {self.horoscope_id} ({self.model})"
+
+
 class Subscription(models.Model):
     id = models.AutoField(primary_key=True)
     user_telegram_uid = models.BigIntegerField(unique=True)
