@@ -2,13 +2,12 @@
 
 ## Next step
 
-Pick TASK_053 to investigate and implement.
+Pick TASK_054 to investigate and implement.
 
-Current status: Starting TASK_053
+Current status: Starting TASK_054
 
 ## Tasks
 
-- [ ] **TASK_053** (new) — Feature: add /refund admin command for Telegram payment refunds
 - [ ] **TASK_054** (new) — Refactor: analyze horoscope callbacks and migrate to aiogram callback classes
 
 ## Completed

@@ -19,6 +19,18 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
             not_found_exception=SubscriptionNotFoundException,
         )
 
+    def get_by_charge_id(self, charge_id: str) -> Optional[SubscriptionEntity]:
+        try:
+            sub = Subscription.objects.get(
+                telegram_payment_charge_id=charge_id,
+            )
+            return SubscriptionEntity.from_model(sub)
+        except Subscription.DoesNotExist:
+            return None
+
+    async def aget_by_charge_id(self, charge_id: str) -> Optional[SubscriptionEntity]:
+        return await sync_to_async(self.get_by_charge_id)(charge_id)
+
     def get_active_by_user(self, telegram_uid: int) -> Optional[SubscriptionEntity]:
         try:
             sub = Subscription.objects.get(
