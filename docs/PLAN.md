@@ -2,15 +2,14 @@
 
 ## Next step
 
-Implement TASK_050 (fix direct User model access in Celery tasks).
+Implement TASK_047 (increase test coverage for Celery task helpers).
 
 Current status: In progress
 
 ## Tasks
 
-- [ ] **TASK_047** (new) — Increase test coverage for Celery task helpers
+- [ ] **TASK_047** (processing) — Increase test coverage for Celery task helpers
 - [ ] **TASK_048** (new) — Increase test coverage for AppContext and middlewares
-- [ ] **TASK_050** (processing) — Fix direct User model access in Celery tasks
 - [ ] **TASK_051** (new) — Feature: allow subscribers to ask questions about horoscope theme
 
 ## Completed
