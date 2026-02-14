@@ -22,6 +22,7 @@ class HoroscopeEntity(BaseEntity):
     date: date
     full_text: str
     teaser_text: str
+    extended_teaser_text: str = ''
     sent_at: Optional[datetime] = None
     failed_to_send_at: Optional[datetime] = None
     created_at: datetime

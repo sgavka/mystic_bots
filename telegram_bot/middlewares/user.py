@@ -3,6 +3,7 @@ from typing import Any, Awaitable, Callable, Dict, Optional
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject, Update
 from asgiref.sync import sync_to_async
+from django.utils import timezone
 
 from core.containers import container
 from core.entities import UserEntity
@@ -71,6 +72,7 @@ class UserMiddleware(BaseMiddleware):
                     'username': username,
                     'language_code': language_code,
                     'is_premium': is_premium,
+                    'last_activity': timezone.now(),
                 },
             )
             return user

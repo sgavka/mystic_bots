@@ -206,6 +206,7 @@ class TestCeleryTasks:
         mock_horoscope.id = 42
         mock_horoscope.full_text = "Your horoscope text"
         mock_horoscope.teaser_text = "Teaser text"
+        mock_horoscope.extended_teaser_text = "Extended teaser text"
 
         mock_service = MagicMock()
         mock_service.generate_for_user.return_value = mock_horoscope
@@ -234,6 +235,7 @@ class TestCeleryTasks:
             horoscope_id=42,
             full_text="Your horoscope text",
             teaser_text="Teaser text",
+            extended_teaser_text="Extended teaser text",
         )
 
     @pytest.mark.django_db
@@ -295,12 +297,16 @@ class TestCeleryTasks:
         mock_profile_repo = MagicMock()
         mock_profile_repo.get_all_telegram_uids.return_value = [111, 222, 333]
 
+        mock_subscription_repo = MagicMock()
+        mock_subscription_repo.has_active_subscription.return_value = True
+
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.generate_horoscope.generate_horoscope_task'
         ) as mock_task:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 
             result = generate_daily_for_all_users_task()
 
@@ -359,13 +365,13 @@ class TestCeleryTasks:
         mock_send.assert_called_once_with(
             telegram_uid=12345,
             text="Full text",
-            reply_markup=None,
         )
         mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
 
     @pytest.mark.django_db
-    def test_send_daily_horoscope_non_subscriber_gets_teaser(self):
-        from horoscope.entities import HoroscopeEntity, UserProfileEntity
+    def test_send_daily_horoscope_non_subscriber_skipped(self):
+        """Non-subscribers are skipped by daily notification task (they get periodic teasers instead)."""
+        from horoscope.entities import UserProfileEntity
         from horoscope.tasks.send_daily_horoscope import (
             send_daily_horoscope_notifications_task,
         )
@@ -380,21 +386,11 @@ class TestCeleryTasks:
             created_at=datetime(2024, 1, 1),
             updated_at=datetime(2024, 1, 1),
         )
-        horoscope = HoroscopeEntity(
-            id=1,
-            user_telegram_uid=12345,
-            horoscope_type="daily",
-            date=date.today(),
-            full_text="Full text",
-            teaser_text="Teaser",
-            created_at=datetime(2024, 1, 1),
-        )
 
         mock_profile_repo = MagicMock()
         mock_profile_repo.all.return_value = [profile]
 
         mock_horoscope_repo = MagicMock()
-        mock_horoscope_repo.get_by_user_and_date.return_value = horoscope
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
@@ -411,11 +407,9 @@ class TestCeleryTasks:
 
             result = send_daily_horoscope_notifications_task()
 
-        assert result == 1
-        text = mock_send.call_args[1]['text']
-        assert "Teaser" in text
-        assert "Subscribe" in text or "🔒" in text
-        mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
+        assert result == 0
+        mock_send.assert_not_called()
+        mock_horoscope_repo.get_by_user_and_date.assert_not_called()
 
     @pytest.mark.django_db
     def test_send_expiry_reminders_task_no_expiring(self):

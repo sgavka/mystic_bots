@@ -58,6 +58,7 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
                 horoscope_id=horoscope.id,
                 full_text=horoscope.full_text,
                 teaser_text=horoscope.teaser_text,
+                extended_teaser_text=horoscope.extended_teaser_text,
             )
 
         return horoscope.id
@@ -71,6 +72,7 @@ def _send_daily_horoscope(
     horoscope_id: int,
     full_text: str,
     teaser_text: str,
+    extended_teaser_text: str = '',
 ) -> None:
     """Send the daily horoscope: full text for subscribers, teaser with subscribe link for others."""
     from django.utils.translation import gettext_lazy as _

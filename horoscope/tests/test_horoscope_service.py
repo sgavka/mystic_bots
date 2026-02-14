@@ -66,8 +66,8 @@ class TestGenerateHoroscopeText:
         profile = self._make_profile()
         target = date(2024, 6, 15)
 
-        text1, teaser1 = generate_horoscope_text(profile=profile, target_date=target)
-        text2, teaser2 = generate_horoscope_text(profile=profile, target_date=target)
+        text1, teaser1, _ = generate_horoscope_text(profile=profile, target_date=target)
+        text2, teaser2, _ = generate_horoscope_text(profile=profile, target_date=target)
 
         assert text1 == text2
         assert teaser1 == teaser2
@@ -75,19 +75,19 @@ class TestGenerateHoroscopeText:
     def test_different_dates_produce_different_output(self):
         profile = self._make_profile()
 
-        text1, _ = generate_horoscope_text(profile=profile, target_date=date(2024, 6, 15))
-        text2, _ = generate_horoscope_text(profile=profile, target_date=date(2024, 6, 16))
+        text1, _, _ = generate_horoscope_text(profile=profile, target_date=date(2024, 6, 15))
+        text2, _, _ = generate_horoscope_text(profile=profile, target_date=date(2024, 6, 16))
 
         assert text1 != text2
 
     def test_different_users_produce_different_output(self):
         target = date(2024, 6, 15)
 
-        text1, _ = generate_horoscope_text(
+        text1, _, _ = generate_horoscope_text(
             profile=self._make_profile(telegram_uid=111),
             target_date=target,
         )
-        text2, _ = generate_horoscope_text(
+        text2, _, _ = generate_horoscope_text(
             profile=self._make_profile(telegram_uid=222),
             target_date=target,
         )
@@ -96,7 +96,7 @@ class TestGenerateHoroscopeText:
 
     def test_teaser_is_shorter_than_full_text(self):
         profile = self._make_profile()
-        full_text, teaser_text = generate_horoscope_text(
+        full_text, teaser_text, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
         )
@@ -105,7 +105,7 @@ class TestGenerateHoroscopeText:
 
     def test_teaser_does_not_contain_header(self):
         profile = self._make_profile()
-        full_text, teaser_text = generate_horoscope_text(
+        full_text, teaser_text, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
         )
@@ -119,7 +119,7 @@ class TestGenerateHoroscopeText:
 
     def test_full_text_contains_zodiac_sign(self):
         profile = self._make_profile()
-        full_text, _ = generate_horoscope_text(
+        full_text, _, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
         )
@@ -128,7 +128,7 @@ class TestGenerateHoroscopeText:
 
     def test_full_text_contains_user_name(self):
         profile = self._make_profile()
-        full_text, _ = generate_horoscope_text(
+        full_text, _, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
         )
@@ -137,7 +137,7 @@ class TestGenerateHoroscopeText:
 
     def test_russian_language_output(self):
         profile = self._make_profile()
-        full_text, _ = generate_horoscope_text(
+        full_text, _, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
             language="ru",
@@ -148,7 +148,7 @@ class TestGenerateHoroscopeText:
 
     def test_ukrainian_language_output(self):
         profile = self._make_profile()
-        full_text, _ = generate_horoscope_text(
+        full_text, _, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
             language="uk",
@@ -158,7 +158,7 @@ class TestGenerateHoroscopeText:
 
     def test_german_language_output(self):
         profile = self._make_profile()
-        full_text, _ = generate_horoscope_text(
+        full_text, _, _ = generate_horoscope_text(
             profile=profile,
             target_date=date(2024, 6, 15),
             language="de",

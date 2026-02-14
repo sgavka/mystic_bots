@@ -216,7 +216,7 @@ def generate_horoscope_text(
     profile: UserProfileEntity,
     target_date: date,
     language: str = 'en',
-) -> tuple[str, str]:
+) -> tuple[str, str, str]:
     sign = get_zodiac_sign(profile.date_of_birth)
     random.seed(f"{profile.user_telegram_uid}-{target_date.isoformat()}")
 
@@ -253,11 +253,18 @@ def generate_horoscope_text(
 
     full_text = "\n".join(lines)
 
-    # Teaser uses content lines (skip header, greeting, empty lines at start)
-    content_lines = [positive, "", details[0]]
-    teaser_text = "\n".join(content_lines) + "\n..."
+    # Content lines (skip header, greeting, empty lines at start)
+    content_lines = [positive, "", details[0], details[1], details[2], "", advice[0], advice[1], "", closing]
 
-    return full_text, teaser_text
+    from django.conf import settings
+
+    teaser_lines = content_lines[:settings.HOROSCOPE_TEASER_LINE_COUNT]
+    teaser_text = "\n".join(teaser_lines) + "\n..."
+
+    extended_teaser_lines = content_lines[:settings.HOROSCOPE_EXTENDED_TEASER_LINE_COUNT]
+    extended_teaser_text = "\n".join(extended_teaser_lines) + "\n..."
+
+    return full_text, teaser_text, extended_teaser_text
 
 
 class HoroscopeService:
@@ -288,7 +295,7 @@ class HoroscopeService:
         if not profile:
             raise ValueError(f"No profile found for user {telegram_uid}")
 
-        full_text, teaser_text, llm_result = self._generate_text(
+        full_text, teaser_text, extended_teaser_text, llm_result = self._generate_text(
             profile=profile,
             target_date=target_date,
             language=profile.preferred_language,
@@ -300,6 +307,7 @@ class HoroscopeService:
             target_date=target_date,
             full_text=full_text,
             teaser_text=teaser_text,
+            extended_teaser_text=extended_teaser_text,
         )
 
         if llm_result:
@@ -334,16 +342,16 @@ class HoroscopeService:
                     target_date=target_date,
                     language=language,
                 )
-                return result.full_text, result.teaser_text, result
+                return result.full_text, result.teaser_text, result.extended_teaser_text, result
             except Exception as e:
                 logger.warning(f"LLM generation failed, falling back to template: {e}")
 
-        full_text, teaser_text = generate_horoscope_text(
+        full_text, teaser_text, extended_teaser_text = generate_horoscope_text(
             profile=profile,
             target_date=target_date,
             language=language,
         )
-        return full_text, teaser_text, None
+        return full_text, teaser_text, extended_teaser_text, None
 
     async def agenerate_for_user(
         self,

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 from asgiref.sync import sync_to_async
@@ -46,6 +46,7 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
         target_date: date,
         full_text: str,
         teaser_text: str,
+        extended_teaser_text: str = '',
     ) -> HoroscopeEntity:
         horoscope = Horoscope.objects.create(
             user_telegram_uid=telegram_uid,
@@ -53,6 +54,7 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
             date=target_date,
             full_text=full_text,
             teaser_text=teaser_text,
+            extended_teaser_text=extended_teaser_text,
         )
         return HoroscopeEntity.from_model(horoscope)
 
@@ -63,6 +65,7 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
         target_date: date,
         full_text: str,
         teaser_text: str,
+        extended_teaser_text: str = '',
     ) -> HoroscopeEntity:
         return await sync_to_async(self.create_horoscope)(
             telegram_uid,
@@ -70,6 +73,7 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
             target_date,
             full_text,
             teaser_text,
+            extended_teaser_text,
         )
 
     def mark_sent(self, horoscope_id: int) -> None:
@@ -83,3 +87,16 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
 
     async def amark_failed_to_send(self, horoscope_id: int) -> None:
         return await sync_to_async(self.mark_failed_to_send)(horoscope_id)
+
+    def get_last_sent_at(self, telegram_uid: int) -> Optional[datetime]:
+        horoscope = (
+            Horoscope.objects
+            .filter(user_telegram_uid=telegram_uid, sent_at__isnull=False)
+            .order_by('-sent_at')
+            .values_list('sent_at', flat=True)
+            .first()
+        )
+        return horoscope
+
+    async def aget_last_sent_at(self, telegram_uid: int) -> Optional[datetime]:
+        return await sync_to_async(self.get_last_sent_at)(telegram_uid)

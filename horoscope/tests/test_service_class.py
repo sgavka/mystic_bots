@@ -95,7 +95,7 @@ class TestHoroscopeServiceGenerateForUser:
             user_profile_repo=user_profile_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
 
         result = service.generate_for_user(
             telegram_uid=12345,
@@ -121,7 +121,7 @@ class TestHoroscopeServiceGenerateForUser:
             user_profile_repo=user_profile_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
 
         result = service.generate_for_user(
             telegram_uid=12345,
@@ -139,6 +139,7 @@ class TestHoroscopeServiceGenerateForUser:
         llm_result = LLMResult(
             full_text="LLM full",
             teaser_text="LLM teaser",
+            extended_teaser_text="LLM extended teaser",
             model="gpt-4o-mini",
             input_tokens=100,
             output_tokens=200,
@@ -159,7 +160,7 @@ class TestHoroscopeServiceGenerateForUser:
             llm_usage_repo=llm_usage_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("LLM full", "LLM teaser", llm_result))
+        service._generate_text = MagicMock(return_value=("LLM full", "LLM teaser", "LLM extended teaser", llm_result))
 
         service.generate_for_user(
             telegram_uid=12345,
@@ -192,7 +193,7 @@ class TestHoroscopeServiceGenerateForUser:
             llm_usage_repo=llm_usage_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
 
         service.generate_for_user(
             telegram_uid=12345,
@@ -226,7 +227,7 @@ class TestHoroscopeServiceGenerateForUser:
             user_profile_repo=user_profile_repo,
         )
 
-        service._generate_text = MagicMock(return_value=("Full text", "Teaser", None))
+        service._generate_text = MagicMock(return_value=("Full text", "Teaser", "Extended teaser", None))
 
         service.generate_for_user(
             telegram_uid=12345,
@@ -255,6 +256,7 @@ class TestHoroscopeServiceGenerateText:
         llm_result = LLMResult(
             full_text="LLM full",
             teaser_text="LLM teaser",
+            extended_teaser_text="LLM extended teaser",
             model="gpt-4o-mini",
             input_tokens=100,
             output_tokens=200,
@@ -265,7 +267,7 @@ class TestHoroscopeServiceGenerateText:
         mock_llm.generate_horoscope_text.return_value = llm_result
 
         with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, teaser, result = service._generate_text(
+            full, teaser, extended_teaser, result = service._generate_text(
                 profile=profile,
                 target_date=date(2024, 6, 15),
                 language="en",
@@ -287,7 +289,7 @@ class TestHoroscopeServiceGenerateText:
         mock_llm.generate_horoscope_text.side_effect = Exception("LLM error")
 
         with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, teaser, result = service._generate_text(
+            full, teaser, extended_teaser, result = service._generate_text(
                 profile=profile,
                 target_date=date(2024, 6, 15),
                 language="en",
@@ -306,7 +308,7 @@ class TestHoroscopeServiceGenerateText:
         mock_llm.is_configured = False
 
         with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, _, result = service._generate_text(
+            full, _, _, result = service._generate_text(
                 profile=profile,
                 target_date=date(2024, 6, 15),
                 language="en",
@@ -325,7 +327,7 @@ class TestHoroscopeServiceGenerateText:
         mock_llm.is_configured = False
 
         with patch('horoscope.services.llm.LLMService', return_value=mock_llm):
-            full, _, result = service._generate_text(
+            full, _, _, result = service._generate_text(
                 profile=profile,
                 target_date=date(2024, 6, 15),
                 language="ru",

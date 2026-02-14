@@ -154,6 +154,11 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 60 * 60 * 24,  # every 24 hours
         'options': {'queue': 'default'},
     },
+    'send-periodic-teaser-notifications': {
+        'task': 'horoscope.send_periodic_teaser_notifications',
+        'schedule': 60 * 60 * 24,  # every 24 hours
+        'options': {'queue': 'default'},
+    },
 }
 
 
@@ -216,6 +221,9 @@ HOROSCOPE_SUBSCRIPTION_PRICE_STARS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_
 HOROSCOPE_SUBSCRIPTION_DURATION_DAYS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_DURATION_DAYS', '90'))
 HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS', '3'))
 HOROSCOPE_TEASER_LINE_COUNT = int(os.environ.get('HOROSCOPE_TEASER_LINE_COUNT', '3'))
+HOROSCOPE_EXTENDED_TEASER_LINE_COUNT = int(os.environ.get('HOROSCOPE_EXTENDED_TEASER_LINE_COUNT', '8'))
+HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS = int(os.environ.get('HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS', '10'))
+HOROSCOPE_ACTIVITY_WINDOW_DAYS = int(os.environ.get('HOROSCOPE_ACTIVITY_WINDOW_DAYS', '5'))
 
 
 # LLM configuration

@@ -55,6 +55,7 @@ class User(models.Model):
     last_name = models.CharField(max_length=255, null=True, blank=True)
     language_code = models.CharField(max_length=15, null=True, blank=True)
     is_premium = models.BooleanField(default=False)
+    last_activity = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         managed = True

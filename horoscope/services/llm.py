@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class LLMResult:
     full_text: str
     teaser_text: str
+    extended_teaser_text: str
     model: str
     input_tokens: int
     output_tokens: int
@@ -85,7 +86,7 @@ class LLMService:
 
         full_text = response.choices[0].message.content.strip()
 
-        # Build teaser from content lines (skip header, greeting, and leading empty lines)
+        # Build content lines (skip header, greeting, and leading empty lines)
         lines = full_text.split("\n")
         content_lines = []
         skip_count = 0
@@ -98,15 +99,19 @@ class LLMService:
             if not content_lines and not line.strip():
                 continue  # skip empty lines between greeting and content
             content_lines.append(line)
-            if len(content_lines) >= settings.HOROSCOPE_TEASER_LINE_COUNT:
-                break
-        teaser_text = "\n".join(content_lines) + "\n..."
+
+        teaser_lines = content_lines[:settings.HOROSCOPE_TEASER_LINE_COUNT]
+        teaser_text = "\n".join(teaser_lines) + "\n..."
+
+        extended_teaser_lines = content_lines[:settings.HOROSCOPE_EXTENDED_TEASER_LINE_COUNT]
+        extended_teaser_text = "\n".join(extended_teaser_lines) + "\n..."
 
         usage = response.usage
         logger.info(f"Generated LLM horoscope for {name} ({zodiac_sign}) on {target_date} in {language_name}")
         return LLMResult(
             full_text=full_text,
             teaser_text=teaser_text,
+            extended_teaser_text=extended_teaser_text,
             model=response.model,
             input_tokens=usage.prompt_tokens,
             output_tokens=usage.completion_tokens,

@@ -16,18 +16,39 @@ logger = logging.getLogger(__name__)
 )
 def generate_daily_for_all_users_task():
     """
-    Celery beat task: generate daily horoscopes for all users with profiles.
+    Celery beat task: generate daily horoscopes for users with profiles.
+    - Subscribers: always generate
+    - Non-subscribers: only generate if active within HOROSCOPE_ACTIVITY_WINDOW_DAYS
     Runs once daily (configured in Celery beat schedule).
     """
+    from datetime import timedelta
+
+    from django.conf import settings
+    from django.utils import timezone
+
     from core.containers import container
+    from core.models import User
     from horoscope.tasks.generate_horoscope import generate_horoscope_task
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
+    subscription_repo = container.horoscope.subscription_repository()
     telegram_uids = user_profile_repo.get_all_telegram_uids()
+
+    activity_cutoff = timezone.now() - timedelta(days=settings.HOROSCOPE_ACTIVITY_WINDOW_DAYS)
 
     count = 0
     for telegram_uid in telegram_uids:
+        has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
+
+        if not has_subscription:
+            try:
+                user = User.objects.get(telegram_uid=telegram_uid)
+            except User.DoesNotExist:
+                continue
+            if not user.last_activity or user.last_activity < activity_cutoff:
+                continue
+
         generate_horoscope_task.delay(
             telegram_uid=telegram_uid,
             target_date=today.isoformat(),
@@ -49,15 +70,12 @@ def generate_daily_for_all_users_task():
 )
 def send_daily_horoscope_notifications_task():
     """
-    Celery beat task: send daily horoscope notifications to all users.
+    Celery beat task: send daily horoscope notifications to subscribers only.
+    Non-subscribers receive periodic teasers via a separate task.
     Runs after generation is expected to be complete.
     """
-    from django.utils.translation import gettext_lazy as _
-
     from core.containers import container
-    from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
-    from horoscope.utils import translate
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -68,6 +86,12 @@ def send_daily_horoscope_notifications_task():
 
     count = 0
     for profile in profiles:
+        has_subscription = subscription_repo.has_active_subscription(
+            telegram_uid=profile.user_telegram_uid,
+        )
+        if not has_subscription:
+            continue
+
         horoscope = horoscope_repo.get_by_user_and_date(
             telegram_uid=profile.user_telegram_uid,
             target_date=today,
@@ -76,27 +100,9 @@ def send_daily_horoscope_notifications_task():
             logger.warning(f"No horoscope found for user {profile.user_telegram_uid} on {today}")
             continue
 
-        has_subscription = subscription_repo.has_active_subscription(
-            telegram_uid=profile.user_telegram_uid,
-        )
-
-        lang = profile.preferred_language
-
-        if has_subscription:
-            text = horoscope.full_text
-            keyboard = None
-        else:
-            text = horoscope.teaser_text + translate(_(
-                "\n"
-                "\n"
-                "🔒 Subscribe to see your full daily horoscope!"
-            ), lang)
-            keyboard = subscribe_keyboard(language=lang)
-
         success = send_message(
             telegram_uid=profile.user_telegram_uid,
-            text=text,
-            reply_markup=keyboard,
+            text=horoscope.full_text,
         )
         if success:
             horoscope_repo.mark_sent(horoscope_id=horoscope.id)
@@ -104,5 +110,5 @@ def send_daily_horoscope_notifications_task():
         else:
             horoscope_repo.mark_failed_to_send(horoscope_id=horoscope.id)
 
-    logger.info(f"Sent daily horoscope to {count} users on {today}")
+    logger.info(f"Sent daily horoscope to {count} subscribers on {today}")
     return count

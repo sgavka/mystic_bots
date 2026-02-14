@@ -30,6 +30,7 @@ class UserEntity(BaseEntity):
     last_name: Optional[str] = None
     language_code: Optional[str] = None
     is_premium: bool = False
+    last_activity: Optional[datetime] = None
 
     @property
     def full_name(self) -> str:
