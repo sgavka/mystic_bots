@@ -23,3 +23,4 @@ These functions create Bot instances and use `asyncio.run()` to send messages. T
 
 ## Questions
 - Should we prioritize these tests or focus on other improvements first?
+yes, these

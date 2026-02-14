@@ -23,3 +23,4 @@ Increase test coverage for `telegram_bot/app_context.py` (73% — missing `for_u
 
 ## Questions
 - Should we add these tests or are the current 274 tests sufficient for now?
+add these tests
