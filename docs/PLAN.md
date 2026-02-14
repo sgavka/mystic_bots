@@ -2,13 +2,14 @@
 
 ## Next step
 
-No pending tasks. Check docs/tasks/ for new operator-created tasks.
+Pick TASK_053 to investigate and implement.
 
-Current status: Idle
+Current status: Starting TASK_053
 
 ## Tasks
 
-_(none)_
+- [ ] **TASK_053** (new) — Feature: add /refund admin command for Telegram payment refunds
+- [ ] **TASK_054** (new) — Refactor: analyze horoscope callbacks and migrate to aiogram callback classes
 
 ## Completed
 

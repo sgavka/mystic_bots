@@ -71,9 +71,10 @@ def setup_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.errors.register(errors.error_handler)
     dispatcher.include_router(wizard_router)
     dispatcher.include_router(horoscope_router)
-    dispatcher.include_router(followup_router)
     dispatcher.include_router(subscription_router)
     dispatcher.include_router(language_router)
+    # followup_router MUST be last — it catches any text message as a followup question
+    dispatcher.include_router(followup_router)
 
 
 def setup_dispatcher(dispatcher: Dispatcher, bot_instance: Bot) -> Dispatcher:

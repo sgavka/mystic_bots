@@ -53,12 +53,13 @@ Here is the horoscope you wrote:
 ---
 {horoscope_text}
 ---
-
+{previous_qa}
 The person has a follow-up question about this horoscope:
 "{question}"
 
 Guidelines:
 - Answer the question based on the horoscope context above
+- Take into account the previous conversation if any
 - Keep the same warm, mystical, and personal tone
 - Use emojis to keep it engaging
 - Keep the answer concise (3-6 lines)
@@ -149,15 +150,29 @@ class LLMService:
         horoscope_text: str,
         question: str,
         language: str = 'en',
+        previous_followups: list | None = None,
     ) -> LLMFollowupResult:
         import litellm
 
         language_name = settings.HOROSCOPE_LANGUAGE_NAMES.get(language, 'English')
 
+        previous_qa = ""
+        if previous_followups:
+            qa_lines = []
+            for followup in previous_followups:
+                qa_lines.append(f'Q: "{followup.question_text}"')
+                qa_lines.append(f'A: "{followup.answer_text}"')
+            previous_qa = (
+                "\nPrevious questions and answers about this horoscope:\n"
+                + "\n".join(qa_lines)
+                + "\n"
+            )
+
         prompt = FOLLOWUP_PROMPT.format(
             horoscope_text=horoscope_text,
             question=question,
             language_name=language_name,
+            previous_qa=previous_qa,
         )
 
         response = litellm.completion(

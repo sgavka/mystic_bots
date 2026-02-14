@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.containers import container
 from core.entities import UserEntity
-from horoscope.keyboards import ask_followup_keyboard, subscribe_keyboard
+from horoscope.keyboards import subscribe_keyboard
 from horoscope.utils import map_telegram_language, translate
 from telegram_bot.app_context import AppContext
 
@@ -65,8 +65,11 @@ async def view_horoscope_handler(message: Message, user: UserEntity, app_context
 
     if has_subscription:
         await app_context.send_message(
-            text=horoscope.full_text,
-            reply_markup=ask_followup_keyboard(language=lang),
+            text=horoscope.full_text + translate(_(
+                "\n"
+                "\n"
+                "💬 You can ask questions about your horoscope — just type your message!"
+            ), lang),
         )
     else:
         await app_context.send_message(

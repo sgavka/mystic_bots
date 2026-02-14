@@ -360,10 +360,11 @@ class TestCeleryTasks:
             result = send_daily_horoscope_notifications_task()
 
         assert result == 1
-        mock_send.assert_called_once_with(
-            telegram_uid=12345,
-            text="Full text",
-        )
+        mock_send.assert_called_once()
+        call_kwargs = mock_send.call_args[1]
+        assert call_kwargs['telegram_uid'] == 12345
+        assert "Full text" in call_kwargs['text']
+        assert "just type your message" in call_kwargs['text']
         mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
 
     @pytest.mark.django_db

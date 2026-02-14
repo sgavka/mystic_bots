@@ -91,7 +91,11 @@ def _send_daily_horoscope(
     lang = profile.preferred_language if profile else 'en'
 
     if has_subscription:
-        text = full_text
+        text = full_text + translate(_(
+            "\n"
+            "\n"
+            "💬 You can ask questions about your horoscope — just type your message!"
+        ), lang)
         keyboard = None
     else:
         text = teaser_text + translate(_(
@@ -115,16 +119,28 @@ def _send_daily_horoscope(
 
 def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) -> None:
     """Send the first horoscope to the user after profile setup."""
+    from django.utils.translation import gettext_lazy as _
+
     from core.containers import container
     from horoscope.tasks.messaging import send_message
     from horoscope.utils import translate
 
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
+    subscription_repo = container.horoscope.subscription_repository()
     profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
     lang = profile.preferred_language if profile else 'en'
 
-    text = translate(TASK_FIRST_HOROSCOPE_READY, lang, text=full_text)
+    has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
+    followup_hint = ""
+    if has_subscription:
+        followup_hint = translate(_(
+            "\n"
+            "\n"
+            "💬 You can ask questions about your horoscope — just type your message!"
+        ), lang)
+
+    text = translate(TASK_FIRST_HOROSCOPE_READY, lang, text=full_text + followup_hint)
     success = send_message(telegram_uid=telegram_uid, text=text)
     if success:
         horoscope_repo.mark_sent(horoscope_id=horoscope_id)

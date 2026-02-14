@@ -9,5 +9,3 @@ class WizardStates(StatesGroup):
     WAITING_PLACE_OF_LIVING = State()
 
 
-class HoroscopeStates(StatesGroup):
-    WAITING_FOLLOWUP_QUESTION = State()

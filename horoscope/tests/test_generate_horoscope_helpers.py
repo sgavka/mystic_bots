@@ -53,7 +53,8 @@ class TestSendDailyHoroscope:
             )
 
         text = mock_send.call_args[1]['text']
-        assert text == "Full horoscope text here"
+        assert "Full horoscope text here" in text
+        assert "just type your message" in text
         assert mock_send.call_args[1]['reply_markup'] is None
         mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=42)
 

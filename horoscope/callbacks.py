@@ -1,5 +1,4 @@
 SUBSCRIBE = "subscribe"
-ASK_FOLLOWUP = "ask_followup"
 
 LANGUAGE_PREFIX = "lang_"
 LANGUAGE_EN = "lang_en"

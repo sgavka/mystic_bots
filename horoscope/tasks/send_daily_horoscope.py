@@ -73,8 +73,11 @@ def send_daily_horoscope_notifications_task():
     Non-subscribers receive periodic teasers via a separate task.
     Runs after generation is expected to be complete.
     """
+    from django.utils.translation import gettext_lazy as _
+
     from core.containers import container
     from horoscope.tasks.messaging import send_message
+    from horoscope.utils import translate
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -99,9 +102,16 @@ def send_daily_horoscope_notifications_task():
             logger.warning(f"No horoscope found for user {profile.user_telegram_uid} on {today}")
             continue
 
+        lang = profile.preferred_language
+        text = horoscope.full_text + translate(_(
+            "\n"
+            "\n"
+            "💬 You can ask questions about your horoscope — just type your message!"
+        ), lang)
+
         success = send_message(
             telegram_uid=profile.user_telegram_uid,
-            text=horoscope.full_text,
+            text=text,
         )
         if success:
             horoscope_repo.mark_sent(horoscope_id=horoscope.id)

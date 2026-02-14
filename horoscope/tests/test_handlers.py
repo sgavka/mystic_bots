@@ -578,7 +578,8 @@ class TestHoroscopeView:
         responses = await user.send_command("horoscope")
 
         assert len(responses) == 1
-        assert responses[0].text == full_text
+        assert full_text in responses[0].text
+        assert "just type your message" in responses[0].text
 
     async def test_non_subscriber_sees_teaser(self, client):
         teaser = "Teaser preview..."
