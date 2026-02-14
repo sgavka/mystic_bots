@@ -12,6 +12,7 @@ class UserMiddleware(BaseMiddleware):
     def __init__(self):
         super().__init__()
         self.user_repository = container.core.user_repository()
+        self.message_history_repository = container.core.message_history_repository()
 
     async def __call__(
         self,
@@ -43,6 +44,9 @@ class UserMiddleware(BaseMiddleware):
         )
 
         data['user'] = user
+
+        await self._log_message(event=event, user_uid=user_obj.id)
+
         return await handler(event, data)
 
     async def _update_or_create_user(
@@ -72,6 +76,34 @@ class UserMiddleware(BaseMiddleware):
             return user
 
         return await _db_update_or_create()
+
+
+    async def _log_message(self, event: TelegramObject, user_uid: int) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            text = None
+            callback_query = None
+            chat_id = user_uid
+
+            if isinstance(event, Message):
+                text = event.text
+                chat_id = event.chat.id
+            elif isinstance(event, CallbackQuery):
+                callback_query = event.data
+                if event.message:
+                    chat_id = event.message.chat.id
+
+            await self.message_history_repository.alog_message(
+                from_user_telegram_uid=user_uid,
+                chat_telegram_uid=chat_id,
+                text=text,
+                callback_query=callback_query,
+            )
+        except Exception:
+            logger.exception("Failed to log message history")
 
 
 class AppContextMiddleware(BaseMiddleware):

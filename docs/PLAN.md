@@ -2,14 +2,14 @@
 
 ## Next step
 
-Pick next task to implement. Start with TASK_041.
+TASK_039 waiting for clarification. All other tasks complete.
 
 ## Tasks
 
 - [x] **TASK_038** (complete) — Refactor: inline remaining text constants in horoscope handlers — Refactor: inline remaining text constants in horoscope handlers (continuation of TASK_037)
 - [ ] **TASK_039** (waiting_for_clarification) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals
 - [x] **TASK_040** (complete) — Feature: make bot understand dates in different formats
-- [ ] **TASK_041** (new) — Feature: add message history tracking
+- [x] **TASK_041** (complete) — Feature: add message history tracking
 
 
 - [x] **TASK_036** (complete) — Feature: add LLM usage tracking table (1-to-1 with horoscope) and cost calculation command

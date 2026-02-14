@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     )
     from horoscope.services.horoscope import HoroscopeService
     from horoscope.services.subscription import SubscriptionService
+    from telegram_bot.repositories import MessageHistoryRepository
 
 
 def _create_user_repository() -> "UserRepository":
@@ -39,8 +40,14 @@ def _create_subscription_repository() -> "SubscriptionRepository":
     return SubscriptionRepository()
 
 
+def _create_message_history_repository() -> "MessageHistoryRepository":
+    from telegram_bot.repositories import MessageHistoryRepository
+    return MessageHistoryRepository()
+
+
 class CoreContainer(containers.DeclarativeContainer):
     user_repository = providers.Singleton(_create_user_repository)
+    message_history_repository = providers.Singleton(_create_message_history_repository)
 
 
 class HoroscopeContainer(containers.DeclarativeContainer):

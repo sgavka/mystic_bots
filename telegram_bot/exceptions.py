@@ -1,0 +1,2 @@
+class MessageHistoryNotFoundException(Exception):
+    pass

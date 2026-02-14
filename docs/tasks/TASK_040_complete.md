@@ -1,5 +1,5 @@
 **Is task investigated** — yes
-**Commit ID** —
+**Commit ID** — 9731769
 **Summary** — Make bot understand dates in different formats (DD.MM.YYYY, DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD, etc.)
 
 ## Checkboxes
