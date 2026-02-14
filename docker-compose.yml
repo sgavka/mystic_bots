@@ -36,6 +36,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      args:
+        INSTALL_DEV: "true"
     command: "celery -A config.celery worker --loglevel=info"
     env_file:
       - .env
@@ -49,6 +51,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      args:
+        INSTALL_DEV: "true"
     command: "celery -A config.celery beat --loglevel=info"
     env_file:
       - .env

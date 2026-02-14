@@ -1,0 +1,1 @@
+why horoscope.tasks.send_daily_horoscope.generate_daily_for_all_users_task and horoscope.tasks.send_periodic_teaser.send_periodic_teaser_notifications_task use User model directly?
