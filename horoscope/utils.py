@@ -1,4 +1,9 @@
 from datetime import date
+from typing import Any
+
+from django.conf import settings
+from django.utils.translation import gettext
+from django.utils.translation import override as translation_override
 
 ZODIAC_SIGNS = {
     (1, 20): "Aquarius", (2, 19): "Pisces", (3, 21): "Aries",
@@ -21,3 +26,22 @@ def get_zodiac_sign(date_of_birth: date) -> str:
             return ZODIAC_SIGNS[(m, d)]
 
     return "Capricorn"
+
+
+def translate(msgid: str, language: str, **kwargs: Any) -> str:
+    """Translate a message string using Django gettext with language override."""
+    with translation_override(language):
+        text = gettext(msgid)
+    if kwargs:
+        text = text.format(**kwargs)
+    return text
+
+
+def map_telegram_language(language_code: str | None) -> str:
+    """Map Telegram's language_code to our supported language code."""
+    if not language_code:
+        return 'en'
+    code = language_code.lower().split('-')[0]
+    if code in settings.HOROSCOPE_SUPPORTED_LANGUAGE_CODES:
+        return code
+    return 'en'

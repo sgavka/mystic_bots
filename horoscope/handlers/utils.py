@@ -1,6 +1,6 @@
 from core.containers import container
 from core.entities import UserEntity
-from horoscope.messages import map_telegram_language
+from horoscope.utils import map_telegram_language
 
 
 async def aget_user_language(user: UserEntity) -> str:

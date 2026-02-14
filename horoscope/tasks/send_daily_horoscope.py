@@ -55,7 +55,8 @@ def send_daily_horoscope_notifications_task():
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
-    from horoscope.messages import HOROSCOPE_SUBSCRIBE_CTA, translate
+    from horoscope.handlers.horoscope import HOROSCOPE_SUBSCRIBE_CTA
+    from horoscope.utils import translate
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()

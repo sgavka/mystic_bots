@@ -1,7 +1,7 @@
 # TASK_036
 
 **Is task investigated**: yes
-**Commit ID**: —
+**Commit ID**: 33e3a28
 **Summary**: Add LLM usage tracking table (1-to-1 with Horoscope) and a management command to calculate total cost
 
 ## Checkboxes

@@ -2,8 +2,15 @@ import logging
 from datetime import date
 
 from celery import shared_task
+from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
+
+TASK_FIRST_HOROSCOPE_READY = _(
+    "🔮 Your first horoscope is ready!\n"
+    "\n"
+    "{text}"
+)
 
 
 @shared_task(
@@ -67,9 +74,10 @@ def _send_daily_horoscope(
 ) -> None:
     """Send the daily horoscope: full text for subscribers, teaser with subscribe link for others."""
     from core.containers import container
+    from horoscope.handlers.horoscope import HOROSCOPE_SUBSCRIBE_CTA
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
-    from horoscope.messages import HOROSCOPE_SUBSCRIBE_CTA, translate
+    from horoscope.utils import translate
 
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
@@ -102,7 +110,7 @@ def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) 
     """Send the first horoscope to the user after profile setup."""
     from core.containers import container
     from horoscope.tasks.messaging import send_message
-    from horoscope.messages import TASK_FIRST_HOROSCOPE_READY, translate
+    from horoscope.utils import translate
 
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()

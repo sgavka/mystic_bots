@@ -1,8 +1,21 @@
 import logging
 
 from celery import shared_task
+from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
+
+TASK_EXPIRY_REMINDER = _(
+    "⏰ Your horoscope subscription expires in <b>{days} day(s)</b>.\n"
+    "\n"
+    "Renew now to keep receiving your full daily horoscope! ✨"
+)
+
+TASK_SUBSCRIPTION_EXPIRED = _(
+    "⚠️ Your horoscope subscription has <b>expired</b>.\n"
+    "\n"
+    "You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐"
+)
 
 
 @shared_task(
@@ -21,7 +34,7 @@ def send_expiry_reminders_task():
     from django.conf import settings
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_messages_batch
-    from horoscope.messages import TASK_EXPIRY_REMINDER, translate
+    from horoscope.utils import translate
 
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -67,7 +80,7 @@ def send_expired_notifications_task():
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_messages_batch
-    from horoscope.messages import TASK_SUBSCRIPTION_EXPIRED, translate
+    from horoscope.utils import translate
 
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()

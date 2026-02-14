@@ -6,35 +6,56 @@ from datetime import date, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django.conf import settings
 from django.utils import timezone
 
-from horoscope.messages import (
-    LANGUAGE_FLAGS,
-    LANGUAGE_NAMES,
+from horoscope.handlers.horoscope import HOROSCOPE_SUBSCRIBE_CTA
+from horoscope.handlers.language import LANGUAGE_CHANGED, LANGUAGE_CURRENT, LANGUAGE_NO_PROFILE
+from horoscope.handlers.subscription import (
+    ERROR_PAYMENT_FAILED,
+    SUBSCRIPTION_INVOICE_DESCRIPTION,
+    SUBSCRIPTION_INVOICE_TITLE,
     SUBSCRIPTION_OFFER,
-    SUPPORTED_LANGUAGE_CODES,
-    TASK_EXPIRY_REMINDER,
+    SUBSCRIPTION_PAYMENT_SUCCESS,
+)
+from horoscope.handlers.wizard import (
+    ERROR_PROFILE_CREATION_FAILED,
+    WIZARD_ASK_DOB,
+    WIZARD_ASK_PLACE_OF_BIRTH,
+    WIZARD_ASK_PLACE_OF_LIVING,
+    WIZARD_CHOOSE_LANGUAGE,
+    WIZARD_DOB_IN_FUTURE,
+    WIZARD_DOB_TOO_OLD,
+    WIZARD_INVALID_CITY,
+    WIZARD_INVALID_DATE_FORMAT,
+    WIZARD_INVALID_NAME,
+    WIZARD_PROFILE_READY,
     WIZARD_WELCOME,
     WIZARD_WELCOME_BACK,
-    map_telegram_language,
-    translate,
 )
-
-# All message constants for completeness tests
-from horoscope import messages as _msg
+from horoscope.handlers.horoscope import (
+    HOROSCOPE_GENERATING,
+    HOROSCOPE_NO_PROFILE,
+    HOROSCOPE_NOT_READY,
+)
+from horoscope.keyboards import KEYBOARD_SUBSCRIBE
+from horoscope.services.horoscope import HOROSCOPE_GREETING, HOROSCOPE_HEADER
+from horoscope.tasks.generate_horoscope import TASK_FIRST_HOROSCOPE_READY
+from horoscope.tasks.subscription_reminders import TASK_EXPIRY_REMINDER, TASK_SUBSCRIPTION_EXPIRED
+from horoscope.utils import map_telegram_language, translate
 
 _ALL_MESSAGE_CONSTANTS = [
-    _msg.WIZARD_CHOOSE_LANGUAGE, _msg.WIZARD_WELCOME_BACK, _msg.WIZARD_WELCOME,
-    _msg.WIZARD_INVALID_NAME, _msg.WIZARD_ASK_DOB, _msg.WIZARD_INVALID_DATE_FORMAT,
-    _msg.WIZARD_DOB_IN_FUTURE, _msg.WIZARD_DOB_TOO_OLD, _msg.WIZARD_ASK_PLACE_OF_BIRTH,
-    _msg.WIZARD_INVALID_CITY, _msg.WIZARD_ASK_PLACE_OF_LIVING, _msg.WIZARD_PROFILE_READY,
-    _msg.HOROSCOPE_NO_PROFILE, _msg.HOROSCOPE_NOT_READY, _msg.HOROSCOPE_GENERATING,
-    _msg.HOROSCOPE_SUBSCRIBE_CTA, _msg.SUBSCRIPTION_OFFER, _msg.SUBSCRIPTION_INVOICE_TITLE,
-    _msg.SUBSCRIPTION_INVOICE_DESCRIPTION, _msg.SUBSCRIPTION_PAYMENT_SUCCESS,
-    _msg.KEYBOARD_SUBSCRIBE, _msg.TASK_FIRST_HOROSCOPE_READY, _msg.TASK_EXPIRY_REMINDER,
-    _msg.TASK_SUBSCRIPTION_EXPIRED, _msg.LANGUAGE_CURRENT, _msg.LANGUAGE_CHANGED,
-    _msg.LANGUAGE_NO_PROFILE, _msg.HOROSCOPE_HEADER, _msg.HOROSCOPE_GREETING,
-    _msg.ERROR_PROFILE_CREATION_FAILED, _msg.ERROR_PAYMENT_FAILED,
+    WIZARD_CHOOSE_LANGUAGE, WIZARD_WELCOME_BACK, WIZARD_WELCOME,
+    WIZARD_INVALID_NAME, WIZARD_ASK_DOB, WIZARD_INVALID_DATE_FORMAT,
+    WIZARD_DOB_IN_FUTURE, WIZARD_DOB_TOO_OLD, WIZARD_ASK_PLACE_OF_BIRTH,
+    WIZARD_INVALID_CITY, WIZARD_ASK_PLACE_OF_LIVING, WIZARD_PROFILE_READY,
+    HOROSCOPE_NO_PROFILE, HOROSCOPE_NOT_READY, HOROSCOPE_GENERATING,
+    HOROSCOPE_SUBSCRIBE_CTA, SUBSCRIPTION_OFFER, SUBSCRIPTION_INVOICE_TITLE,
+    SUBSCRIPTION_INVOICE_DESCRIPTION, SUBSCRIPTION_PAYMENT_SUCCESS,
+    KEYBOARD_SUBSCRIBE, TASK_FIRST_HOROSCOPE_READY, TASK_EXPIRY_REMINDER,
+    TASK_SUBSCRIPTION_EXPIRED, LANGUAGE_CURRENT, LANGUAGE_CHANGED,
+    LANGUAGE_NO_PROFILE, HOROSCOPE_HEADER, HOROSCOPE_GREETING,
+    ERROR_PROFILE_CREATION_FAILED, ERROR_PAYMENT_FAILED,
 ]
 
 
@@ -115,19 +136,19 @@ class TestTranslationCompleteness:
     def test_all_messages_have_all_languages(self):
         for msg in _ALL_MESSAGE_CONSTANTS:
             msgid = str(msg)
-            for lang in SUPPORTED_LANGUAGE_CODES:
+            for lang in settings.HOROSCOPE_SUPPORTED_LANGUAGE_CODES:
                 result = translate(msg, lang)
                 assert result, (
                     f"Message '{msgid[:50]}...' has empty translation for '{lang}'"
                 )
 
     def test_language_names_complete(self):
-        for lang in SUPPORTED_LANGUAGE_CODES:
-            assert lang in LANGUAGE_NAMES
+        for lang in settings.HOROSCOPE_SUPPORTED_LANGUAGE_CODES:
+            assert lang in settings.HOROSCOPE_LANGUAGE_NAMES
 
     def test_language_flags_complete(self):
-        for lang in SUPPORTED_LANGUAGE_CODES:
-            assert lang in LANGUAGE_FLAGS
+        for lang in settings.HOROSCOPE_SUPPORTED_LANGUAGE_CODES:
+            assert lang in settings.HOROSCOPE_LANGUAGE_FLAGS
 
 
 class TestCeleryTasks:
@@ -586,6 +607,7 @@ class TestLLMService:
             mock_settings.LLM_BASE_URL = None
             mock_settings.LLM_TIMEOUT = 30
             mock_settings.HOROSCOPE_TEASER_LINE_COUNT = 3
+            mock_settings.HOROSCOPE_LANGUAGE_NAMES = settings.HOROSCOPE_LANGUAGE_NAMES
 
             service = LLMService()
             service.generate_horoscope_text(

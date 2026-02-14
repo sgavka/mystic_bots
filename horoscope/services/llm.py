@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from datetime import date
 
 from django.conf import settings
-from horoscope.messages import LANGUAGE_NAMES
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +61,7 @@ class LLMService:
     ) -> LLMResult:
         import litellm
 
-        language_name = LANGUAGE_NAMES.get(language, 'English')
+        language_name = settings.HOROSCOPE_LANGUAGE_NAMES.get(language, 'English')
 
         prompt = HOROSCOPE_PROMPT.format(
             name=name,

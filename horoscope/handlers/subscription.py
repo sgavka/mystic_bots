@@ -8,19 +8,36 @@ from aiogram.types import (
     PreCheckoutQuery,
 )
 
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
-from django.conf import settings
 from horoscope.handlers.utils import aget_user_language
-from horoscope.messages import (
-    ERROR_PAYMENT_FAILED,
-    SUBSCRIPTION_INVOICE_DESCRIPTION,
-    SUBSCRIPTION_INVOICE_TITLE,
-    SUBSCRIPTION_OFFER,
-    SUBSCRIPTION_PAYMENT_SUCCESS,
-    translate,
+from horoscope.utils import translate
+
+SUBSCRIPTION_OFFER = _(
+    "⭐ Subscribe for <b>{days} days</b> of full daily horoscope access.\n"
+    "\n"
+    "💰 Price: <b>{price} Telegram Stars</b>\n"
+    "\n"
+    "Tap the button below to pay."
 )
+
+SUBSCRIPTION_INVOICE_TITLE = _("Horoscope Subscription")
+
+SUBSCRIPTION_INVOICE_DESCRIPTION = _("{days}-day access to full daily horoscope")
+
+SUBSCRIPTION_PAYMENT_SUCCESS = _(
+    "✅ Payment successful! Your subscription is now active.\n"
+    "\n"
+    "📅 Expires: {expires}\n"
+    "\n"
+    "Use /horoscope to see your full daily horoscope ✨"
+)
+
+ERROR_PAYMENT_FAILED = _("😔 Something went wrong while activating your subscription. Please contact support if the issue persists.")
 
 logger = logging.getLogger(__name__)
 

@@ -5,10 +5,15 @@ from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
 
+from django.utils.translation import gettext_lazy as _
+
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
 from horoscope.enums import HoroscopeType
-from horoscope.messages import HOROSCOPE_GREETING, HOROSCOPE_HEADER, translate
-from horoscope.utils import get_zodiac_sign
+from horoscope.utils import get_zodiac_sign, translate
+
+HOROSCOPE_HEADER = _("Horoscope for {sign} — {date}")
+
+HOROSCOPE_GREETING = _("Dear {name},")
 
 if TYPE_CHECKING:
     from horoscope.repositories import HoroscopeRepository, LLMUsageRepository, UserProfileRepository

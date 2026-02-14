@@ -5,17 +5,26 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
-from horoscope.messages import (
-    LANGUAGE_CHANGED,
-    LANGUAGE_CURRENT,
-    LANGUAGE_NAMES,
-    LANGUAGE_NO_PROFILE,
-    map_telegram_language,
-    translate,
+from horoscope.utils import map_telegram_language, translate
+
+LANGUAGE_CURRENT = _(
+    "🌍 Your current language: <b>{lang_name}</b>\n"
+    "\n"
+    "Choose a new language:"
+)
+
+LANGUAGE_CHANGED = _("✅ Language changed to <b>English</b> 🇬🇧")
+
+LANGUAGE_NO_PROFILE = _(
+    "⚠️ You haven't set up your profile yet.\n"
+    "Send /start to begin."
 )
 
 logger = logging.getLogger(__name__)
@@ -34,7 +43,7 @@ async def language_command_handler(message: Message, state: FSMContext, user: Us
         return
 
     lang = profile.preferred_language
-    lang_display = LANGUAGE_NAMES.get(lang, lang)
+    lang_display = settings.HOROSCOPE_LANGUAGE_NAMES.get(lang, lang)
 
     await state.clear()
     await message.answer(

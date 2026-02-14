@@ -8,28 +8,77 @@ from aiogram.types import CallbackQuery, Message
 
 from asgiref.sync import sync_to_async
 
+from django.utils.translation import gettext_lazy as _
+
 from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
 from horoscope.states import WizardStates
-from horoscope.messages import (
-    ERROR_PROFILE_CREATION_FAILED,
-    WIZARD_ASK_DOB,
-    WIZARD_ASK_PLACE_OF_BIRTH,
-    WIZARD_ASK_PLACE_OF_LIVING,
-    WIZARD_CHOOSE_LANGUAGE,
-    WIZARD_DOB_IN_FUTURE,
-    WIZARD_DOB_TOO_OLD,
-    WIZARD_INVALID_CITY,
-    WIZARD_INVALID_DATE_FORMAT,
-    WIZARD_INVALID_NAME,
-    WIZARD_PROFILE_READY,
-    WIZARD_WELCOME,
-    WIZARD_WELCOME_BACK,
-    map_telegram_language,
-    translate,
+from horoscope.utils import map_telegram_language, translate
+
+WIZARD_CHOOSE_LANGUAGE = _("🌍 Please choose your language:")
+
+WIZARD_WELCOME_BACK = _(
+    "👋 Welcome back, <b>{name}</b>!\n"
+    "\n"
+    "Your profile is already set up. You'll receive your daily horoscope soon ✨"
 )
+
+WIZARD_WELCOME = _(
+    "✨ Welcome to <b>Mystic Horoscope</b>! ✨\n"
+    "\n"
+    "🔮 I'll create a personalized horoscope just for you. Let's set up your profile first.\n"
+    "\n"
+    "What is your <b>name</b>?"
+)
+
+WIZARD_INVALID_NAME = _("Please enter a valid name (2-100 characters).")
+
+WIZARD_ASK_DOB = _(
+    "😊 Nice to meet you, <b>{name}</b>!\n"
+    "\n"
+    "📅 Now, please enter your <b>full date of birth</b>\n"
+    "in format: <code>DD.MM.YYYY</code>\n"
+    "\n"
+    "Example: <code>15.03.1990</code>"
+)
+
+WIZARD_INVALID_DATE_FORMAT = _(
+    "Invalid date format. Please use <code>DD.MM.YYYY</code>\n"
+    "\n"
+    "Example: <code>15.03.1990</code>"
+)
+
+WIZARD_DOB_IN_FUTURE = _("Date of birth must be in the past. Please try again.")
+
+WIZARD_DOB_TOO_OLD = _("Please enter a valid date of birth.")
+
+WIZARD_ASK_PLACE_OF_BIRTH = _(
+    "🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
+    "\n"
+    "Example: <code>London</code>"
+)
+
+WIZARD_INVALID_CITY = _("Please enter a valid city name (2-200 characters).")
+
+WIZARD_ASK_PLACE_OF_LIVING = _(
+    "📍 Almost done! Please enter your <b>current place of living</b> (city).\n"
+    "\n"
+    "Example: <code>New York</code>"
+)
+
+WIZARD_PROFILE_READY = _(
+    "✅ Your profile is ready, <b>{name}</b>!\n"
+    "\n"
+    "📅 Date of birth: {dob}\n"
+    "🏠 Born in: {place_of_birth}\n"
+    "📍 Living in: {place_of_living}\n"
+    "\n"
+    "🔮 Generating your first horoscope... Please wait a moment."
+)
+
+ERROR_PROFILE_CREATION_FAILED = _("😔 Something went wrong while creating your profile. Please try again with /start")
 
 
 logger = logging.getLogger(__name__)
