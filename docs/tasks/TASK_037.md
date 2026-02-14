@@ -1,0 +1,1 @@
+remove horoscope.messages, instead move such texts in place they are used directly
