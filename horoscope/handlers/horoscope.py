@@ -36,7 +36,17 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     )
 
     if not horoscope:
-        await message.answer(t("horoscope.not_ready", lang))
+        has_subscription = await subscription_repo.ahas_active_subscription(user.telegram_uid)
+        if has_subscription:
+            from horoscope.tasks.generate_horoscope import generate_horoscope_task
+
+            generate_horoscope_task.delay(
+                telegram_uid=user.telegram_uid,
+                target_date=today.isoformat(),
+            )
+            await message.answer(t("horoscope.generating", lang))
+        else:
+            await message.answer(t("horoscope.not_ready", lang))
         return
 
     has_subscription = await subscription_repo.ahas_active_subscription(user.telegram_uid)

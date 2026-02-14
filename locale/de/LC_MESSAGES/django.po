@@ -128,6 +128,14 @@ msgstr ""
 "⏳ Ihr Horoskop für heute ist noch nicht fertig.\n"
 "Es wird bald erstellt. Bitte schauen Sie später noch einmal vorbei."
 
+#. horoscope.generating
+msgid ""
+"🔮 Your horoscope is being generated right now!\n"
+"Please check back in a minute."
+msgstr ""
+"🔮 Ihr Horoskop wird gerade erstellt!\n"
+"Bitte schauen Sie in einer Minute noch einmal vorbei."
+
 #. horoscope.subscribe_cta
 msgid ""
 "\n"

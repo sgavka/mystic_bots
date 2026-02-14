@@ -94,6 +94,12 @@ msgid ""
 "It will be generated soon. Please check back later."
 msgstr ""
 
+#. horoscope.generating
+msgid ""
+"🔮 Your horoscope is being generated right now!\n"
+"Please check back in a minute."
+msgstr ""
+
 #. horoscope.subscribe_cta
 msgid ""
 "\n"

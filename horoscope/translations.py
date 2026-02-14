@@ -76,6 +76,10 @@ _KEY_TO_MSGID = {
         "⏳ Your horoscope for today is not ready yet.\n"
         "It will be generated soon. Please check back later."
     ),
+    "horoscope.generating": (
+        "🔮 Your horoscope is being generated right now!\n"
+        "Please check back in a minute."
+    ),
     "horoscope.subscribe_cta": (
         "\n"
         "\n"

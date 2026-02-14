@@ -471,14 +471,18 @@ class TestHoroscopeView:
         assert "profile" in responses[0].text.lower()
         assert "/start" in responses[0].text
 
-    async def test_no_horoscope_today(self, client):
+    async def test_no_horoscope_today_no_subscription(self, client):
         profile_repo = _mock_profile_repo(profile=_make_profile())
         horoscope_repo = _mock_horoscope_repo(horoscope=None)
+        subscription_repo = _mock_subscription_repo(has_active=False)
         container.horoscope.user_profile_repository.override(
             providers.Object(profile_repo)
         )
         container.horoscope.horoscope_repository.override(
             providers.Object(horoscope_repo)
+        )
+        container.horoscope.subscription_repository.override(
+            providers.Object(subscription_repo)
         )
 
         user = client.create_user(first_name="Test")
@@ -486,6 +490,28 @@ class TestHoroscopeView:
 
         assert len(responses) == 1
         assert "not ready" in responses[0].text.lower()
+
+    @patch('horoscope.tasks.generate_horoscope.generate_horoscope_task')
+    async def test_no_horoscope_today_with_subscription_triggers_generation(self, mock_task, client):
+        profile_repo = _mock_profile_repo(profile=_make_profile())
+        horoscope_repo = _mock_horoscope_repo(horoscope=None)
+        subscription_repo = _mock_subscription_repo(has_active=True)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+        container.horoscope.horoscope_repository.override(
+            providers.Object(horoscope_repo)
+        )
+        container.horoscope.subscription_repository.override(
+            providers.Object(subscription_repo)
+        )
+
+        user = client.create_user(first_name="Test")
+        responses = await user.send_command("horoscope")
+
+        assert len(responses) == 1
+        assert "generated" in responses[0].text.lower() or "generating" in responses[0].text.lower()
+        mock_task.delay.assert_called_once()
 
     async def test_subscriber_sees_full_text(self, client):
         full_text = "Full horoscope for today."
