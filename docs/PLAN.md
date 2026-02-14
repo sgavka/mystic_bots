@@ -2,14 +2,13 @@
 
 ## Next step
 
-Implement TASK_047 (increase test coverage for Celery task helpers).
+Implement TASK_048 (increase test coverage for AppContext and middlewares).
 
 Current status: In progress
 
 ## Tasks
 
-- [ ] **TASK_047** (processing) — Increase test coverage for Celery task helpers
-- [ ] **TASK_048** (new) — Increase test coverage for AppContext and middlewares
+- [ ] **TASK_048** (processing) — Increase test coverage for AppContext and middlewares
 - [ ] **TASK_051** (new) — Feature: allow subscribers to ask questions about horoscope theme
 
 ## Completed

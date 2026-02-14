@@ -266,3 +266,140 @@ class TestSendVideo:
 
         assert result == mock_msg
         mock_log.assert_called_once_with(mock_msg)
+
+
+class TestForUserFactory:
+
+    def test_for_user_creates_context_with_chat_id(self):
+        bot = AsyncMock()
+        bot.id = 99999
+
+        ctx = AppContext.__new__(AppContext)
+        ctx.bot = bot
+        ctx.chat_id = 55555
+        ctx.bot_id = 99999
+        ctx.message_history_repo = MagicMock()
+        ctx.conversations = {}
+
+        with patch.object(AppContext, '__init__', return_value=None) as mock_init:
+            result = AppContext.for_user(
+                bot=bot,
+                user_telegram_uid=55555,
+            )
+
+        mock_init.assert_called_once_with(
+            bot=bot,
+            chat_id=55555,
+        )
+
+
+class TestSendInvoice:
+
+    @pytest.mark.asyncio
+    async def test_send_invoice_logs_message(self):
+        ctx = _create_app_context()
+        mock_msg = _make_message(message_id=40)
+        ctx.bot.send_invoice.return_value = mock_msg
+
+        with patch.object(ctx, '_log_message_to_db', new_callable=AsyncMock) as mock_log:
+            result = await ctx.send_invoice(
+                title="Subscription",
+                description="Monthly plan",
+                payload="sub_monthly",
+                currency="XTR",
+                prices=[MagicMock()],
+            )
+
+        assert result == mock_msg
+        mock_log.assert_called_once_with(mock_msg)
+
+    @pytest.mark.asyncio
+    async def test_send_invoice_non_message_result(self):
+        ctx = _create_app_context()
+        ctx.bot.send_invoice.return_value = True  # Not a Message instance
+
+        with patch.object(ctx, '_log_message_to_db', new_callable=AsyncMock) as mock_log:
+            result = await ctx.send_invoice(
+                title="Subscription",
+                description="Monthly plan",
+                payload="sub_monthly",
+                currency="XTR",
+                prices=[MagicMock()],
+            )
+
+        assert result is True
+        mock_log.assert_not_called()
+
+
+class TestSendDice:
+
+    @pytest.mark.asyncio
+    async def test_send_dice_logs_to_db(self):
+        ctx = _create_app_context()
+        mock_msg = MagicMock(spec=Message)
+        mock_msg.message_id = 50
+        mock_msg.dice = MagicMock()
+        mock_msg.dice.value = 4
+        mock_msg.dice.emoji = "\U0001f3b2"
+        mock_msg.model_dump.return_value = {"message_id": 50}
+        ctx.bot.send_dice.return_value = mock_msg
+
+        with patch.object(ctx, '_log_dice_to_db', new_callable=AsyncMock) as mock_log:
+            result = await ctx.send_dice()
+
+        assert result == mock_msg
+        mock_log.assert_called_once_with(mock_msg)
+
+    @pytest.mark.asyncio
+    async def test_send_dice_custom_emoji(self):
+        ctx = _create_app_context()
+        mock_msg = MagicMock(spec=Message)
+        mock_msg.message_id = 51
+        mock_msg.dice = MagicMock()
+        mock_msg.dice.value = 5
+        mock_msg.dice.emoji = "\U0001f3af"
+        mock_msg.model_dump.return_value = {"message_id": 51}
+        ctx.bot.send_dice.return_value = mock_msg
+
+        with patch.object(ctx, '_log_dice_to_db', new_callable=AsyncMock):
+            result = await ctx.send_dice(emoji="\U0001f3af")
+
+        ctx.bot.send_dice.assert_called_once_with(
+            chat_id=12345,
+            emoji="\U0001f3af",
+            reply_to_message_id=None,
+        )
+
+
+class TestSetReaction:
+
+    @pytest.mark.asyncio
+    async def test_set_reaction_success(self):
+        ctx = _create_app_context()
+        ctx.bot.set_message_reaction.return_value = True
+
+        await ctx.set_reaction(message_id=10)
+
+        ctx.bot.set_message_reaction.assert_called_once()
+        call_kwargs = ctx.bot.set_message_reaction.call_args[1]
+        assert call_kwargs['chat_id'] == 12345
+        assert call_kwargs['message_id'] == 10
+        assert call_kwargs['is_big'] is True
+
+    @pytest.mark.asyncio
+    async def test_set_reaction_failure_does_not_raise(self):
+        ctx = _create_app_context()
+        ctx.bot.set_message_reaction.side_effect = Exception("API error")
+
+        # Should not raise
+        await ctx.set_reaction(message_id=10)
+
+    @pytest.mark.asyncio
+    async def test_set_reaction_custom_emoji(self):
+        ctx = _create_app_context()
+        ctx.bot.set_message_reaction.return_value = True
+
+        await ctx.set_reaction(message_id=10, emoji="\U0001f44d", is_big=False)
+
+        call_kwargs = ctx.bot.set_message_reaction.call_args[1]
+        assert call_kwargs['is_big'] is False
