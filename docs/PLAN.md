@@ -2,12 +2,12 @@
 
 ## Next step
 
-TASK_039 in progress. Implementing periodic teaser horoscopes for non-subscribers.
+All tasks complete. Check for improvements and test coverage.
 
 ## Tasks
 
 - [x] **TASK_038** (complete) — Refactor: inline remaining text constants in horoscope handlers
-- [ ] **TASK_039** (processing) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals
+- [x] **TASK_039** (complete) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals
 - [x] **TASK_040** (complete) — Feature: make bot understand dates in different formats
 - [x] **TASK_041** (complete) — Feature: add message history tracking
 

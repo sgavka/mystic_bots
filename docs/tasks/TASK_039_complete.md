@@ -1,5 +1,5 @@
 **Is task investigated** — yes
-**Commit ID** — (pending)
+**Commit ID** — 3feddf0
 **Summary** — Periodic teaser horoscopes for non-subscribers with configurable intervals and activity window
 
 ## Original Requirements
