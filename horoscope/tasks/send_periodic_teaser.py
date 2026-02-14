@@ -29,7 +29,6 @@ def send_periodic_teaser_notifications_task():
     from django.utils.translation import gettext_lazy as _
 
     from core.containers import container
-    from core.models import User
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
     from horoscope.utils import translate
@@ -42,6 +41,7 @@ def send_periodic_teaser_notifications_task():
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
+    user_repo = container.core.user_repository()
 
     profiles = user_profile_repo.all()
 
@@ -53,9 +53,8 @@ def send_periodic_teaser_notifications_task():
         if has_subscription:
             continue
 
-        try:
-            user = User.objects.get(telegram_uid=profile.user_telegram_uid)
-        except User.DoesNotExist:
+        user = user_repo.get(profile.user_telegram_uid)
+        if not user:
             continue
 
         if not user.last_activity or user.last_activity < activity_cutoff:

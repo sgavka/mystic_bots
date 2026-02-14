@@ -2,7 +2,7 @@
 
 ## Next step
 
-Implement TASK_049 (remove template-based horoscope fallback).
+Implement TASK_050 (fix direct User model access in Celery tasks).
 
 Current status: In progress
 
@@ -10,8 +10,7 @@ Current status: In progress
 
 - [ ] **TASK_047** (new) — Increase test coverage for Celery task helpers
 - [ ] **TASK_048** (new) — Increase test coverage for AppContext and middlewares
-- [ ] **TASK_049** (processing) — Remove fallback to template-based horoscope generation
-- [ ] **TASK_050** (new) — Fix direct User model access in Celery tasks
+- [ ] **TASK_050** (processing) — Fix direct User model access in Celery tasks
 - [ ] **TASK_051** (new) — Feature: allow subscribers to ask questions about horoscope theme
 
 ## Completed

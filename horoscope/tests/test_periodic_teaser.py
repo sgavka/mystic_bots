@@ -12,6 +12,7 @@ import pytest
 from django.conf import settings
 from django.utils import timezone
 
+from core.entities import UserEntity
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
 
 
@@ -41,6 +42,21 @@ def _make_horoscope(telegram_uid: int = 12345) -> HoroscopeEntity:
     )
 
 
+def _make_user_entity(
+    telegram_uid: int = 12345,
+    last_activity: datetime | None = None,
+) -> UserEntity:
+    return UserEntity(
+        telegram_uid=telegram_uid,
+        username="test",
+        first_name="Test",
+        last_name="User",
+        language_code="en",
+        is_premium=False,
+        last_activity=last_activity,
+    )
+
+
 class TestGenerateDailyFiltersByActivity:
     @pytest.mark.django_db
     def test_skips_non_subscriber_without_recent_activity(self):
@@ -52,15 +68,18 @@ class TestGenerateDailyFiltersByActivity:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = timezone.now() - timedelta(days=30)
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=timezone.now() - timedelta(days=30),
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         with patch('core.containers.container') as mock_container, \
-             patch('horoscope.tasks.generate_horoscope.generate_horoscope_task') as mock_task, \
-             patch('core.models.User') as MockUser:
+             patch('horoscope.tasks.generate_horoscope.generate_horoscope_task') as mock_task:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = generate_daily_for_all_users_task()
 
@@ -77,15 +96,18 @@ class TestGenerateDailyFiltersByActivity:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = timezone.now() - timedelta(days=1)
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=timezone.now() - timedelta(days=1),
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         with patch('core.containers.container') as mock_container, \
-             patch('horoscope.tasks.generate_horoscope.generate_horoscope_task') as mock_task, \
-             patch('core.models.User') as MockUser:
+             patch('horoscope.tasks.generate_horoscope.generate_horoscope_task') as mock_task:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = generate_daily_for_all_users_task()
 
@@ -122,15 +144,18 @@ class TestGenerateDailyFiltersByActivity:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = None
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=None,
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         with patch('core.containers.container') as mock_container, \
-             patch('horoscope.tasks.generate_horoscope.generate_horoscope_task') as mock_task, \
-             patch('core.models.User') as MockUser:
+             patch('horoscope.tasks.generate_horoscope.generate_horoscope_task') as mock_task:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = generate_daily_for_all_users_task()
 
@@ -156,23 +181,26 @@ class TestSendPeriodicTeaserNotifications:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = timezone.now() - timedelta(days=1)
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=timezone.now() - timedelta(days=1),
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         with patch('core.containers.container') as mock_container, \
-             patch('core.models.User') as MockUser, \
              patch('horoscope.tasks.messaging.send_message', return_value=True) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = send_periodic_teaser_notifications_task()
 
         assert result == 1
         text = mock_send.call_args[1]['text']
         assert "Extended teaser content" in text
-        assert "🔒" in text
+        assert "\U0001f512" in text
         mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
 
     @pytest.mark.django_db
@@ -209,18 +237,21 @@ class TestSendPeriodicTeaserNotifications:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = timezone.now() - timedelta(days=30)
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=timezone.now() - timedelta(days=30),
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         mock_horoscope_repo = MagicMock()
 
         with patch('core.containers.container') as mock_container, \
-             patch('core.models.User') as MockUser, \
              patch('horoscope.tasks.messaging.send_message', return_value=True) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = send_periodic_teaser_notifications_task()
 
@@ -239,19 +270,22 @@ class TestSendPeriodicTeaserNotifications:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = timezone.now() - timedelta(days=1)
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=timezone.now() - timedelta(days=1),
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         mock_horoscope_repo = MagicMock()
         mock_horoscope_repo.get_last_sent_at.return_value = timezone.now() - timedelta(days=2)
 
         with patch('core.containers.container') as mock_container, \
-             patch('core.models.User') as MockUser, \
              patch('horoscope.tasks.messaging.send_message', return_value=True) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = send_periodic_teaser_notifications_task()
 
@@ -271,8 +305,12 @@ class TestSendPeriodicTeaserNotifications:
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.has_active_subscription.return_value = False
 
-        mock_user = MagicMock()
-        mock_user.last_activity = timezone.now() - timedelta(days=1)
+        user_entity = _make_user_entity(
+            telegram_uid=111,
+            last_activity=timezone.now() - timedelta(days=1),
+        )
+        mock_user_repo = MagicMock()
+        mock_user_repo.get.return_value = user_entity
 
         mock_horoscope_repo = MagicMock()
         mock_horoscope_repo.get_last_sent_at.return_value = timezone.now() - timedelta(
@@ -281,12 +319,11 @@ class TestSendPeriodicTeaserNotifications:
         mock_horoscope_repo.get_by_user_and_date.return_value = horoscope
 
         with patch('core.containers.container') as mock_container, \
-             patch('core.models.User') as MockUser, \
              patch('horoscope.tasks.messaging.send_message', return_value=True) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
-            MockUser.objects.get.return_value = mock_user
+            mock_container.core.user_repository.return_value = mock_user_repo
 
             result = send_periodic_teaser_notifications_task()
 

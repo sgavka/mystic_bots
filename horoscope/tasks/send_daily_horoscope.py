@@ -27,12 +27,12 @@ def generate_daily_for_all_users_task():
     from django.utils import timezone
 
     from core.containers import container
-    from core.models import User
     from horoscope.tasks.generate_horoscope import generate_horoscope_task
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
     subscription_repo = container.horoscope.subscription_repository()
+    user_repo = container.core.user_repository()
     telegram_uids = user_profile_repo.get_all_telegram_uids()
 
     activity_cutoff = timezone.now() - timedelta(days=settings.HOROSCOPE_ACTIVITY_WINDOW_DAYS)
@@ -42,9 +42,8 @@ def generate_daily_for_all_users_task():
         has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
 
         if not has_subscription:
-            try:
-                user = User.objects.get(telegram_uid=telegram_uid)
-            except User.DoesNotExist:
+            user = user_repo.get(telegram_uid)
+            if not user:
                 continue
             if not user.last_activity or user.last_activity < activity_cutoff:
                 continue
