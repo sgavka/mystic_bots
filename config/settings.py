@@ -187,6 +187,14 @@ _reports_chat_id = os.environ.get('REPORTS_CHAT_ID', '')
 REPORTS_CHAT_ID = int(_reports_chat_id) if _reports_chat_id and _reports_chat_id.lstrip('-').isdigit() else None
 
 
+# Horoscope configuration
+
+HOROSCOPE_SUBSCRIPTION_PRICE_STARS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_PRICE_STARS', '1'))
+HOROSCOPE_SUBSCRIPTION_DURATION_DAYS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_DURATION_DAYS', '90'))
+HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS', '3'))
+HOROSCOPE_TEASER_LINE_COUNT = int(os.environ.get('HOROSCOPE_TEASER_LINE_COUNT', '3'))
+
+
 # LLM configuration
 
 LLM_API_KEY = os.environ.get('LLM_API_KEY', '')

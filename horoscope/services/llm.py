@@ -1,8 +1,7 @@
 import logging
 from datetime import date
 
-from config import settings
-from horoscope.config import TEASER_LINE_COUNT
+from django.conf import settings
 from horoscope.translations import LANGUAGE_NAMES
 
 logger = logging.getLogger(__name__)
@@ -89,7 +88,7 @@ class LLMService:
             if not content_lines and not line.strip():
                 continue  # skip empty lines between greeting and content
             content_lines.append(line)
-            if len(content_lines) >= TEASER_LINE_COUNT:
+            if len(content_lines) >= settings.HOROSCOPE_TEASER_LINE_COUNT:
                 break
         teaser_text = "\n".join(content_lines) + "\n..."
 

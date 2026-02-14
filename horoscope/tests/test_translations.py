@@ -535,6 +535,7 @@ class TestLLMService:
             mock_settings.LLM_MODEL = "gpt-4"
             mock_settings.LLM_BASE_URL = None
             mock_settings.LLM_TIMEOUT = 30
+            mock_settings.HOROSCOPE_TEASER_LINE_COUNT = 3
 
             service = LLMService()
             full_text, teaser_text = service.generate_horoscope_text(
@@ -564,6 +565,7 @@ class TestLLMService:
             mock_settings.LLM_MODEL = "gpt-4"
             mock_settings.LLM_BASE_URL = None
             mock_settings.LLM_TIMEOUT = 30
+            mock_settings.HOROSCOPE_TEASER_LINE_COUNT = 3
 
             service = LLMService()
             service.generate_horoscope_text(

@@ -18,7 +18,7 @@ def send_expiry_reminders_task():
     Celery beat task: send reminders to users whose subscription is about to expire.
     """
     from core.containers import container
-    from horoscope.config import SUBSCRIPTION_REMINDER_DAYS
+    from django.conf import settings
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_messages_batch
     from horoscope.translations import t
@@ -26,7 +26,7 @@ def send_expiry_reminders_task():
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
 
-    expiring = subscription_repo.get_expiring_soon(days=SUBSCRIPTION_REMINDER_DAYS)
+    expiring = subscription_repo.get_expiring_soon(days=settings.HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS)
 
     if not expiring:
         return 0

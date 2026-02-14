@@ -11,7 +11,7 @@ from aiogram.types import (
 from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
-from horoscope.config import SUBSCRIPTION_DURATION_DAYS, SUBSCRIPTION_PRICE_STARS
+from django.conf import settings
 from horoscope.handlers.utils import aget_user_language
 from horoscope.translations import t
 
@@ -30,17 +30,17 @@ async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs
         t(
             "subscription.offer",
             lang,
-            days=SUBSCRIPTION_DURATION_DAYS,
-            price=SUBSCRIPTION_PRICE_STARS,
+            days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
+            price=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS,
         ),
     )
 
     await callback.message.answer_invoice(
         title=t("subscription.invoice_title", lang),
-        description=t("subscription.invoice_description", lang, days=SUBSCRIPTION_DURATION_DAYS),
+        description=t("subscription.invoice_description", lang, days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS),
         payload=f"subscription_{user.telegram_uid}",
         currency="XTR",
-        prices=[LabeledPrice(label="Subscription", amount=SUBSCRIPTION_PRICE_STARS)],
+        prices=[LabeledPrice(label="Subscription", amount=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS)],
     )
 
 
@@ -58,7 +58,7 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
     try:
         subscription = await service.aactivate_subscription(
             telegram_uid=user.telegram_uid,
-            duration_days=SUBSCRIPTION_DURATION_DAYS,
+            duration_days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
             payment_charge_id=payment.telegram_payment_charge_id,
         )
     except Exception:
