@@ -1,29 +1,18 @@
 from typing import Any
 
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext
 from django.utils.translation import override as translation_override
 
 
 # ---------------------------------------------------------------------------
-# Language configuration
+# Language configuration (from Django settings, configurable via env)
 # ---------------------------------------------------------------------------
 
-LANGUAGE_NAMES = {
-    'en': "English",
-    'ru': "Русский",
-    'uk': "Українська",
-    'de': "Deutsch",
-}
-
-LANGUAGE_FLAGS = {
-    'en': "🇬🇧",
-    'ru': "🇷🇺",
-    'uk': "🇺🇦",
-    'de': "🇩🇪",
-}
-
-SUPPORTED_LANGUAGE_CODES = {'en', 'ru', 'uk', 'de'}
+LANGUAGE_NAMES: dict[str, str] = settings.HOROSCOPE_LANGUAGE_NAMES
+LANGUAGE_FLAGS: dict[str, str] = settings.HOROSCOPE_LANGUAGE_FLAGS
+SUPPORTED_LANGUAGE_CODES: set[str] = settings.HOROSCOPE_SUPPORTED_LANGUAGE_CODES
 
 
 def map_telegram_language(language_code: str | None) -> str:

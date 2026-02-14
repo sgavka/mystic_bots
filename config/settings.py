@@ -189,6 +189,29 @@ REPORTS_CHAT_ID = int(_reports_chat_id) if _reports_chat_id and _reports_chat_id
 
 # Horoscope configuration
 
+_DEFAULT_HOROSCOPE_LANGUAGES = 'en:English:🇬🇧,ru:Русский:🇷🇺,uk:Українська:🇺🇦,de:Deutsch:🇩🇪'
+
+
+def _parse_horoscope_languages(raw: str) -> tuple[dict[str, str], dict[str, str]]:
+    """Parse HOROSCOPE_LANGUAGES env var into (names, flags) dicts."""
+    names = {}
+    flags = {}
+    for entry in raw.split(','):
+        parts = entry.strip().split(':')
+        if len(parts) >= 2:
+            code = parts[0].strip()
+            name = parts[1].strip()
+            flag = parts[2].strip() if len(parts) >= 3 else ''
+            names[code] = name
+            flags[code] = flag
+    return names, flags
+
+
+HOROSCOPE_LANGUAGE_NAMES, HOROSCOPE_LANGUAGE_FLAGS = _parse_horoscope_languages(
+    os.environ.get('HOROSCOPE_LANGUAGES', _DEFAULT_HOROSCOPE_LANGUAGES)
+)
+HOROSCOPE_SUPPORTED_LANGUAGE_CODES = set(HOROSCOPE_LANGUAGE_NAMES.keys())
+
 HOROSCOPE_SUBSCRIPTION_PRICE_STARS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_PRICE_STARS', '1'))
 HOROSCOPE_SUBSCRIPTION_DURATION_DAYS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_DURATION_DAYS', '90'))
 HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS = int(os.environ.get('HOROSCOPE_SUBSCRIPTION_REMINDER_DAYS', '3'))
