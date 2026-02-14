@@ -23,9 +23,12 @@ from horoscope.entities import HoroscopeEntity, UserProfileEntity
 # ---------------------------------------------------------------------------
 
 class _MockUserMiddleware(BaseMiddleware):
-    """Injects UserEntity from the Telegram user, bypassing real DB."""
+    """Injects UserEntity and AppContext from the Telegram user, bypassing real DB."""
 
     async def __call__(self, handler, event, data):
+        from aiogram.types import CallbackQuery, Message
+        from telegram_bot.app_context import AppContext
+
         from_user = getattr(event, 'from_user', None)
         if from_user:
             data['user'] = UserEntity(
@@ -37,6 +40,25 @@ class _MockUserMiddleware(BaseMiddleware):
                 is_premium=from_user.is_premium or False,
             )
         data['bot_slug'] = BotSlug.HOROSCOPE
+
+        bot = data.get('bot')
+        chat_id = None
+        if isinstance(event, Message):
+            chat_id = event.chat.id
+        elif isinstance(event, CallbackQuery):
+            chat_id = event.message.chat.id if event.message else event.from_user.id
+
+        if bot and chat_id:
+            mock_repo = MagicMock()
+            mock_repo.log_message = MagicMock()
+            app_context = AppContext.__new__(AppContext)
+            app_context.bot = bot
+            app_context.chat_id = chat_id
+            app_context.bot_id = bot.id if hasattr(bot, 'id') else 0
+            app_context.message_history_repo = mock_repo
+            app_context.conversations = {}
+            data['app_context'] = app_context
+
         return await handler(event, data)
 
 
@@ -699,6 +721,7 @@ class TestErrorHandling:
 
     async def test_subscription_activation_failure(self):
         from horoscope.handlers.subscription import successful_payment_handler
+        from telegram_bot.app_context import AppContext
 
         mock_message = AsyncMock()
         mock_payment = MagicMock()
@@ -717,12 +740,19 @@ class TestErrorHandling:
             side_effect=Exception("DB error")
         )
 
+        mock_app_context = MagicMock(spec=AppContext)
+        mock_app_context.send_message = AsyncMock()
+
         with patch(
             'horoscope.handlers.subscription.container'
         ) as mock_container:
             mock_container.horoscope.subscription_service.return_value = mock_service
-            await successful_payment_handler(message=mock_message, user=user)
+            await successful_payment_handler(
+                message=mock_message,
+                user=user,
+                app_context=mock_app_context,
+            )
 
-        mock_message.answer.assert_called_once()
-        call_text = mock_message.answer.call_args[0][0]
+        mock_app_context.send_message.assert_called_once()
+        call_text = mock_app_context.send_message.call_args[1]['text']
         assert "went wrong" in call_text.lower() or "support" in call_text.lower()

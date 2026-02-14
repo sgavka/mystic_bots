@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 def send_message(telegram_uid: int, text: str, reply_markup=None) -> bool:
-    """Send a single Telegram message. Returns True on success."""
+    """Send a single Telegram message via AppContext. Returns True on success."""
     from aiogram import Bot
     from aiogram.client.default import DefaultBotProperties
     from aiogram.enums import ParseMode
     from config import settings
+    from telegram_bot.app_context import AppContext
 
     async def _send():
         bot = Bot(
@@ -23,8 +24,11 @@ def send_message(telegram_uid: int, text: str, reply_markup=None) -> bool:
             default=DefaultBotProperties(parse_mode=ParseMode.HTML),
         )
         try:
-            await bot.send_message(
-                chat_id=telegram_uid,
+            app_context = AppContext.for_user(
+                bot=bot,
+                user_telegram_uid=telegram_uid,
+            )
+            await app_context.send_message(
                 text=text,
                 reply_markup=reply_markup,
             )
@@ -54,6 +58,7 @@ def send_messages_batch(
     from aiogram.client.default import DefaultBotProperties
     from aiogram.enums import ParseMode
     from config import settings
+    from telegram_bot.app_context import AppContext
 
     async def _send_all():
         bot = Bot(
@@ -64,8 +69,11 @@ def send_messages_batch(
         try:
             for telegram_uid, text, keyboard in messages:
                 try:
-                    await bot.send_message(
-                        chat_id=telegram_uid,
+                    app_context = AppContext.for_user(
+                        bot=bot,
+                        user_telegram_uid=telegram_uid,
+                    )
+                    await app_context.send_message(
                         text=text,
                         reply_markup=keyboard,
                     )

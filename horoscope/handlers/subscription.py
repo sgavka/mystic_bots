@@ -16,6 +16,7 @@ from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.handlers.utils import aget_user_language
 from horoscope.utils import translate
+from telegram_bot.app_context import AppContext
 
 SUBSCRIPTION_OFFER = _(
     "⭐ Subscribe for <b>{days} days</b> of full daily horoscope access.\n"
@@ -45,13 +46,13 @@ router = Router()
 
 
 @router.callback_query(F.data == callbacks.SUBSCRIBE)
-async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs):
+async def subscribe_callback(callback: CallbackQuery, user: UserEntity, app_context: AppContext, **kwargs):
     await callback.answer()
 
     lang = await aget_user_language(user)
 
-    await callback.message.answer(
-        translate(
+    await app_context.send_message(
+        text=translate(
             SUBSCRIPTION_OFFER,
             lang,
             days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
@@ -59,7 +60,7 @@ async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs
         ),
     )
 
-    await callback.message.answer_invoice(
+    await app_context.send_invoice(
         title=translate(SUBSCRIPTION_INVOICE_TITLE, lang),
         description=translate(SUBSCRIPTION_INVOICE_DESCRIPTION, lang, days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS),
         payload=f"subscription_{user.telegram_uid}",
@@ -74,7 +75,7 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery, **kwargs):
 
 
 @router.message(F.successful_payment)
-async def successful_payment_handler(message: Message, user: UserEntity, **kwargs):
+async def successful_payment_handler(message: Message, user: UserEntity, app_context: AppContext, **kwargs):
     payment = message.successful_payment
     service = container.horoscope.subscription_service()
     lang = await aget_user_language(user)
@@ -90,7 +91,7 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
             f"Failed to activate subscription for user {user.telegram_uid} "
             f"after payment {payment.telegram_payment_charge_id}"
         )
-        await message.answer(translate(ERROR_PAYMENT_FAILED, lang))
+        await app_context.send_message(text=translate(ERROR_PAYMENT_FAILED, lang))
         return
 
     logger.info(
@@ -98,10 +99,10 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
         f"until {subscription.expires_at}"
     )
 
-    await message.answer(
-        translate(
+    await app_context.send_message(
+        text=translate(
             SUBSCRIPTION_PAYMENT_SUCCESS,
             lang,
             expires=subscription.expires_at.strftime('%d.%m.%Y'),
-        )
+        ),
     )

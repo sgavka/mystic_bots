@@ -2,19 +2,19 @@
 
 ## Next step
 
-TASK_043: Extract LoggingMiddleware from UserMiddleware.
+TASK_044: Migrate handlers to use AppContext instead of direct message methods.
 
-Current status: Starting TASK_043
+Current status: Starting TASK_044
 
 ## Tasks
 
-- [ ] **TASK_043** (processing) — Extract LoggingMiddleware from UserMiddleware
-- [ ] **TASK_044** (new) — Migrate handlers to use AppContext instead of direct message methods
+- [ ] **TASK_044** (processing) — Migrate handlers to use AppContext instead of direct message methods
 - [ ] **TASK_045** (new) — Add UserLanguageMiddleware for i18n
 - [ ] **TASK_046** (new) — Exception handling and logging audit
 
 ## Completed
 
+- [x] **TASK_043** (complete) — Extract LoggingMiddleware from UserMiddleware
 - [x] **TASK_042** (complete) — Upgrade AppContext with DB logging and add helpers.py
 - [x] **TASK_038** (complete) — Refactor: inline remaining text constants in horoscope handlers
 - [x] **TASK_039** (complete) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals

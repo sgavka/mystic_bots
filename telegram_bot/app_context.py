@@ -128,7 +128,7 @@ class AppContext:
                     disable_web_page_preview=disable_web_page_preview,
                 )
 
-            if message is not None:
+            if isinstance(message, Message):
                 await self._log_message_to_db(message)
 
         except TelegramBadRequest as e:
@@ -222,6 +222,28 @@ class AppContext:
         )
         await self._log_message_to_db(message)
         return message
+
+    async def send_invoice(
+        self,
+        title: str,
+        description: str,
+        payload: str,
+        currency: str,
+        prices: list,
+        **kwargs: Any,
+    ) -> Message:
+        result = await self.bot.send_invoice(
+            chat_id=self.chat_id,
+            title=title,
+            description=description,
+            payload=payload,
+            currency=currency,
+            prices=prices,
+            **kwargs,
+        )
+        if isinstance(result, Message):
+            await self._log_message_to_db(result)
+        return result
 
     async def send_video(
         self,

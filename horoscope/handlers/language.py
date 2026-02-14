@@ -3,7 +3,7 @@ import logging
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +13,7 @@ from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
 from horoscope.utils import map_telegram_language, translate
+from telegram_bot.app_context import AppContext
 
 LANGUAGE_CURRENT = _(
     "🌍 Your current language: <b>{lang_name}</b>\n"
@@ -33,27 +34,39 @@ router = Router()
 
 
 @router.message(Command("language"))
-async def language_command_handler(message: Message, state: FSMContext, user: UserEntity, **kwargs):
+async def language_command_handler(
+    message: Message,
+    state: FSMContext,
+    user: UserEntity,
+    app_context: AppContext,
+    **kwargs,
+):
     user_profile_repo = container.horoscope.user_profile_repository()
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
 
     if not profile:
         lang = map_telegram_language(user.language_code)
-        await message.answer(translate(LANGUAGE_NO_PROFILE, lang))
+        await app_context.send_message(text=translate(LANGUAGE_NO_PROFILE, lang))
         return
 
     lang = profile.preferred_language
     lang_display = settings.HOROSCOPE_LANGUAGE_NAMES.get(lang, lang)
 
     await state.clear()
-    await message.answer(
-        translate(LANGUAGE_CURRENT, lang, lang_name=lang_display),
+    await app_context.send_message(
+        text=translate(LANGUAGE_CURRENT, lang, lang_name=lang_display),
         reply_markup=language_keyboard(current_language=lang),
     )
 
 
 @router.callback_query(F.data.startswith(callbacks.LANGUAGE_PREFIX))
-async def change_language_callback(callback: CallbackQuery, state: FSMContext, user: UserEntity, **kwargs):
+async def change_language_callback(
+    callback: CallbackQuery,
+    state: FSMContext,
+    user: UserEntity,
+    app_context: AppContext,
+    **kwargs,
+):
     await callback.answer()
 
     new_lang = callback.data[len(callbacks.LANGUAGE_PREFIX):]
@@ -67,9 +80,12 @@ async def change_language_callback(callback: CallbackQuery, state: FSMContext, u
 
     if not profile:
         lang = map_telegram_language(user.language_code)
-        await callback.message.answer(translate(LANGUAGE_NO_PROFILE, lang))
+        await app_context.send_message(text=translate(LANGUAGE_NO_PROFILE, lang))
         return
 
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer(translate(LANGUAGE_CHANGED, new_lang))
+    await app_context.edit_message(
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[]),
+        message_id=callback.message.message_id,
+    )
+    await app_context.send_message(text=translate(LANGUAGE_CHANGED, new_lang))
     logger.info(f"User {user.telegram_uid} changed language to {new_lang}")

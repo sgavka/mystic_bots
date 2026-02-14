@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from aiogram.types import Message
 
 from telegram_bot.app_context import AppContext
 
@@ -30,8 +31,8 @@ def _make_message(
     text: str = "Hello",
     caption: str | None = None,
 ) -> MagicMock:
-    """Create a mock Message object."""
-    msg = MagicMock()
+    """Create a mock Message object that passes isinstance(msg, Message)."""
+    msg = MagicMock(spec=Message)
     msg.message_id = message_id
     msg.text = text
     msg.caption = caption

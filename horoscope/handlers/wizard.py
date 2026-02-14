@@ -4,7 +4,7 @@ from datetime import date, datetime
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from asgiref.sync import sync_to_async
 
@@ -16,6 +16,7 @@ from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
 from horoscope.states import WizardStates
 from horoscope.utils import map_telegram_language, parse_date, translate
+from telegram_bot.app_context import AppContext
 
 WIZARD_CHOOSE_LANGUAGE = _("🌍 Please choose your language:")
 
@@ -87,99 +88,108 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def start_handler(message: Message, state: FSMContext, user: UserEntity, **kwargs):
+async def start_handler(message: Message, state: FSMContext, user: UserEntity, app_context: AppContext, **kwargs):
     user_profile_repo = container.horoscope.user_profile_repository()
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
 
     if profile:
         lang = profile.preferred_language
-        await message.answer(translate(WIZARD_WELCOME_BACK, lang, name=profile.name))
+        await app_context.send_message(text=translate(WIZARD_WELCOME_BACK, lang, name=profile.name))
         await state.clear()
         return
 
     default_lang = map_telegram_language(user.language_code)
-    await message.answer(
-        translate(WIZARD_CHOOSE_LANGUAGE, default_lang),
+    await app_context.send_message(
+        text=translate(WIZARD_CHOOSE_LANGUAGE, default_lang),
         reply_markup=language_keyboard(),
     )
     await state.set_state(WizardStates.WAITING_LANGUAGE)
 
 
 @router.callback_query(WizardStates.WAITING_LANGUAGE, F.data.startswith(callbacks.LANGUAGE_PREFIX))
-async def process_language(callback: CallbackQuery, state: FSMContext, **kwargs):
+async def process_language(callback: CallbackQuery, state: FSMContext, app_context: AppContext, **kwargs):
     await callback.answer()
 
     lang = callback.data[len(callbacks.LANGUAGE_PREFIX):]
     await state.update_data(preferred_language=lang)
 
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer(translate(WIZARD_WELCOME, lang))
+    await app_context.edit_message(
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[]),
+        message_id=callback.message.message_id,
+    )
+    await app_context.send_message(text=translate(WIZARD_WELCOME, lang))
     await state.set_state(WizardStates.WAITING_NAME)
 
 
 @router.message(WizardStates.WAITING_NAME, F.text)
-async def process_name(message: Message, state: FSMContext, **kwargs):
+async def process_name(message: Message, state: FSMContext, app_context: AppContext, **kwargs):
     data = await state.get_data()
     lang = data.get('preferred_language', 'en')
 
     name = message.text.strip()
     if len(name) < 2 or len(name) > 100:
-        await message.answer(translate(WIZARD_INVALID_NAME, lang))
+        await app_context.send_message(text=translate(WIZARD_INVALID_NAME, lang))
         return
 
     await state.update_data(name=name)
-    await message.answer(translate(WIZARD_ASK_DOB, lang, name=name))
+    await app_context.send_message(text=translate(WIZARD_ASK_DOB, lang, name=name))
     await state.set_state(WizardStates.WAITING_DATE_OF_BIRTH)
 
 
 @router.message(WizardStates.WAITING_DATE_OF_BIRTH, F.text)
-async def process_date_of_birth(message: Message, state: FSMContext, **kwargs):
+async def process_date_of_birth(message: Message, state: FSMContext, app_context: AppContext, **kwargs):
     data = await state.get_data()
     lang = data.get('preferred_language', 'en')
     text = message.text.strip()
 
     date_of_birth = parse_date(text)
     if not date_of_birth:
-        await message.answer(translate(WIZARD_INVALID_DATE_FORMAT, lang))
+        await app_context.send_message(text=translate(WIZARD_INVALID_DATE_FORMAT, lang))
         return
 
     today = datetime.now().date()
     if date_of_birth >= today:
-        await message.answer(translate(WIZARD_DOB_IN_FUTURE, lang))
+        await app_context.send_message(text=translate(WIZARD_DOB_IN_FUTURE, lang))
         return
 
     if (today.year - date_of_birth.year) > 150:
-        await message.answer(translate(WIZARD_DOB_TOO_OLD, lang))
+        await app_context.send_message(text=translate(WIZARD_DOB_TOO_OLD, lang))
         return
 
     await state.update_data(date_of_birth=date_of_birth.isoformat())
-    await message.answer(translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
+    await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
     await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
 
 
 @router.message(WizardStates.WAITING_PLACE_OF_BIRTH, F.text)
-async def process_place_of_birth(message: Message, state: FSMContext, **kwargs):
+async def process_place_of_birth(message: Message, state: FSMContext, app_context: AppContext, **kwargs):
     data = await state.get_data()
     lang = data.get('preferred_language', 'en')
 
     place = message.text.strip()
     if len(place) < 2 or len(place) > 200:
-        await message.answer(translate(WIZARD_INVALID_CITY, lang))
+        await app_context.send_message(text=translate(WIZARD_INVALID_CITY, lang))
         return
 
     await state.update_data(place_of_birth=place)
-    await message.answer(translate(WIZARD_ASK_PLACE_OF_LIVING, lang))
+    await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_LIVING, lang))
     await state.set_state(WizardStates.WAITING_PLACE_OF_LIVING)
 
 
 @router.message(WizardStates.WAITING_PLACE_OF_LIVING, F.text)
-async def process_place_of_living(message: Message, state: FSMContext, user: UserEntity, **kwargs):
+async def process_place_of_living(
+    message: Message,
+    state: FSMContext,
+    user: UserEntity,
+    app_context: AppContext,
+    **kwargs,
+):
     data = await state.get_data()
     lang = data.get('preferred_language', 'en')
 
     place = message.text.strip()
     if len(place) < 2 or len(place) > 200:
-        await message.answer(translate(WIZARD_INVALID_CITY, lang))
+        await app_context.send_message(text=translate(WIZARD_INVALID_CITY, lang))
         return
 
     name = data['name']
@@ -205,20 +215,20 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
     except Exception:
         logger.exception(f"Failed to create profile for user {user.telegram_uid}")
         await state.clear()
-        await message.answer(translate(ERROR_PROFILE_CREATION_FAILED, lang))
+        await app_context.send_message(text=translate(ERROR_PROFILE_CREATION_FAILED, lang))
         return
 
     await state.clear()
 
-    await message.answer(
-        translate(
+    await app_context.send_message(
+        text=translate(
             WIZARD_PROFILE_READY,
             lang,
             name=profile.name,
             dob=profile.date_of_birth.strftime('%d.%m.%Y'),
             place_of_birth=profile.place_of_birth,
             place_of_living=profile.place_of_living,
-        )
+        ),
     )
 
     # Trigger Celery task to generate first horoscope

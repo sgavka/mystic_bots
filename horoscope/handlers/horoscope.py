@@ -11,6 +11,7 @@ from core.containers import container
 from core.entities import UserEntity
 from horoscope.keyboards import subscribe_keyboard
 from horoscope.utils import map_telegram_language, translate
+from telegram_bot.app_context import AppContext
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ router = Router()
 
 
 @router.message(Command("horoscope"))
-async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
+async def view_horoscope_handler(message: Message, user: UserEntity, app_context: AppContext, **kwargs):
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
@@ -26,7 +27,7 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
     if not profile:
         lang = map_telegram_language(user.language_code)
-        await message.answer(translate(_(
+        await app_context.send_message(text=translate(_(
             "⚠️ You haven't set up your profile yet.\n"
             "Send /start to begin the onboarding wizard."
         ), lang))
@@ -49,12 +50,12 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
                 telegram_uid=user.telegram_uid,
                 target_date=today.isoformat(),
             )
-            await message.answer(translate(_(
+            await app_context.send_message(text=translate(_(
                 "🔮 Your horoscope is being generated right now!\n"
                 "Please check back in a minute."
             ), lang))
         else:
-            await message.answer(translate(_(
+            await app_context.send_message(text=translate(_(
                 "⏳ Your horoscope for today is not ready yet.\n"
                 "It will be generated soon. Please check back later."
             ), lang))
@@ -63,10 +64,10 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     has_subscription = await subscription_repo.ahas_active_subscription(user.telegram_uid)
 
     if has_subscription:
-        await message.answer(horoscope.full_text)
+        await app_context.send_message(text=horoscope.full_text)
     else:
-        await message.answer(
-            horoscope.teaser_text + translate(_(
+        await app_context.send_message(
+            text=horoscope.teaser_text + translate(_(
                 "\n"
                 "\n"
                 "🔒 Subscribe to see your full daily horoscope!"
