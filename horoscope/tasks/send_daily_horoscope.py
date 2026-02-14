@@ -52,10 +52,11 @@ def send_daily_horoscope_notifications_task():
     Celery beat task: send daily horoscope notifications to all users.
     Runs after generation is expected to be complete.
     """
+    from django.utils.translation import gettext_lazy as _
+
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
-    from horoscope.handlers.horoscope import HOROSCOPE_SUBSCRIBE_CTA
     from horoscope.utils import translate
 
     today = date.today()
@@ -85,7 +86,11 @@ def send_daily_horoscope_notifications_task():
             text = horoscope.full_text
             keyboard = None
         else:
-            text = horoscope.teaser_text + translate(HOROSCOPE_SUBSCRIBE_CTA, lang)
+            text = horoscope.teaser_text + translate(_(
+                "\n"
+                "\n"
+                "🔒 Subscribe to see your full daily horoscope!"
+            ), lang)
             keyboard = subscribe_keyboard(language=lang)
 
         success = send_message(

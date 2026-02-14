@@ -73,8 +73,9 @@ def _send_daily_horoscope(
     teaser_text: str,
 ) -> None:
     """Send the daily horoscope: full text for subscribers, teaser with subscribe link for others."""
+    from django.utils.translation import gettext_lazy as _
+
     from core.containers import container
-    from horoscope.handlers.horoscope import HOROSCOPE_SUBSCRIBE_CTA
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
     from horoscope.utils import translate
@@ -91,7 +92,11 @@ def _send_daily_horoscope(
         text = full_text
         keyboard = None
     else:
-        text = teaser_text + translate(HOROSCOPE_SUBSCRIBE_CTA, lang)
+        text = teaser_text + translate(_(
+            "\n"
+            "\n"
+            "🔒 Subscribe to see your full daily horoscope!"
+        ), lang)
         keyboard = subscribe_keyboard(language=lang)
 
     success = send_message(

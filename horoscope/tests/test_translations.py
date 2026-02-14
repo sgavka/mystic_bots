@@ -9,7 +9,8 @@ import pytest
 from django.conf import settings
 from django.utils import timezone
 
-from horoscope.handlers.horoscope import HOROSCOPE_SUBSCRIBE_CTA
+from django.utils.translation import gettext_lazy as _
+
 from horoscope.handlers.language import LANGUAGE_CHANGED, LANGUAGE_CURRENT, LANGUAGE_NO_PROFILE
 from horoscope.handlers.subscription import (
     ERROR_PAYMENT_FAILED,
@@ -33,11 +34,6 @@ from horoscope.handlers.wizard import (
     WIZARD_WELCOME,
     WIZARD_WELCOME_BACK,
 )
-from horoscope.handlers.horoscope import (
-    HOROSCOPE_GENERATING,
-    HOROSCOPE_NO_PROFILE,
-    HOROSCOPE_NOT_READY,
-)
 from horoscope.keyboards import KEYBOARD_SUBSCRIBE
 from horoscope.services.horoscope import HOROSCOPE_GREETING, HOROSCOPE_HEADER
 from horoscope.tasks.generate_horoscope import TASK_FIRST_HOROSCOPE_READY
@@ -49,8 +45,24 @@ _ALL_MESSAGE_CONSTANTS = [
     WIZARD_INVALID_NAME, WIZARD_ASK_DOB, WIZARD_INVALID_DATE_FORMAT,
     WIZARD_DOB_IN_FUTURE, WIZARD_DOB_TOO_OLD, WIZARD_ASK_PLACE_OF_BIRTH,
     WIZARD_INVALID_CITY, WIZARD_ASK_PLACE_OF_LIVING, WIZARD_PROFILE_READY,
-    HOROSCOPE_NO_PROFILE, HOROSCOPE_NOT_READY, HOROSCOPE_GENERATING,
-    HOROSCOPE_SUBSCRIBE_CTA, SUBSCRIPTION_OFFER, SUBSCRIPTION_INVOICE_TITLE,
+    _(
+        "⚠️ You haven't set up your profile yet.\n"
+        "Send /start to begin the onboarding wizard."
+    ),
+    _(
+        "⏳ Your horoscope for today is not ready yet.\n"
+        "It will be generated soon. Please check back later."
+    ),
+    _(
+        "🔮 Your horoscope is being generated right now!\n"
+        "Please check back in a minute."
+    ),
+    _(
+        "\n"
+        "\n"
+        "🔒 Subscribe to see your full daily horoscope!"
+    ),
+    SUBSCRIPTION_OFFER, SUBSCRIPTION_INVOICE_TITLE,
     SUBSCRIPTION_INVOICE_DESCRIPTION, SUBSCRIPTION_PAYMENT_SUCCESS,
     KEYBOARD_SUBSCRIBE, TASK_FIRST_HOROSCOPE_READY, TASK_EXPIRY_REMINDER,
     TASK_SUBSCRIPTION_EXPIRED, LANGUAGE_CURRENT, LANGUAGE_CHANGED,
