@@ -77,14 +77,18 @@ project_root/
 │   └── services/
 ├── telegram_bot/              # Telegram bot base app
 │   ├── bot.py                 # Bot factory, dispatcher setup
-│   ├── models.py
-│   ├── entities.py
+│   ├── models.py              # MessageHistory model
+│   ├── entities.py            # MessageHistoryEntity
+│   ├── app_context.py         # AppContext class for message management
+│   ├── helpers.py             # fix_unserializable_values_in_raw, etc.
 │   ├── states.py              # FSM states
 │   ├── handlers/
 │   ├── middlewares/
 │   │   ├── bot.py             # BotMiddleware
-│   │   └── user.py            # UserMiddleware, AppContextMiddleware
+│   │   ├── user.py            # UserMiddleware, LoggingMiddleware, AppContextMiddleware
+│   │   └── i18n.py            # UserLanguageMiddleware (i18n)
 │   ├── repositories/
+│   │   └── message_history.py # MessageHistoryRepository
 │   ├── services/
 │   ├── utils/
 │   └── management/commands/
@@ -253,14 +257,44 @@ await process_data(item_id=item.id, items=item_list)
 <middleware_pattern>
 <description>
 Aiogram 3.x middlewares auto-apply to all handlers (NO decorators needed).
+Middleware registration order is defined in telegram_bot/bot.py:setup_middlewares().
 </description>
 
     <chain>
-      1. BotMiddleware - Injects bot_slug for multi-bot support
-      2. UserMiddleware - Creates/updates user, injects UserEntity
-      3. AppContextMiddleware - Manages message context
+      1. BotMiddleware (telegram_bot/middlewares/bot.py) - Injects bot_slug for multi-bot support
+      2. UserMiddleware (telegram_bot/middlewares/user.py) - Creates/updates user, injects UserEntity as 'user'
+      3. AppContextMiddleware (telegram_bot/middlewares/user.py) - Creates AppContext, injects as 'app_context'
+      4. LoggingMiddleware (telegram_bot/middlewares/user.py) - Logs ALL incoming messages/callbacks to MessageHistory
+      5. UserLanguageMiddleware (telegram_bot/middlewares/i18n.py) - Sets locale from user's Telegram language_code
     </chain>
 </middleware_pattern>
+
+<app_context_pattern>
+<description>
+AppContext (telegram_bot/app_context.py) is the REQUIRED way to send all outgoing messages.
+It wraps bot message operations and automatically logs every sent message to MessageHistory.
+AppContext is injected by AppContextMiddleware as 'app_context' handler parameter.
+For sending outside handler flow (background tasks, Celery), use AppContext.for_user() factory.
+</description>
+
+    <rules>
+      - NEVER use bot.send_message(), message.answer(), message.reply() directly — these bypass logging
+      - ALWAYS use app_context.send_message(), app_context.edit_message(), app_context.send_photo(), etc.
+    </rules>
+</app_context_pattern>
+
+<message_history_pattern>
+<description>
+ALL messages (incoming and outgoing) MUST be logged to the MessageHistory table.
+- Incoming: logged automatically by LoggingMiddleware (telegram_bot/middlewares/user.py)
+- Outgoing: logged automatically by AppContext (telegram_bot/app_context.py)
+- Model: telegram_bot/models.py — MessageHistory
+- Entity: telegram_bot/entities.py — MessageHistoryEntity
+- Repository: telegram_bot/repositories/message_history.py — MessageHistoryRepository
+- Helper: telegram_bot/helpers.py — fix_unserializable_values_in_raw()
+(MUST be applied to message.model_dump() before storing in the raw field)
+</description>
+</message_history_pattern>
 
 <service_layer>
 <description>
@@ -370,6 +404,7 @@ await create_item(user.telegram_uid, item_text, parsed_data)
 - NEVER use decorators for middleware logic
 - Middlewares auto-apply to all handlers
 - User injected as 'user' in handler context
+- AppContext injected as 'app_context' in handler context
 </middleware>
 
     <structure>
@@ -380,14 +415,26 @@ from aiogram.filters import StateFilter
 router = Router()
 
 @router.message(StateFilter(SomeStates.ENTER_TEXT))
-async def handle_text(message: Message, state: FSMContext, user: UserEntity):
+async def handle_text(message: Message, state: FSMContext, user: UserEntity, app_context: AppContext):
 # 1. Validate input
 # 2. Call service/repository
-# 3. Send response
+# 3. Send response via app_context (NEVER via message.answer or bot.send_message)
 # 4. Update state
-pass
+await app_context.send_message(text="Done!")
 </structure>
 </handler_rules>
+
+<message_logging_rules>
+<requirements>
+- EVERY received and sent message MUST be logged to MessageHistory
+- Incoming messages are logged automatically by LoggingMiddleware — do NOT log them manually
+- Outgoing messages are logged automatically by AppContext — ALWAYS use AppContext to send messages
+- NEVER use bot.send_message(), message.answer(), message.reply() directly — these bypass logging
+- ALWAYS use app_context.send_message(), app_context.edit_message(), app_context.send_photo(), etc.
+- For sending messages outside handler flow (background tasks, Celery), use AppContext.for_user()
+- Raw message data MUST be sanitized with fix_unserializable_values_in_raw() before DB storage
+</requirements>
+</message_logging_rules>
 
 <error_handling>
 <exceptions>
@@ -438,9 +485,11 @@ pass
 
   <deployment>
     <docker>
+      - The project MUST ALWAYS run inside Docker. NEVER use system Python.
       - docker-compose.yml for development
       - docker-compose-prod.yml for production
       - Separate containers: bot, database, redis
+      - Dockerfile located at docker/Dockerfile, entrypoint at docker/entrypoint.sh
     </docker>
   </deployment>
 
@@ -460,13 +509,83 @@ After implementing any task, ALWAYS run related tests:
       - Use aiogram-test-framework for bot handler tests
     </new_code_tests>
 </testing_requirements>
+<exception_handling>
+<requirements>
+- NEVER catch general exceptions (Exception, BaseException) just to log and suppress them. Let them propagate.
+- ONLY catch specific, expected exception types that you can meaningfully handle.
+- If catching a general exception is truly necessary (e.g., top-level error boundary, background task loop, third-party integration),
+it MUST have a comment explaining WHY the broad catch is needed.
+</requirements>
+
+    <correct>
+# Catch specific exceptions only
+try:
+await process()
+except ValidationError as e:
+logger.error("Validation failed", exc_info=e)
+await message.answer("Invalid input")
+
+# General catch ONLY when justified with a comment
+try:
+await send_notification()
+except Exception as e:
+# Notification failure must not break the main flow — best-effort delivery
+logger.error("Notification failed", exc_info=e)
+</correct>
+
+    <incorrect>
+# WRONG: Catching general exception just to log it
+try:
+await process()
+except Exception as e:
+logger.error("Something went wrong", exc_info=e)
+
+# WRONG: Bare except
+try:
+await process()
+except:
+logger.error("Error occurred")
+</incorrect>
+</exception_handling>
+
+  <logging>
+    <requirements>
+      - ALWAYS include exc_info in logging calls within exception handlers
+      - If the exception object is available, use exc_info=e
+      - If the exception object is not available, use exc_info=True
+      - This ensures full tracebacks are captured in logs for debugging
+    </requirements>
+
+    <correct>
+try:
+await process()
+except SomeException as e:
+logger.error("Processing failed", exc_info=e)
+
+try:
+await process()
+except Exception:
+# Top-level handler — must not crash the worker loop
+logger.error("Processing failed", exc_info=True)
+</correct>
+
+    <incorrect>
+try:
+await process()
+except SomeException as e:
+logger.error("Processing failed")  # Missing exc_info
+logger.error(f"Processing failed: {e}")  # Missing traceback
+</incorrect>
+</logging>
 </rules>
 
 <commands>
   <critical_rule>
+    The project MUST ALWAYS be run inside Docker containers. NEVER use system Python or locally installed interpreters.
     NEVER run commands directly (python, uv, django, celery, etc.).
     ALWAYS use `make` commands which run everything inside Docker containers.
     This ensures consistent environment and proper dependency resolution.
+    If Docker is not running, start it first. Do NOT fall back to system Python under any circumstances.
   </critical_rule>
 
   <make>

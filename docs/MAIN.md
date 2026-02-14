@@ -13,8 +13,8 @@ Main file to keep summary of the developing process.
 1. Look at `docs/tasks/` if any new tasks appeared and add them to docs/PLAN.md (with file name status "new"; just created
    tasks will be without file status)
 2. Get task to implement
-2.1. If exists in progress — take it to continue implementing
-2.2. Check tasks with status "waiting_for_clarification" if questions were asked already, if so start implementing
+   2.1. If exists in progress — take it to continue implementing
+   2.2. Check tasks with status "waiting_for_clarification" if questions were asked already, if so start implementing
 3. In docs/PLAN.md mark task as in progress
 4. In task file first need to add all information how to implement task, investigation result
    4.1. If "Is task investigated" is "no", investigate it and fill task file
@@ -47,11 +47,11 @@ Main file to keep summary of the developing process.
 2. Name format: `TASK_{number}_{status}.md`
 3. Number: 001, 002, etc.
 4. Status:
-    - *(not present)* — task is created by operator
-    - `new` — task acknowledged, added to plan
-    - `processing` — task is being implemented
-    - `complete` — task is done
-    - `waiting_for_clarification` — task wait for clarification from operator
+   - *(not present)* — task is created by operator
+   - `new` — task acknowledged, added to plan
+   - `processing` — task is being implemented
+   - `complete` — task is done
+   - `waiting_for_clarification` — task wait for clarification from operator
 
 ## Task file structure
 
@@ -62,6 +62,43 @@ Main file to keep summary of the developing process.
 **Checkboxes** — task checkboxes (subtasks)
 **Investigation** — result of investigation how to implement task
 **Questions** — questions to ask operator (if needed)
+
+### Example task file
+
+```markdown
+# TASK_001 - Set up review_bot repositories
+
+## Is task investigated
+yes
+
+## Commit ID
+_(not yet completed)_
+
+## Branch name
+_(none)_
+
+## Summary
+Create repository classes for all review_bot models following the base repository pattern.
+
+## Checklist
+- [ ] Create ReviewRepository
+- [ ] Create EmailContactRepository
+- [ ] Create PhoneContactRepository
+- [ ] Create IBANContactRepository
+- [ ] Create BankCardContactRepository
+- [ ] Create FullNameContactRepository
+- [ ] Create ReviewMediaRepository
+- [ ] Create M2M relationship repository methods
+
+## Investigation
+- Follow BaseRepository pattern from core/repositories/base.py
+- Each repository needs sync + async method pairs
+- M2M operations should be handled through dedicated methods
+
+## Questions
+_(no questions)_
+```
+
 
 ## Commit rules
 
