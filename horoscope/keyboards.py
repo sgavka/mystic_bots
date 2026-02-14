@@ -6,6 +6,7 @@ from horoscope import callbacks
 from horoscope.utils import translate
 
 KEYBOARD_SUBSCRIBE = _("⭐ Subscribe for full horoscope")
+KEYBOARD_ASK_FOLLOWUP = _("❓ Ask a question about your horoscope")
 
 
 def language_keyboard(current_language: str | None = None) -> InlineKeyboardMarkup:
@@ -27,5 +28,14 @@ def subscribe_keyboard(language: str = 'en') -> InlineKeyboardMarkup:
         [InlineKeyboardButton(
             text=translate(KEYBOARD_SUBSCRIBE, language),
             callback_data=callbacks.SUBSCRIBE,
+        )]
+    ])
+
+
+def ask_followup_keyboard(language: str = 'en') -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text=translate(KEYBOARD_ASK_FOLLOWUP, language),
+            callback_data=callbacks.ASK_FOLLOWUP,
         )]
     ])

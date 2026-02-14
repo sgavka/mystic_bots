@@ -96,3 +96,26 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"Subscription {self.id} for user {self.user_telegram_uid} ({self.status})"
+
+
+class HoroscopeFollowup(models.Model):
+    id = models.AutoField(primary_key=True)
+    horoscope = models.ForeignKey(
+        Horoscope,
+        on_delete=models.CASCADE,
+        related_name='followups',
+    )
+    question_text = models.TextField()
+    answer_text = models.TextField()
+    model = models.CharField(max_length=256)
+    input_tokens = models.PositiveIntegerField()
+    output_tokens = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['horoscope']),
+        ]
+
+    def __str__(self):
+        return f"HoroscopeFollowup {self.id} for horoscope {self.horoscope_id}"

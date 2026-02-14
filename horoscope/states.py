@@ -7,3 +7,7 @@ class WizardStates(StatesGroup):
     WAITING_DATE_OF_BIRTH = State()
     WAITING_PLACE_OF_BIRTH = State()
     WAITING_PLACE_OF_LIVING = State()
+
+
+class HoroscopeStates(StatesGroup):
+    WAITING_FOLLOWUP_QUESTION = State()

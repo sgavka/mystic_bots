@@ -66,10 +66,12 @@ def setup_handlers(dispatcher: Dispatcher) -> None:
     from horoscope.handlers.horoscope import router as horoscope_router
     from horoscope.handlers.subscription import router as subscription_router
     from horoscope.handlers.language import router as language_router
+    from horoscope.handlers.followup import router as followup_router
 
     dispatcher.errors.register(errors.error_handler)
     dispatcher.include_router(wizard_router)
     dispatcher.include_router(horoscope_router)
+    dispatcher.include_router(followup_router)
     dispatcher.include_router(subscription_router)
     dispatcher.include_router(language_router)
 

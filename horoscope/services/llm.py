@@ -17,6 +17,14 @@ class LLMResult:
     output_tokens: int
 
 
+@dataclass
+class LLMFollowupResult:
+    answer_text: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+
+
 HOROSCOPE_PROMPT = """You are a mystical astrologer who writes personalized daily horoscopes.
 
 Write a personalized horoscope for the following person:
@@ -37,6 +45,25 @@ Guidelines:
 - Do NOT use markdown formatting, just plain text with emojis
 - Each section should be a separate line
 - IMPORTANT: Write the ENTIRE horoscope INCLUDING the header and greeting in {language_name}"""
+
+
+FOLLOWUP_PROMPT = """You are a mystical astrologer who has just written a personalized horoscope.
+
+Here is the horoscope you wrote:
+---
+{horoscope_text}
+---
+
+The person has a follow-up question about this horoscope:
+"{question}"
+
+Guidelines:
+- Answer the question based on the horoscope context above
+- Keep the same warm, mystical, and personal tone
+- Use emojis to keep it engaging
+- Keep the answer concise (3-6 lines)
+- Do NOT use markdown formatting, just plain text with emojis
+- IMPORTANT: Write the answer in {language_name}"""
 
 
 class LLMService:
@@ -112,6 +139,42 @@ class LLMService:
             full_text=full_text,
             teaser_text=teaser_text,
             extended_teaser_text=extended_teaser_text,
+            model=response.model,
+            input_tokens=usage.prompt_tokens,
+            output_tokens=usage.completion_tokens,
+        )
+
+    def generate_followup_answer(
+        self,
+        horoscope_text: str,
+        question: str,
+        language: str = 'en',
+    ) -> LLMFollowupResult:
+        import litellm
+
+        language_name = settings.HOROSCOPE_LANGUAGE_NAMES.get(language, 'English')
+
+        prompt = FOLLOWUP_PROMPT.format(
+            horoscope_text=horoscope_text,
+            question=question,
+            language_name=language_name,
+        )
+
+        response = litellm.completion(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            api_key=self.api_key,
+            api_base=self.base_url,
+            timeout=self.timeout,
+            max_tokens=500,
+        )
+
+        answer_text = response.choices[0].message.content.strip()
+        usage = response.usage
+
+        logger.info(f"Generated LLM followup answer in {language_name}")
+        return LLMFollowupResult(
+            answer_text=answer_text,
             model=response.model,
             input_tokens=usage.prompt_tokens,
             output_tokens=usage.completion_tokens,

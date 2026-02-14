@@ -37,6 +37,17 @@ class LLMUsageEntity(BaseEntity):
     created_at: datetime
 
 
+class HoroscopeFollowupEntity(BaseEntity):
+    id: int
+    horoscope_id: int
+    question_text: str
+    answer_text: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+    created_at: datetime
+
+
 class SubscriptionEntity(BaseEntity):
     id: int
     user_telegram_uid: int

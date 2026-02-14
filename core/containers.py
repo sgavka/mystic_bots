@@ -5,6 +5,7 @@ from dependency_injector import containers, providers
 if TYPE_CHECKING:
     from core.repositories import UserRepository
     from horoscope.repositories import (
+        HoroscopeFollowupRepository,
         HoroscopeRepository,
         LLMUsageRepository,
         SubscriptionRepository,
@@ -40,6 +41,11 @@ def _create_subscription_repository() -> "SubscriptionRepository":
     return SubscriptionRepository()
 
 
+def _create_followup_repository() -> "HoroscopeFollowupRepository":
+    from horoscope.repositories import HoroscopeFollowupRepository
+    return HoroscopeFollowupRepository()
+
+
 def _create_message_history_repository() -> "MessageHistoryRepository":
     from telegram_bot.repositories import MessageHistoryRepository
     return MessageHistoryRepository()
@@ -57,6 +63,7 @@ class HoroscopeContainer(containers.DeclarativeContainer):
     horoscope_repository = providers.Singleton(_create_horoscope_repository)
     llm_usage_repository = providers.Singleton(_create_llm_usage_repository)
     subscription_repository = providers.Singleton(_create_subscription_repository)
+    followup_repository = providers.Singleton(_create_followup_repository)
 
     horoscope_service = providers.Singleton(
         lambda: _create_horoscope_service(),

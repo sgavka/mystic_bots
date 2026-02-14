@@ -12,3 +12,7 @@ class LLMUsageNotFoundException(Exception):
 
 class SubscriptionNotFoundException(Exception):
     pass
+
+
+class HoroscopeFollowupNotFoundException(Exception):
+    pass

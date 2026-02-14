@@ -2,17 +2,17 @@
 
 ## Next step
 
-Implement TASK_048 (increase test coverage for AppContext and middlewares).
+No pending tasks. Check docs/tasks/ for new operator-created tasks.
 
-Current status: In progress
+Current status: Idle
 
 ## Tasks
 
-- [ ] **TASK_048** (processing) — Increase test coverage for AppContext and middlewares
-- [ ] **TASK_051** (new) — Feature: allow subscribers to ask questions about horoscope theme
+_(none)_
 
 ## Completed
 
+- [x] **TASK_051** (complete) — Feature: allow subscribers to ask questions about horoscope theme
 - [x] **TASK_046** (complete) — Exception handling and logging audit
 - [x] **TASK_045** (complete) — Add UserLanguageMiddleware for i18n
 - [x] **TASK_044** (complete) — Migrate handlers to use AppContext instead of direct message methods
