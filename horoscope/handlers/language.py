@@ -1,6 +1,6 @@
 import logging
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.containers import container
 from core.entities import UserEntity
-from horoscope import callbacks
+from horoscope.callbacks import LanguageCallback
 from horoscope.keyboards import language_keyboard
 from horoscope.utils import map_telegram_language, translate
 from telegram_bot.app_context import AppContext
@@ -59,9 +59,10 @@ async def language_command_handler(
     )
 
 
-@router.callback_query(F.data.startswith(callbacks.LANGUAGE_PREFIX))
+@router.callback_query(LanguageCallback.filter())
 async def change_language_callback(
     callback: CallbackQuery,
+    callback_data: LanguageCallback,
     state: FSMContext,
     user: UserEntity,
     app_context: AppContext,
@@ -69,7 +70,7 @@ async def change_language_callback(
 ):
     await callback.answer()
 
-    new_lang = callback.data[len(callbacks.LANGUAGE_PREFIX):]
+    new_lang = callback_data.code
 
     user_profile_repo = container.horoscope.user_profile_repository()
 

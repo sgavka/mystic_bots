@@ -1,2 +1,0 @@
-analyze horoscope/callbacks.py, need to make it to use aiogram callback classes
-but also need to create summary here in task file why this happens, why its not class right now, and what need to add to CLADUE.md to make it a rule (do not update it actually, just mention it in the summary)

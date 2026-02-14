@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.containers import container
 from core.entities import UserEntity
-from horoscope import callbacks
+from horoscope.callbacks import LanguageCallback
 from horoscope.keyboards import language_keyboard
 from horoscope.states import WizardStates
 from horoscope.utils import map_telegram_language, parse_date, translate
@@ -106,11 +106,17 @@ async def start_handler(message: Message, state: FSMContext, user: UserEntity, a
     await state.set_state(WizardStates.WAITING_LANGUAGE)
 
 
-@router.callback_query(WizardStates.WAITING_LANGUAGE, F.data.startswith(callbacks.LANGUAGE_PREFIX))
-async def process_language(callback: CallbackQuery, state: FSMContext, app_context: AppContext, **kwargs):
+@router.callback_query(WizardStates.WAITING_LANGUAGE, LanguageCallback.filter())
+async def process_language(
+    callback: CallbackQuery,
+    callback_data: LanguageCallback,
+    state: FSMContext,
+    app_context: AppContext,
+    **kwargs,
+):
     await callback.answer()
 
-    lang = callback.data[len(callbacks.LANGUAGE_PREFIX):]
+    lang = callback_data.code
     await state.update_data(preferred_language=lang)
 
     await app_context.edit_message(

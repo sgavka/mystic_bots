@@ -2,13 +2,13 @@
 
 ## Next step
 
-Pick TASK_054 to investigate and implement.
+No pending tasks. Check docs/tasks/ for new operator-created tasks.
 
-Current status: Starting TASK_054
+Current status: Idle
 
 ## Tasks
 
-- [ ] **TASK_054** (new) — Refactor: analyze horoscope callbacks and migrate to aiogram callback classes
+_(none)_
 
 ## Completed
 

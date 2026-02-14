@@ -175,7 +175,7 @@ def _reset_overrides():
 
 async def _select_language(user, lang_code: str = "en"):
     """Click a language button during wizard language selection step."""
-    responses = await user.click_button(f"lang_{lang_code}")
+    responses = await user.click_button(f"lang:{lang_code}")
     return responses
 
 
@@ -680,7 +680,7 @@ class TestLanguageCommand:
         await user.send_command("language")
 
         # Then click on Russian
-        await user.click_button("lang_ru")
+        await user.click_button("lang:ru")
 
         callback_answers = client.capture.get_callback_answers()
         assert len(callback_answers) >= 1

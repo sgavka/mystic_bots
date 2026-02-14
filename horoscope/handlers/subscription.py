@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.containers import container
 from core.entities import UserEntity
-from horoscope import callbacks
+from horoscope.callbacks import SubscribeCallback
 from horoscope.handlers.utils import aget_user_language
 from horoscope.utils import translate
 from telegram_bot.app_context import AppContext
@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
-@router.callback_query(F.data == callbacks.SUBSCRIBE)
+@router.callback_query(SubscribeCallback.filter())
 async def subscribe_callback(callback: CallbackQuery, user: UserEntity, app_context: AppContext, **kwargs):
     await callback.answer()
 
