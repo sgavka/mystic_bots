@@ -1,2 +1,0 @@
-- "You can ask questions about your horoscope — just type your message" is not translated to all languages
-- after user sends a message (as request), imediately after that, send eyes emoji reaction to the user message and send 10 seconds of typing action

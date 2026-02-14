@@ -253,3 +253,17 @@ msgstr "😔 Beim Erstellen Ihres Profils ist ein Fehler aufgetreten. Versuchen 
 #. error.payment_failed
 msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
 msgstr "😔 Beim Aktivieren Ihres Abonnements ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Support, wenn das Problem weiterhin besteht."
+
+#. followup.hint
+msgid ""
+"\n"
+"\n"
+"💬 You can ask questions about your horoscope — just type your message!"
+msgstr ""
+"\n"
+"\n"
+"💬 Sie können Fragen zu Ihrem Horoskop stellen — schreiben Sie einfach Ihre Nachricht!"
+
+#. followup.error
+msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
+msgstr "😔 Entschuldigung, ich konnte gerade keine Antwort generieren. Bitte versuchen Sie es später erneut."

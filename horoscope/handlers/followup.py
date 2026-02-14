@@ -1,7 +1,9 @@
+import asyncio
 import logging
 from datetime import date
 
 from aiogram import F, Router
+from aiogram.enums import ChatAction
 from aiogram.types import Message
 
 from django.utils.translation import gettext_lazy as _
@@ -14,6 +16,21 @@ from telegram_bot.app_context import AppContext
 logger = logging.getLogger(__name__)
 
 router = Router()
+
+TYPING_INTERVAL_SECONDS = 5
+TYPING_DURATION_SECONDS = 10
+
+
+async def _send_typing_action(app_context: AppContext, duration: int) -> None:
+    """Send typing action repeatedly for the specified duration."""
+    elapsed = 0
+    while elapsed < duration:
+        await app_context.bot.send_chat_action(
+            chat_id=app_context.chat_id,
+            action=ChatAction.TYPING,
+        )
+        await asyncio.sleep(TYPING_INTERVAL_SECONDS)
+        elapsed += TYPING_INTERVAL_SECONDS
 
 
 @router.message(F.text)
@@ -48,6 +65,16 @@ async def handle_followup_question(
     followup_repo = container.horoscope.followup_repository()
     previous_followups = await followup_repo.aget_by_horoscope(horoscope.id)
 
+    await app_context.set_reaction(
+        message_id=message.message_id,
+        emoji="👀",
+        is_big=False,
+    )
+
+    typing_task = asyncio.create_task(
+        _send_typing_action(app_context=app_context, duration=TYPING_DURATION_SECONDS)
+    )
+
     from horoscope.services.llm import LLMService
 
     llm_service = LLMService()
@@ -61,12 +88,15 @@ async def handle_followup_question(
     except Exception as e:
         # LLM failure must not break the flow — best-effort delivery
         logger.error("Failed to generate followup answer", exc_info=e)
+        typing_task.cancel()
         await app_context.send_message(
             text=translate(_(
                 "😔 Sorry, I couldn't generate an answer right now. Please try again later."
             ), lang),
         )
         return
+    finally:
+        typing_task.cancel()
 
     await followup_repo.acreate_followup(
         horoscope_id=horoscope.id,

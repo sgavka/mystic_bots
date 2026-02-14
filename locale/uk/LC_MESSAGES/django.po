@@ -253,3 +253,17 @@ msgstr "😔 Щось пішло не так при створенні проф�
 #. error.payment_failed
 msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
 msgstr "😔 Щось пішло не так при активації підписки. Будь ласка, зверніться до підтримки, якщо проблема залишиться."
+
+#. followup.hint
+msgid ""
+"\n"
+"\n"
+"💬 You can ask questions about your horoscope — just type your message!"
+msgstr ""
+"\n"
+"\n"
+"💬 Ви можете задавати питання про свій гороскоп — просто напишіть повідомлення!"
+
+#. followup.error
+msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
+msgstr "😔 Вибачте, не вдалося згенерувати відповідь зараз. Спробуйте пізніше."
