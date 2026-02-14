@@ -1,6 +1,6 @@
 """Tests for UserLanguageMiddleware."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.utils import translation
@@ -25,7 +25,6 @@ class TestUserLanguageMiddleware:
     async def test_activates_supported_language(self):
         middleware = UserLanguageMiddleware()
         event = _make_message_event(language_code="ru")
-        handler = AsyncMock(return_value=None)
 
         activated_lang = None
 
@@ -45,7 +44,6 @@ class TestUserLanguageMiddleware:
     async def test_falls_back_to_default_for_unsupported(self):
         middleware = UserLanguageMiddleware()
         event = _make_message_event(language_code="ja")
-        handler = AsyncMock(return_value=None)
 
         activated_lang = None
 
