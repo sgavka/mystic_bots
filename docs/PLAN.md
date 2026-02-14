@@ -2,13 +2,14 @@
 
 ## Next step
 
-All tasks complete. Check for new tasks or improvements.
+All implementable tasks complete. Waiting for operator clarification on improvement tasks.
 
-Current status: All tasks finished
+Current status: Waiting for clarification
 
 ## Tasks
 
-_(none pending)_
+- [ ] **TASK_047** (waiting_for_clarification) — Increase test coverage for Celery task helpers
+- [ ] **TASK_048** (waiting_for_clarification) — Increase test coverage for AppContext and middlewares
 
 ## Completed
 
