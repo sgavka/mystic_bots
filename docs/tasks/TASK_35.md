@@ -1,0 +1,1 @@
+make bot languages list to be in config.settings and get from env

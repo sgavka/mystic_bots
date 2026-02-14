@@ -1,0 +1,1 @@
+move horoscope.config values to config.settings, separate prefix for them all, and get values from env
