@@ -6,7 +6,6 @@ from aiogram.types import Message
 
 from django.conf import settings
 
-from core.containers import container
 from core.entities import UserEntity
 from telegram_bot.app_context import AppContext
 
@@ -45,5 +44,5 @@ async def refund_command_handler(
         return
 
     await app_context.send_message(
-        text=f"Refund successful for charge ID {charge_id} (user {subscription.user_telegram_uid}).",
+        text=f"Refund successful for charge ID {charge_id}.",
     )
