@@ -7,7 +7,7 @@ from asgiref.sync import sync_to_async
 
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
 from horoscope.enums import HoroscopeType
-from horoscope.translations import t
+from horoscope.messages import HOROSCOPE_GREETING, HOROSCOPE_HEADER, translate
 from horoscope.utils import get_zodiac_sign
 
 if TYPE_CHECKING:
@@ -227,8 +227,8 @@ def generate_horoscope_text(
     details = [random.choice(lang_details).format(theme=t_) for t_ in themes]
     closing = random.choice(lang_closing)
 
-    header = t("horoscope.header", language, sign=sign, date=target_date.strftime('%d.%m.%Y'))
-    greeting = t("horoscope.greeting", language, name=profile.name)
+    header = translate(HOROSCOPE_HEADER, language, sign=sign, date=target_date.strftime('%d.%m.%Y'))
+    greeting = translate(HOROSCOPE_GREETING, language, name=profile.name)
 
     lines = [
         header,

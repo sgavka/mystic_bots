@@ -69,7 +69,7 @@ def _send_daily_horoscope(
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
-    from horoscope.translations import t
+    from horoscope.messages import HOROSCOPE_SUBSCRIBE_CTA, translate
 
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
@@ -83,7 +83,7 @@ def _send_daily_horoscope(
         text = full_text
         keyboard = None
     else:
-        text = teaser_text + t("horoscope.subscribe_cta", lang)
+        text = teaser_text + translate(HOROSCOPE_SUBSCRIBE_CTA, lang)
         keyboard = subscribe_keyboard(language=lang)
 
     success = send_message(
@@ -102,14 +102,14 @@ def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) 
     """Send the first horoscope to the user after profile setup."""
     from core.containers import container
     from horoscope.tasks.messaging import send_message
-    from horoscope.translations import t
+    from horoscope.messages import TASK_FIRST_HOROSCOPE_READY, translate
 
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
     profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
     lang = profile.preferred_language if profile else 'en'
 
-    text = t("task.first_horoscope_ready", lang, text=full_text)
+    text = translate(TASK_FIRST_HOROSCOPE_READY, lang, text=full_text)
     success = send_message(telegram_uid=telegram_uid, text=text)
     if success:
         horoscope_repo.mark_sent(horoscope_id=horoscope_id)

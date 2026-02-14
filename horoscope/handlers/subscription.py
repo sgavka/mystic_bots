@@ -13,7 +13,14 @@ from core.entities import UserEntity
 from horoscope import callbacks
 from django.conf import settings
 from horoscope.handlers.utils import aget_user_language
-from horoscope.translations import t
+from horoscope.messages import (
+    ERROR_PAYMENT_FAILED,
+    SUBSCRIPTION_INVOICE_DESCRIPTION,
+    SUBSCRIPTION_INVOICE_TITLE,
+    SUBSCRIPTION_OFFER,
+    SUBSCRIPTION_PAYMENT_SUCCESS,
+    translate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +34,8 @@ async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs
     lang = await aget_user_language(user)
 
     await callback.message.answer(
-        t(
-            "subscription.offer",
+        translate(
+            SUBSCRIPTION_OFFER,
             lang,
             days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
             price=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS,
@@ -36,8 +43,8 @@ async def subscribe_callback(callback: CallbackQuery, user: UserEntity, **kwargs
     )
 
     await callback.message.answer_invoice(
-        title=t("subscription.invoice_title", lang),
-        description=t("subscription.invoice_description", lang, days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS),
+        title=translate(SUBSCRIPTION_INVOICE_TITLE, lang),
+        description=translate(SUBSCRIPTION_INVOICE_DESCRIPTION, lang, days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS),
         payload=f"subscription_{user.telegram_uid}",
         currency="XTR",
         prices=[LabeledPrice(label="Subscription", amount=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS)],
@@ -66,7 +73,7 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
             f"Failed to activate subscription for user {user.telegram_uid} "
             f"after payment {payment.telegram_payment_charge_id}"
         )
-        await message.answer(t("error.payment_failed", lang))
+        await message.answer(translate(ERROR_PAYMENT_FAILED, lang))
         return
 
     logger.info(
@@ -75,8 +82,8 @@ async def successful_payment_handler(message: Message, user: UserEntity, **kwarg
     )
 
     await message.answer(
-        t(
-            "subscription.payment_success",
+        translate(
+            SUBSCRIPTION_PAYMENT_SUCCESS,
             lang,
             expires=subscription.expires_at.strftime('%d.%m.%Y'),
         )

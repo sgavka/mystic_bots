@@ -55,7 +55,7 @@ def send_daily_horoscope_notifications_task():
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
-    from horoscope.translations import t
+    from horoscope.messages import HOROSCOPE_SUBSCRIBE_CTA, translate
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -84,7 +84,7 @@ def send_daily_horoscope_notifications_task():
             text = horoscope.full_text
             keyboard = None
         else:
-            text = horoscope.teaser_text + t("horoscope.subscribe_cta", lang)
+            text = horoscope.teaser_text + translate(HOROSCOPE_SUBSCRIBE_CTA, lang)
             keyboard = subscribe_keyboard(language=lang)
 
         success = send_message(

@@ -9,7 +9,14 @@ from core.containers import container
 from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
-from horoscope.translations import LANGUAGE_NAMES, map_telegram_language, t
+from horoscope.messages import (
+    LANGUAGE_CHANGED,
+    LANGUAGE_CURRENT,
+    LANGUAGE_NAMES,
+    LANGUAGE_NO_PROFILE,
+    map_telegram_language,
+    translate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +30,7 @@ async def language_command_handler(message: Message, state: FSMContext, user: Us
 
     if not profile:
         lang = map_telegram_language(user.language_code)
-        await message.answer(t("language.no_profile", lang))
+        await message.answer(translate(LANGUAGE_NO_PROFILE, lang))
         return
 
     lang = profile.preferred_language
@@ -31,7 +38,7 @@ async def language_command_handler(message: Message, state: FSMContext, user: Us
 
     await state.clear()
     await message.answer(
-        t("language.current", lang, lang_name=lang_display),
+        translate(LANGUAGE_CURRENT, lang, lang_name=lang_display),
         reply_markup=language_keyboard(current_language=lang),
     )
 
@@ -51,9 +58,9 @@ async def change_language_callback(callback: CallbackQuery, state: FSMContext, u
 
     if not profile:
         lang = map_telegram_language(user.language_code)
-        await callback.message.answer(t("language.no_profile", lang))
+        await callback.message.answer(translate(LANGUAGE_NO_PROFILE, lang))
         return
 
     await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer(t("language.changed", new_lang))
+    await callback.message.answer(translate(LANGUAGE_CHANGED, new_lang))
     logger.info(f"User {user.telegram_uid} changed language to {new_lang}")

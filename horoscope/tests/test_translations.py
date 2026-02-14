@@ -8,57 +8,73 @@ from unittest.mock import MagicMock, patch
 import pytest
 from django.utils import timezone
 
-from horoscope.translations import (
+from horoscope.messages import (
     LANGUAGE_FLAGS,
     LANGUAGE_NAMES,
+    SUBSCRIPTION_OFFER,
     SUPPORTED_LANGUAGE_CODES,
-    _KEY_TO_MSGID,
+    TASK_EXPIRY_REMINDER,
+    WIZARD_WELCOME,
+    WIZARD_WELCOME_BACK,
     map_telegram_language,
-    t,
+    translate,
 )
+
+# All message constants for completeness tests
+from horoscope import messages as _msg
+
+_ALL_MESSAGE_CONSTANTS = [
+    _msg.WIZARD_CHOOSE_LANGUAGE, _msg.WIZARD_WELCOME_BACK, _msg.WIZARD_WELCOME,
+    _msg.WIZARD_INVALID_NAME, _msg.WIZARD_ASK_DOB, _msg.WIZARD_INVALID_DATE_FORMAT,
+    _msg.WIZARD_DOB_IN_FUTURE, _msg.WIZARD_DOB_TOO_OLD, _msg.WIZARD_ASK_PLACE_OF_BIRTH,
+    _msg.WIZARD_INVALID_CITY, _msg.WIZARD_ASK_PLACE_OF_LIVING, _msg.WIZARD_PROFILE_READY,
+    _msg.HOROSCOPE_NO_PROFILE, _msg.HOROSCOPE_NOT_READY, _msg.HOROSCOPE_GENERATING,
+    _msg.HOROSCOPE_SUBSCRIBE_CTA, _msg.SUBSCRIPTION_OFFER, _msg.SUBSCRIPTION_INVOICE_TITLE,
+    _msg.SUBSCRIPTION_INVOICE_DESCRIPTION, _msg.SUBSCRIPTION_PAYMENT_SUCCESS,
+    _msg.KEYBOARD_SUBSCRIBE, _msg.TASK_FIRST_HOROSCOPE_READY, _msg.TASK_EXPIRY_REMINDER,
+    _msg.TASK_SUBSCRIPTION_EXPIRED, _msg.LANGUAGE_CURRENT, _msg.LANGUAGE_CHANGED,
+    _msg.LANGUAGE_NO_PROFILE, _msg.HOROSCOPE_HEADER, _msg.HOROSCOPE_GREETING,
+    _msg.ERROR_PROFILE_CREATION_FAILED, _msg.ERROR_PAYMENT_FAILED,
+]
 
 
 class TestTranslationFunction:
     def test_basic_translation_en(self):
-        result = t("wizard.welcome", "en")
+        result = translate(WIZARD_WELCOME, "en")
         assert "Mystic Horoscope" in result
 
     def test_basic_translation_ru(self):
-        result = t("wizard.welcome", "ru")
+        result = translate(WIZARD_WELCOME, "ru")
         assert "Mystic Horoscope" in result
         assert "зовут" in result.lower()
 
     def test_basic_translation_uk(self):
-        result = t("wizard.welcome", "uk")
+        result = translate(WIZARD_WELCOME, "uk")
         assert "звати" in result.lower()
 
     def test_basic_translation_de(self):
-        result = t("wizard.welcome", "de")
+        result = translate(WIZARD_WELCOME, "de")
         assert "Willkommen" in result
 
-    def test_missing_key_returns_key(self):
-        result = t("nonexistent.key", "en")
-        assert result == "nonexistent.key"
-
     def test_unsupported_language_falls_back_to_en(self):
-        result = t("wizard.welcome", "fr")
-        en_result = t("wizard.welcome", "en")
+        result = translate(WIZARD_WELCOME, "fr")
+        en_result = translate(WIZARD_WELCOME, "en")
         assert result == en_result
 
     def test_formatting_kwargs(self):
-        result = t("wizard.welcome_back", "en", name="Alice")
+        result = translate(WIZARD_WELCOME_BACK, "en", name="Alice")
         assert "Alice" in result
 
     def test_formatting_kwargs_ru(self):
-        result = t("wizard.welcome_back", "ru", name="Алиса")
+        result = translate(WIZARD_WELCOME_BACK, "ru", name="Алиса")
         assert "Алиса" in result
 
     def test_expiry_reminder_formatting(self):
-        result = t("task.expiry_reminder", "en", days=3)
+        result = translate(TASK_EXPIRY_REMINDER, "en", days=3)
         assert "3" in result
 
     def test_subscription_offer_formatting(self):
-        result = t("subscription.offer", "en", days=30, price=100)
+        result = translate(SUBSCRIPTION_OFFER, "en", days=30, price=100)
         assert "30" in result
         assert "100" in result
 
@@ -94,17 +110,15 @@ class TestMapTelegramLanguage:
 
 
 class TestTranslationCompleteness:
-    """Verify all translation keys have all 4 languages."""
+    """Verify all message constants have all 4 language translations."""
 
-    def test_all_keys_have_all_languages(self):
-        for key in _KEY_TO_MSGID:
+    def test_all_messages_have_all_languages(self):
+        for msg in _ALL_MESSAGE_CONSTANTS:
+            msgid = str(msg)
             for lang in SUPPORTED_LANGUAGE_CODES:
-                result = t(key, lang)
-                assert result != key, (
-                    f"Translation key '{key}' returned key itself for '{lang}'"
-                )
+                result = translate(msg, lang)
                 assert result, (
-                    f"Translation key '{key}' has empty value for '{lang}'"
+                    f"Message '{msgid[:50]}...' has empty translation for '{lang}'"
                 )
 
     def test_language_names_complete(self):

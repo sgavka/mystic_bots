@@ -13,7 +13,23 @@ from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
 from horoscope.states import WizardStates
-from horoscope.translations import map_telegram_language, t
+from horoscope.messages import (
+    ERROR_PROFILE_CREATION_FAILED,
+    WIZARD_ASK_DOB,
+    WIZARD_ASK_PLACE_OF_BIRTH,
+    WIZARD_ASK_PLACE_OF_LIVING,
+    WIZARD_CHOOSE_LANGUAGE,
+    WIZARD_DOB_IN_FUTURE,
+    WIZARD_DOB_TOO_OLD,
+    WIZARD_INVALID_CITY,
+    WIZARD_INVALID_DATE_FORMAT,
+    WIZARD_INVALID_NAME,
+    WIZARD_PROFILE_READY,
+    WIZARD_WELCOME,
+    WIZARD_WELCOME_BACK,
+    map_telegram_language,
+    translate,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -28,13 +44,13 @@ async def start_handler(message: Message, state: FSMContext, user: UserEntity, *
 
     if profile:
         lang = profile.preferred_language
-        await message.answer(t("wizard.welcome_back", lang, name=profile.name))
+        await message.answer(translate(WIZARD_WELCOME_BACK, lang, name=profile.name))
         await state.clear()
         return
 
     default_lang = map_telegram_language(user.language_code)
     await message.answer(
-        t("wizard.choose_language", default_lang),
+        translate(WIZARD_CHOOSE_LANGUAGE, default_lang),
         reply_markup=language_keyboard(),
     )
     await state.set_state(WizardStates.WAITING_LANGUAGE)
@@ -48,7 +64,7 @@ async def process_language(callback: CallbackQuery, state: FSMContext, **kwargs)
     await state.update_data(preferred_language=lang)
 
     await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer(t("wizard.welcome", lang))
+    await callback.message.answer(translate(WIZARD_WELCOME, lang))
     await state.set_state(WizardStates.WAITING_NAME)
 
 
@@ -59,11 +75,11 @@ async def process_name(message: Message, state: FSMContext, **kwargs):
 
     name = message.text.strip()
     if len(name) < 2 or len(name) > 100:
-        await message.answer(t("wizard.invalid_name", lang))
+        await message.answer(translate(WIZARD_INVALID_NAME, lang))
         return
 
     await state.update_data(name=name)
-    await message.answer(t("wizard.ask_dob", lang, name=name))
+    await message.answer(translate(WIZARD_ASK_DOB, lang, name=name))
     await state.set_state(WizardStates.WAITING_DATE_OF_BIRTH)
 
 
@@ -76,20 +92,20 @@ async def process_date_of_birth(message: Message, state: FSMContext, **kwargs):
     try:
         date_of_birth = datetime.strptime(text, "%d.%m.%Y").date()
     except ValueError:
-        await message.answer(t("wizard.invalid_date_format", lang))
+        await message.answer(translate(WIZARD_INVALID_DATE_FORMAT, lang))
         return
 
     today = datetime.now().date()
     if date_of_birth >= today:
-        await message.answer(t("wizard.dob_in_future", lang))
+        await message.answer(translate(WIZARD_DOB_IN_FUTURE, lang))
         return
 
     if (today.year - date_of_birth.year) > 150:
-        await message.answer(t("wizard.dob_too_old", lang))
+        await message.answer(translate(WIZARD_DOB_TOO_OLD, lang))
         return
 
     await state.update_data(date_of_birth=text)
-    await message.answer(t("wizard.ask_place_of_birth", lang))
+    await message.answer(translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
     await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
 
 
@@ -100,11 +116,11 @@ async def process_place_of_birth(message: Message, state: FSMContext, **kwargs):
 
     place = message.text.strip()
     if len(place) < 2 or len(place) > 200:
-        await message.answer(t("wizard.invalid_city", lang))
+        await message.answer(translate(WIZARD_INVALID_CITY, lang))
         return
 
     await state.update_data(place_of_birth=place)
-    await message.answer(t("wizard.ask_place_of_living", lang))
+    await message.answer(translate(WIZARD_ASK_PLACE_OF_LIVING, lang))
     await state.set_state(WizardStates.WAITING_PLACE_OF_LIVING)
 
 
@@ -115,7 +131,7 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
 
     place = message.text.strip()
     if len(place) < 2 or len(place) > 200:
-        await message.answer(t("wizard.invalid_city", lang))
+        await message.answer(translate(WIZARD_INVALID_CITY, lang))
         return
 
     name = data['name']
@@ -141,14 +157,14 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
     except Exception:
         logger.exception(f"Failed to create profile for user {user.telegram_uid}")
         await state.clear()
-        await message.answer(t("error.profile_creation_failed", lang))
+        await message.answer(translate(ERROR_PROFILE_CREATION_FAILED, lang))
         return
 
     await state.clear()
 
     await message.answer(
-        t(
-            "wizard.profile_ready",
+        translate(
+            WIZARD_PROFILE_READY,
             lang,
             name=profile.name,
             dob=profile.date_of_birth.strftime('%d.%m.%Y'),

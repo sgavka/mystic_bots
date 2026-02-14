@@ -8,7 +8,14 @@ from aiogram.types import Message
 from core.containers import container
 from core.entities import UserEntity
 from horoscope.keyboards import subscribe_keyboard
-from horoscope.translations import map_telegram_language, t
+from horoscope.messages import (
+    HOROSCOPE_GENERATING,
+    HOROSCOPE_NO_PROFILE,
+    HOROSCOPE_NOT_READY,
+    HOROSCOPE_SUBSCRIBE_CTA,
+    map_telegram_language,
+    translate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +31,7 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
     profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
     if not profile:
         lang = map_telegram_language(user.language_code)
-        await message.answer(t("horoscope.no_profile", lang))
+        await message.answer(translate(HOROSCOPE_NO_PROFILE, lang))
         return
 
     lang = profile.preferred_language
@@ -44,9 +51,9 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
                 telegram_uid=user.telegram_uid,
                 target_date=today.isoformat(),
             )
-            await message.answer(t("horoscope.generating", lang))
+            await message.answer(translate(HOROSCOPE_GENERATING, lang))
         else:
-            await message.answer(t("horoscope.not_ready", lang))
+            await message.answer(translate(HOROSCOPE_NOT_READY, lang))
         return
 
     has_subscription = await subscription_repo.ahas_active_subscription(user.telegram_uid)
@@ -55,6 +62,6 @@ async def view_horoscope_handler(message: Message, user: UserEntity, **kwargs):
         await message.answer(horoscope.full_text)
     else:
         await message.answer(
-            horoscope.teaser_text + t("horoscope.subscribe_cta", lang),
+            horoscope.teaser_text + translate(HOROSCOPE_SUBSCRIBE_CTA, lang),
             reply_markup=subscribe_keyboard(language=lang),
         )

@@ -21,7 +21,7 @@ def send_expiry_reminders_task():
     from django.conf import settings
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_messages_batch
-    from horoscope.translations import t
+    from horoscope.messages import TASK_EXPIRY_REMINDER, translate
 
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -39,7 +39,7 @@ def send_expiry_reminders_task():
         days_left = (sub.expires_at - now).days
         profile = user_profile_repo.get_by_telegram_uid(sub.user_telegram_uid)
         lang = profile.preferred_language if profile else 'en'
-        text = t("task.expiry_reminder", lang, days=days_left)
+        text = translate(TASK_EXPIRY_REMINDER, lang, days=days_left)
         messages.append((sub.user_telegram_uid, text, subscribe_keyboard(language=lang)))
 
     count = send_messages_batch(messages)
@@ -67,7 +67,7 @@ def send_expired_notifications_task():
     from core.containers import container
     from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_messages_batch
-    from horoscope.translations import t
+    from horoscope.messages import TASK_SUBSCRIPTION_EXPIRED, translate
 
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
@@ -85,7 +85,7 @@ def send_expired_notifications_task():
     for sub in expired:
         profile = user_profile_repo.get_by_telegram_uid(sub.user_telegram_uid)
         lang = profile.preferred_language if profile else 'en'
-        text = t("task.subscription_expired", lang)
+        text = translate(TASK_SUBSCRIPTION_EXPIRED, lang)
         messages.append((sub.user_telegram_uid, text, subscribe_keyboard(language=lang)))
 
     count = send_messages_batch(messages)

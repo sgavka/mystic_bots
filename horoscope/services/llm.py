@@ -2,7 +2,7 @@ import logging
 from datetime import date
 
 from django.conf import settings
-from horoscope.translations import LANGUAGE_NAMES
+from horoscope.messages import LANGUAGE_NAMES
 
 logger = logging.getLogger(__name__)
 

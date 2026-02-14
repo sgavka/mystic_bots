@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from horoscope import callbacks
-from horoscope.translations import LANGUAGE_FLAGS, LANGUAGE_NAMES, t
+from horoscope.messages import KEYBOARD_SUBSCRIBE, LANGUAGE_FLAGS, LANGUAGE_NAMES, translate
 
 
 def language_keyboard(current_language: str | None = None) -> InlineKeyboardMarkup:
@@ -21,7 +21,7 @@ def language_keyboard(current_language: str | None = None) -> InlineKeyboardMark
 def subscribe_keyboard(language: str = 'en') -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
-            text=t("keyboard.subscribe", language),
+            text=translate(KEYBOARD_SUBSCRIBE, language),
             callback_data=callbacks.SUBSCRIBE,
         )]
     ])
