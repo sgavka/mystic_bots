@@ -2,13 +2,13 @@
 
 ## Next step
 
-Pick next task to implement. Start with TASK_039.
+Pick next task to implement. Start with TASK_041.
 
 ## Tasks
 
 - [x] **TASK_038** (complete) — Refactor: inline remaining text constants in horoscope handlers — Refactor: inline remaining text constants in horoscope handlers (continuation of TASK_037)
-- [ ] **TASK_039** (new) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals
-- [ ] **TASK_040** (new) — Feature: make bot understand dates in different formats
+- [ ] **TASK_039** (waiting_for_clarification) — Feature: periodic teaser horoscopes for non-subscribers with configurable intervals
+- [x] **TASK_040** (complete) — Feature: make bot understand dates in different formats
 - [ ] **TASK_041** (new) — Feature: add message history tracking
 
 

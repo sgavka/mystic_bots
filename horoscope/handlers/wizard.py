@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import date, datetime
 
 from aiogram import Router, F
 from aiogram.filters import CommandStart
@@ -15,7 +15,7 @@ from core.entities import UserEntity
 from horoscope import callbacks
 from horoscope.keyboards import language_keyboard
 from horoscope.states import WizardStates
-from horoscope.utils import map_telegram_language, translate
+from horoscope.utils import map_telegram_language, parse_date, translate
 
 WIZARD_CHOOSE_LANGUAGE = _("🌍 Please choose your language:")
 
@@ -38,14 +38,14 @@ WIZARD_INVALID_NAME = _("Please enter a valid name (2-100 characters).")
 WIZARD_ASK_DOB = _(
     "😊 Nice to meet you, <b>{name}</b>!\n"
     "\n"
-    "📅 Now, please enter your <b>full date of birth</b>\n"
-    "in format: <code>DD.MM.YYYY</code>\n"
+    "📅 Now, please enter your <b>full date of birth</b>.\n"
     "\n"
     "Example: <code>15.03.1990</code>"
 )
 
 WIZARD_INVALID_DATE_FORMAT = _(
-    "Invalid date format. Please use <code>DD.MM.YYYY</code>\n"
+    "Invalid date format. Accepted formats:\n"
+    "<code>DD.MM.YYYY</code>, <code>DD/MM/YYYY</code>, <code>DD-MM-YYYY</code>, <code>YYYY-MM-DD</code>\n"
     "\n"
     "Example: <code>15.03.1990</code>"
 )
@@ -138,9 +138,8 @@ async def process_date_of_birth(message: Message, state: FSMContext, **kwargs):
     lang = data.get('preferred_language', 'en')
     text = message.text.strip()
 
-    try:
-        date_of_birth = datetime.strptime(text, "%d.%m.%Y").date()
-    except ValueError:
+    date_of_birth = parse_date(text)
+    if not date_of_birth:
         await message.answer(translate(WIZARD_INVALID_DATE_FORMAT, lang))
         return
 
@@ -153,7 +152,7 @@ async def process_date_of_birth(message: Message, state: FSMContext, **kwargs):
         await message.answer(translate(WIZARD_DOB_TOO_OLD, lang))
         return
 
-    await state.update_data(date_of_birth=text)
+    await state.update_data(date_of_birth=date_of_birth.isoformat())
     await message.answer(translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
     await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
 
@@ -195,7 +194,7 @@ async def process_place_of_living(message: Message, state: FSMContext, user: Use
         return user_profile_repo.create_profile(
             telegram_uid=user.telegram_uid,
             name=name,
-            date_of_birth=datetime.strptime(date_of_birth, "%d.%m.%Y").date(),
+            date_of_birth=date.fromisoformat(date_of_birth),
             place_of_birth=place_of_birth,
             place_of_living=place_of_living,
             preferred_language=lang,

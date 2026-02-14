@@ -1,5 +1,5 @@
 **Is task investigated** — yes
-**Commit ID** —
+**Commit ID** — de52cb3
 **Summary** — Remove module-level text constants from horoscope/handlers/horoscope.py, inline _() calls directly where used
 
 ## Checkboxes

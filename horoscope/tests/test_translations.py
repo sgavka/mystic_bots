@@ -38,7 +38,7 @@ from horoscope.keyboards import KEYBOARD_SUBSCRIBE
 from horoscope.services.horoscope import HOROSCOPE_GREETING, HOROSCOPE_HEADER
 from horoscope.tasks.generate_horoscope import TASK_FIRST_HOROSCOPE_READY
 from horoscope.tasks.subscription_reminders import TASK_EXPIRY_REMINDER, TASK_SUBSCRIPTION_EXPIRED
-from horoscope.utils import map_telegram_language, translate
+from horoscope.utils import map_telegram_language, parse_date, translate
 
 _ALL_MESSAGE_CONSTANTS = [
     WIZARD_CHOOSE_LANGUAGE, WIZARD_WELCOME_BACK, WIZARD_WELCOME,
@@ -140,6 +140,38 @@ class TestMapTelegramLanguage:
         assert map_telegram_language("ru-RU") == "ru"
         assert map_telegram_language("de-AT") == "de"
         assert map_telegram_language("en-US") == "en"
+
+
+class TestParseDate:
+    def test_dot_format(self):
+        assert parse_date("15.03.1990") == date(1990, 3, 15)
+
+    def test_slash_format(self):
+        assert parse_date("15/03/1990") == date(1990, 3, 15)
+
+    def test_dash_format(self):
+        assert parse_date("15-03-1990") == date(1990, 3, 15)
+
+    def test_iso_format(self):
+        assert parse_date("1990-03-15") == date(1990, 3, 15)
+
+    def test_iso_slash_format(self):
+        assert parse_date("1990/03/15") == date(1990, 3, 15)
+
+    def test_iso_dot_format(self):
+        assert parse_date("1990.03.15") == date(1990, 3, 15)
+
+    def test_invalid_returns_none(self):
+        assert parse_date("not-a-date") is None
+
+    def test_empty_returns_none(self):
+        assert parse_date("") is None
+
+    def test_whitespace_stripped(self):
+        assert parse_date("  15.03.1990  ") == date(1990, 3, 15)
+
+    def test_partial_date_returns_none(self):
+        assert parse_date("15.03") is None
 
 
 class TestTranslationCompleteness:

@@ -299,10 +299,31 @@ class TestWizardDateOfBirth:
 
     async def test_invalid_format(self, client):
         user = await self._enter_dob_step(client)
-        responses = await user.send_message("1990-03-15")
+        responses = await user.send_message("not-a-date")
 
         assert len(responses) == 1
         assert "DD.MM.YYYY" in responses[0].text
+
+    async def test_iso_format_accepted(self, client):
+        user = await self._enter_dob_step(client)
+        responses = await user.send_message("1990-03-15")
+
+        assert len(responses) == 1
+        assert "place of birth" in responses[0].text.lower()
+
+    async def test_slash_format_accepted(self, client):
+        user = await self._enter_dob_step(client)
+        responses = await user.send_message("15/03/1990")
+
+        assert len(responses) == 1
+        assert "place of birth" in responses[0].text.lower()
+
+    async def test_dash_format_accepted(self, client):
+        user = await self._enter_dob_step(client)
+        responses = await user.send_message("15-03-1990")
+
+        assert len(responses) == 1
+        assert "place of birth" in responses[0].text.lower()
 
     async def test_future_date(self, client):
         user = await self._enter_dob_step(client)

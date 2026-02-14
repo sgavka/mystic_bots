@@ -1,5 +1,5 @@
-from datetime import date
-from typing import Any
+from datetime import date, datetime
+from typing import Any, Optional
 
 from django.conf import settings
 from django.utils.translation import gettext
@@ -35,6 +35,30 @@ def translate(msgid: str, language: str, **kwargs: Any) -> str:
     if kwargs:
         text = text.format(**kwargs)
     return text
+
+
+DATE_FORMATS = [
+    "%d.%m.%Y",   # DD.MM.YYYY (15.03.1990)
+    "%d/%m/%Y",   # DD/MM/YYYY (15/03/1990)
+    "%d-%m-%Y",   # DD-MM-YYYY (15-03-1990)
+    "%Y-%m-%d",   # YYYY-MM-DD (1990-03-15)
+    "%Y/%m/%d",   # YYYY/MM/DD (1990/03/15)
+    "%Y.%m.%d",   # YYYY.MM.DD (1990.03.15)
+]
+
+
+def parse_date(text: str) -> Optional[date]:
+    """Parse a date string trying multiple common formats.
+
+    Returns date object if parsing succeeds, None otherwise.
+    """
+    text = text.strip()
+    for fmt in DATE_FORMATS:
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    return None
 
 
 def map_telegram_language(language_code: str | None) -> str:
