@@ -282,7 +282,7 @@ class TestForUserFactory:
         ctx.conversations = {}
 
         with patch.object(AppContext, '__init__', return_value=None) as mock_init:
-            result = AppContext.for_user(
+            AppContext.for_user(
                 bot=bot,
                 user_telegram_uid=55555,
             )
@@ -362,7 +362,7 @@ class TestSendDice:
         ctx.bot.send_dice.return_value = mock_msg
 
         with patch.object(ctx, '_log_dice_to_db', new_callable=AsyncMock):
-            result = await ctx.send_dice(emoji="\U0001f3af")
+            await ctx.send_dice(emoji="\U0001f3af")
 
         ctx.bot.send_dice.assert_called_once_with(
             chat_id=12345,
