@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Optional
 
 from asgiref.sync import sync_to_async
@@ -138,3 +138,17 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
         return Subscription.objects.filter(
             id__in=subscription_ids,
         ).update(reminder_sent_at=timezone.now())
+
+    def count_active(self) -> int:
+        return Subscription.objects.filter(
+            status=SubscriptionStatus.ACTIVE,
+        ).count()
+
+    async def acount_active(self) -> int:
+        return await sync_to_async(self.count_active)()
+
+    def count_created_since(self, since: date) -> int:
+        return Subscription.objects.filter(created_at__date__gte=since).count()
+
+    async def acount_created_since(self, since: date) -> int:
+        return await sync_to_async(self.count_created_since)(since)

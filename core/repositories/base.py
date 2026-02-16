@@ -70,6 +70,12 @@ class BaseRepository(Generic[M, E]):
     async def aexists(self, pk: Any, even_deleted: bool = True) -> bool:
         return await sync_to_async(self.exists)(pk, even_deleted=even_deleted)
 
+    def count(self) -> int:
+        return self.model.objects.count()
+
+    async def acount(self) -> int:
+        return await sync_to_async(self.count)()
+
     def all(self, even_deleted: bool = True) -> list[E]:
         if even_deleted:
             models = self.model.objects.all()

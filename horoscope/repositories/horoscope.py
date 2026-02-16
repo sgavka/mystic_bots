@@ -100,3 +100,9 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
 
     async def aget_last_sent_at(self, telegram_uid: int) -> Optional[datetime]:
         return await sync_to_async(self.get_last_sent_at)(telegram_uid)
+
+    def count_created_since(self, since: date) -> int:
+        return Horoscope.objects.filter(created_at__date__gte=since).count()
+
+    async def acount_created_since(self, since: date) -> int:
+        return await sync_to_async(self.count_created_since)(since)

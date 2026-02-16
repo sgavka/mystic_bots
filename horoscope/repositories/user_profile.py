@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import date, time
 from typing import Optional
 
 from asgiref.sync import sync_to_async
@@ -87,3 +87,9 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
 
     async def aget_all_telegram_uids(self) -> list[int]:
         return await sync_to_async(self.get_all_telegram_uids)()
+
+    def count_created_since(self, since: date) -> int:
+        return UserProfile.objects.filter(created_at__date__gte=since).count()
+
+    async def acount_created_since(self, since: date) -> int:
+        return await sync_to_async(self.count_created_since)(since)

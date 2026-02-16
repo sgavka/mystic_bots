@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from horoscope.handlers.admin import refund_command_handler
+from horoscope.handlers.admin import refund_command_handler, stats_command_handler
 
 
 def _make_user_entity(telegram_uid: int = 12345):
@@ -98,3 +98,73 @@ class TestRefundCommand:
 
         app_context.send_message.assert_called_once()
         assert "failed" in app_context.send_message.call_args[1]['text'].lower()
+
+
+class TestStatsCommand:
+
+    @pytest.mark.asyncio
+    async def test_non_admin_is_ignored(self):
+        message = AsyncMock()
+        user = _make_user_entity(telegram_uid=99999)
+        app_context = AsyncMock()
+
+        with patch('horoscope.handlers.admin.settings') as mock_settings:
+            mock_settings.ADMIN_USERS_IDS = [12345]
+
+            await stats_command_handler(
+                message=message,
+                user=user,
+                app_context=app_context,
+            )
+
+        app_context.send_message.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_stats_returns_data(self):
+        message = AsyncMock()
+        user = _make_user_entity(telegram_uid=12345)
+        app_context = AsyncMock()
+
+        mock_profile_repo = MagicMock()
+        mock_profile_repo.count.return_value = 100
+        mock_profile_repo.count_created_since.return_value = 5
+
+        mock_subscription_repo = MagicMock()
+        mock_subscription_repo.count.return_value = 50
+        mock_subscription_repo.count_active.return_value = 30
+        mock_subscription_repo.count_created_since.return_value = 2
+
+        mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.count.return_value = 500
+        mock_horoscope_repo.count_created_since.return_value = 10
+
+        mock_followup_repo = MagicMock()
+        mock_followup_repo.count.return_value = 25
+
+        with patch('horoscope.handlers.admin.settings') as mock_settings, \
+             patch('horoscope.handlers.admin.container') as mock_container:
+            mock_settings.ADMIN_USERS_IDS = [12345]
+            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
+            mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
+            mock_container.horoscope.followup_repository.return_value = mock_followup_repo
+
+            await stats_command_handler(
+                message=message,
+                user=user,
+                app_context=app_context,
+            )
+
+        app_context.send_message.assert_called_once()
+        text = app_context.send_message.call_args[1]['text']
+        assert "100" in text
+        assert "50" in text
+        assert "30" in text
+        assert "500" in text
+        assert "25" in text
+        assert "5" in text
+        assert "2" in text
+        assert "10" in text
+        assert "Stats" in text
+        assert "Total" in text
+        assert "Today" in text
