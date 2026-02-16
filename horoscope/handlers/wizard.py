@@ -12,8 +12,8 @@ from django.utils.translation import gettext_lazy as _
 
 from core.containers import container
 from core.entities import UserEntity
-from horoscope.callbacks import LanguageCallback
-from horoscope.keyboards import language_keyboard
+from horoscope.callbacks import LanguageCallback, SkipBirthTimeCallback
+from horoscope.keyboards import language_keyboard, skip_birth_time_keyboard
 from horoscope.states import WizardStates
 from horoscope.utils import map_telegram_language, parse_date, parse_time, translate
 from telegram_bot.app_context import AppContext
@@ -59,12 +59,12 @@ WIZARD_ASK_BIRTH_TIME = _(
     "🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
     "\n"
     "Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-    "or type <b>skip</b> if you don't know."
+    "or press the button below to skip."
 )
 
 WIZARD_INVALID_TIME_FORMAT = _(
     "Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-    "or type <b>skip</b> if you don't know your birth time."
+    "or press the button below to skip."
 )
 
 WIZARD_ASK_PLACE_OF_BIRTH = _(
@@ -178,25 +178,45 @@ async def process_date_of_birth(message: Message, state: FSMContext, app_context
         return
 
     await state.update_data(date_of_birth=date_of_birth.isoformat())
-    await app_context.send_message(text=translate(WIZARD_ASK_BIRTH_TIME, lang))
+    await app_context.send_message(
+        text=translate(WIZARD_ASK_BIRTH_TIME, lang),
+        reply_markup=skip_birth_time_keyboard(language=lang),
+    )
     await state.set_state(WizardStates.WAITING_BIRTH_TIME)
+
+
+@router.callback_query(WizardStates.WAITING_BIRTH_TIME, SkipBirthTimeCallback.filter())
+async def skip_birth_time(
+    callback: CallbackQuery,
+    state: FSMContext,
+    app_context: AppContext,
+    **kwargs,
+):
+    await callback.answer()
+
+    data = await state.get_data()
+    lang = data.get('preferred_language', 'en')
+
+    await state.update_data(birth_time=None)
+    await app_context.edit_message(
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[]),
+        message_id=callback.message.message_id,
+    )
+    await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
+    await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
 
 
 @router.message(WizardStates.WAITING_BIRTH_TIME, F.text)
 async def process_birth_time(message: Message, state: FSMContext, app_context: AppContext, **kwargs):
     data = await state.get_data()
     lang = data.get('preferred_language', 'en')
-    text = message.text.strip().lower()
-
-    if text in ('skip', 'пропустить', 'пропустити', 'überspringen', 'छोड़ें', 'تخطي', '-'):
-        await state.update_data(birth_time=None)
-        await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
-        await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
-        return
 
     birth_time = parse_time(message.text.strip())
     if not birth_time:
-        await app_context.send_message(text=translate(WIZARD_INVALID_TIME_FORMAT, lang))
+        await app_context.send_message(
+            text=translate(WIZARD_INVALID_TIME_FORMAT, lang),
+            reply_markup=skip_birth_time_keyboard(language=lang),
+        )
         return
 
     await state.update_data(birth_time=birth_time.isoformat())

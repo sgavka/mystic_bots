@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from horoscope.callbacks import LanguageCallback, SubscribeCallback
+from horoscope.callbacks import LanguageCallback, SkipBirthTimeCallback, SubscribeCallback
 from horoscope.utils import translate
 
 KEYBOARD_SUBSCRIBE = _("⭐ Subscribe for full horoscope")
@@ -20,6 +20,18 @@ def language_keyboard(current_language: str | None = None) -> InlineKeyboardMark
             callback_data=LanguageCallback(code=lang_code).pack(),
         )])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+KEYBOARD_SKIP_BIRTH_TIME = _("⏭ Skip")
+
+
+def skip_birth_time_keyboard(language: str = 'en') -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text=translate(KEYBOARD_SKIP_BIRTH_TIME, language),
+            callback_data=SkipBirthTimeCallback().pack(),
+        )]
+    ])
 
 
 def subscribe_keyboard(language: str = 'en') -> InlineKeyboardMarkup:

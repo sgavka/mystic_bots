@@ -389,10 +389,10 @@ class TestWizardBirthTime:
 
     async def test_skip(self, client):
         user = await self._enter_birth_time_step(client)
-        responses = await user.send_message("skip")
+        responses = await user.click_button("skip_birth_time")
 
-        assert len(responses) == 1
-        assert "place of birth" in responses[0].text.lower()
+        text_responses = [r for r in responses if r.text]
+        assert any("place of birth" in r.text.lower() for r in text_responses)
 
     async def test_invalid_time(self, client):
         user = await self._enter_birth_time_step(client)
@@ -421,7 +421,7 @@ class TestWizardPlaceOfBirth:
         await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
-        await user.send_message("skip")  # skip birth time
+        await user.click_button("skip_birth_time")  # skip birth time
         return user
 
     async def test_valid_place(self, client):
@@ -463,7 +463,7 @@ class TestWizardPlaceOfLiving:
         await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
-        await user.send_message("skip")  # skip birth time
+        await user.click_button("skip_birth_time")  # skip birth time
         await user.send_message("London")
         return user, profile_repo
 
@@ -524,9 +524,10 @@ class TestWizardFullFlow:
         responses = await user.send_message("15.03.1990")
         assert "birth time" in responses[0].text.lower()
 
-        # Step 5: birth time (skip)
-        responses = await user.send_message("skip")
-        assert "place of birth" in responses[0].text.lower()
+        # Step 5: birth time (skip via button)
+        responses = await user.click_button("skip_birth_time")
+        text_responses = [r for r in responses if r.text]
+        assert any("place of birth" in r.text.lower() for r in text_responses)
 
         # Step 6: place of birth
         responses = await user.send_message("London")
@@ -866,7 +867,7 @@ class TestErrorHandling:
         await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
-        await user.send_message("skip")  # skip birth time
+        await user.click_button("skip_birth_time")  # skip birth time
         await user.send_message("London")
 
         with patch('horoscope.tasks.generate_horoscope_task') as mock_task:

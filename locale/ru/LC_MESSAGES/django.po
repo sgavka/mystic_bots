@@ -75,20 +75,20 @@ msgid ""
 "🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
 "\n"
 "Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-"or type <b>skip</b> if you don't know."
+"or press the button below to skip."
 msgstr ""
 "🕐 Знаете ли вы <b>время рождения</b>? Это поможет сделать гороскоп точнее.\n"
 "\n"
 "Введите время в формате <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
-"или напишите <b>пропустить</b>, если не знаете."
+"или нажмите кнопку ниже, чтобы пропустить."
 
 #. wizard.invalid_time_format
 msgid ""
 "Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-"or type <b>skip</b> if you don't know your birth time."
+"or press the button below to skip."
 msgstr ""
 "Неверный формат времени. Введите время как <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
-"или напишите <b>пропустить</b>, если не знаете время рождения."
+"или нажмите кнопку ниже, чтобы пропустить."
 
 #. wizard.ask_place_of_birth
 msgid ""
@@ -293,3 +293,7 @@ msgstr ""
 #. followup.error
 msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
 msgstr "😔 Извините, не удалось сгенерировать ответ сейчас. Попробуйте позже."
+
+#. keyboard.skip_birth_time
+msgid "⏭ Skip"
+msgstr "⏭ Пропустить"

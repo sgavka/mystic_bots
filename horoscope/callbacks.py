@@ -7,3 +7,7 @@ class SubscribeCallback(CallbackData, prefix="subscribe"):
 
 class LanguageCallback(CallbackData, prefix="lang"):
     code: str
+
+
+class SkipBirthTimeCallback(CallbackData, prefix="skip_birth_time"):
+    pass
