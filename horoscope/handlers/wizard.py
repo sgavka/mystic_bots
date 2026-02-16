@@ -188,7 +188,7 @@ async def process_birth_time(message: Message, state: FSMContext, app_context: A
     lang = data.get('preferred_language', 'en')
     text = message.text.strip().lower()
 
-    if text in ('skip', 'пропустить', 'пропустити', 'überspringen', '-'):
+    if text in ('skip', 'пропустить', 'пропустити', 'überspringen', 'छोड़ें', 'تخطي', '-'):
         await state.update_data(birth_time=None)
         await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
         await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)

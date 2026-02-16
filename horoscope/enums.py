@@ -17,3 +17,5 @@ class Language(models.TextChoices):
     RU = 'ru', 'Russian'
     UK = 'uk', 'Ukrainian'
     DE = 'de', 'German'
+    HI = 'hi', 'Hindi'
+    AR = 'ar', 'Arabic'

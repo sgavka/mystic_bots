@@ -21,15 +21,18 @@ from horoscope.handlers.subscription import (
 )
 from horoscope.handlers.wizard import (
     ERROR_PROFILE_CREATION_FAILED,
+    WIZARD_ASK_BIRTH_TIME,
     WIZARD_ASK_DOB,
     WIZARD_ASK_PLACE_OF_BIRTH,
     WIZARD_ASK_PLACE_OF_LIVING,
+    WIZARD_BIRTH_TIME_LINE,
     WIZARD_CHOOSE_LANGUAGE,
     WIZARD_DOB_IN_FUTURE,
     WIZARD_DOB_TOO_OLD,
     WIZARD_INVALID_CITY,
     WIZARD_INVALID_DATE_FORMAT,
     WIZARD_INVALID_NAME,
+    WIZARD_INVALID_TIME_FORMAT,
     WIZARD_PROFILE_READY,
     WIZARD_WELCOME,
     WIZARD_WELCOME_BACK,
@@ -42,7 +45,9 @@ from horoscope.utils import map_telegram_language, parse_date, translate
 _ALL_MESSAGE_CONSTANTS = [
     WIZARD_CHOOSE_LANGUAGE, WIZARD_WELCOME_BACK, WIZARD_WELCOME,
     WIZARD_INVALID_NAME, WIZARD_ASK_DOB, WIZARD_INVALID_DATE_FORMAT,
-    WIZARD_DOB_IN_FUTURE, WIZARD_DOB_TOO_OLD, WIZARD_ASK_PLACE_OF_BIRTH,
+    WIZARD_DOB_IN_FUTURE, WIZARD_DOB_TOO_OLD, WIZARD_ASK_BIRTH_TIME,
+    WIZARD_INVALID_TIME_FORMAT, WIZARD_BIRTH_TIME_LINE,
+    WIZARD_ASK_PLACE_OF_BIRTH,
     WIZARD_INVALID_CITY, WIZARD_ASK_PLACE_OF_LIVING, WIZARD_PROFILE_READY,
     _(
         "⚠️ You haven't set up your profile yet.\n"
@@ -88,6 +93,14 @@ class TestTranslationFunction:
         result = translate(WIZARD_WELCOME, "de")
         assert "Willkommen" in result
 
+    def test_basic_translation_hi(self):
+        result = translate(WIZARD_WELCOME, "hi")
+        assert "स्वागत" in result
+
+    def test_basic_translation_ar(self):
+        result = translate(WIZARD_WELCOME, "ar")
+        assert "مرحبًا" in result
+
     def test_unsupported_language_falls_back_to_en(self):
         result = translate(WIZARD_WELCOME, "fr")
         en_result = translate(WIZARD_WELCOME, "en")
@@ -120,6 +133,12 @@ class TestMapTelegramLanguage:
 
     def test_german(self):
         assert map_telegram_language("de") == "de"
+
+    def test_hindi(self):
+        assert map_telegram_language("hi") == "hi"
+
+    def test_arabic(self):
+        assert map_telegram_language("ar") == "ar"
 
     def test_english(self):
         assert map_telegram_language("en") == "en"
@@ -174,7 +193,7 @@ class TestParseDate:
 
 
 class TestTranslationCompleteness:
-    """Verify all message constants have all 4 language translations."""
+    """Verify all message constants have all 6 language translations."""
 
     def test_all_messages_have_all_languages(self):
         for msg in _ALL_MESSAGE_CONSTANTS:
