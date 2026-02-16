@@ -1,21 +1,4 @@
 services:
-  db:
-    image: postgres:17
-    ports:
-      - "${DB_EXTERNAL_PORT:-5435}:5432"
-    env_file:
-      - .env
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-    restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    command: redis-server --appendonly yes
-    volumes:
-      - ./data/redis:/data
-    restart: unless-stopped
-
   bot_horoscope:
     build:
       context: .
