@@ -2,9 +2,9 @@
 
 ## Next step
 
-TASK_059 complete. Starting TASK_060.
+All tasks complete.
 
-Current status: Processing TASK_060
+Current status: Idle
 
 ## Tasks
 
@@ -12,7 +12,7 @@ Current status: Processing TASK_060
 - [x] **TASK_057** (complete) — Add optional birth time to user profile
 - [x] **TASK_058** (complete) — Add Hindi and Arabic languages
 - [x] **TASK_059** (complete) — Use button instead of text for skipping birth time in wizard
-- [ ] **TASK_060** (processing) — Add admin handler for stats (new users, horoscopes, subscriptions)
+- [x] **TASK_060** (complete) — Add admin handler for stats (new users, horoscopes, subscriptions)
 
 ## Completed
 
