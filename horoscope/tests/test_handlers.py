@@ -634,6 +634,64 @@ class TestSubscription:
         )
         assert has_subscribe_info
 
+    async def test_pre_checkout_handler_answers_ok(self):
+        from horoscope.handlers.subscription import pre_checkout_handler
+
+        mock_query = AsyncMock()
+        await pre_checkout_handler(pre_checkout_query=mock_query)
+
+        mock_query.answer.assert_called_once_with(ok=True)
+
+    async def test_successful_payment_activates_subscription(self):
+        from horoscope.handlers.subscription import successful_payment_handler
+        from horoscope.entities import SubscriptionEntity
+        from telegram_bot.app_context import AppContext
+
+        mock_message = AsyncMock()
+        mock_payment = MagicMock()
+        mock_payment.telegram_payment_charge_id = "charge_456"
+        mock_message.successful_payment = mock_payment
+
+        user = UserEntity(telegram_uid=12345, language_code="en")
+
+        profile_repo = _mock_profile_repo(profile=_make_profile())
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        subscription = SubscriptionEntity(
+            id=1,
+            user_telegram_uid=12345,
+            status="active",
+            started_at=datetime(2024, 1, 1),
+            expires_at=datetime(2024, 1, 31),
+            telegram_payment_charge_id="charge_456",
+            created_at=datetime(2024, 1, 1),
+            updated_at=datetime(2024, 1, 1),
+        )
+
+        mock_service = MagicMock()
+        mock_service.aactivate_subscription = AsyncMock(return_value=subscription)
+
+        mock_app_context = MagicMock(spec=AppContext)
+        mock_app_context.send_message = AsyncMock()
+
+        with patch(
+            'horoscope.handlers.subscription.container'
+        ) as mock_container:
+            mock_container.horoscope.subscription_service.return_value = mock_service
+            await successful_payment_handler(
+                message=mock_message,
+                user=user,
+                app_context=mock_app_context,
+            )
+
+        mock_service.aactivate_subscription.assert_called_once()
+        mock_app_context.send_message.assert_called_once()
+        call_text = mock_app_context.send_message.call_args[1]['text']
+        assert "31.01.2024" in call_text
+        assert "successful" in call_text.lower() or "✅" in call_text
+
 
 # ---------------------------------------------------------------------------
 # Language command handler
@@ -691,6 +749,54 @@ class TestLanguageCommand:
             for m in sent_messages
         )
         assert has_language_changed
+
+
+# ---------------------------------------------------------------------------
+# Utils: aget_user_language
+# ---------------------------------------------------------------------------
+
+class TestAgetUserLanguage:
+
+    async def test_returns_profile_language_when_profile_exists(self):
+        from horoscope.handlers.utils import aget_user_language
+
+        profile = _make_profile(preferred_language="ru")
+        profile_repo = _mock_profile_repo(profile=profile)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = UserEntity(telegram_uid=100000, language_code="en")
+        lang = await aget_user_language(user)
+
+        assert lang == "ru"
+
+    async def test_falls_back_to_telegram_language_when_no_profile(self):
+        from horoscope.handlers.utils import aget_user_language
+
+        profile_repo = _mock_profile_repo(profile=None)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = UserEntity(telegram_uid=100000, language_code="uk")
+        lang = await aget_user_language(user)
+
+        assert lang == "uk"
+
+    async def test_falls_back_to_en_when_no_profile_and_unsupported_language(self):
+        from horoscope.handlers.utils import aget_user_language
+
+        profile_repo = _mock_profile_repo(profile=None)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+
+        user = UserEntity(telegram_uid=100000, language_code="zh")
+        lang = await aget_user_language(user)
+
+        # map_telegram_language should return 'en' for unsupported languages
+        assert lang == "en"
 
 
 # ---------------------------------------------------------------------------

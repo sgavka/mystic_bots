@@ -2,13 +2,15 @@
 
 ## Next step
 
-No pending tasks. Check docs/tasks/ for new operator-created tasks.
+TASK_056 complete. Pick next task.
 
-Current status: Idle
+Current status: Starting TASK_057
 
 ## Tasks
 
-_(none)_
+- [x] **TASK_056** (complete) — Full test coverage for all handlers
+- [ ] **TASK_057** (new) — Add optional birth time to user profile
+- [ ] **TASK_058** (new) — Add Hindi and Arabic languages
 
 ## Completed
 
