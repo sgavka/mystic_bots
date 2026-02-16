@@ -12,6 +12,7 @@ _(none)_
 
 ## Completed
 
+- [x] **TASK_055** (complete) — Add missing translations and UX feedback for followup questions
 - [x] **TASK_051** (complete) — Feature: allow subscribers to ask questions about horoscope theme
 - [x] **TASK_046** (complete) — Exception handling and logging audit
 - [x] **TASK_045** (complete) — Add UserLanguageMiddleware for i18n
