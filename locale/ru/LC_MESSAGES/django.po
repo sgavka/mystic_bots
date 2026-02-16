@@ -70,6 +70,26 @@ msgstr "Дата рождения должна быть в прошлом. По�
 msgid "Please enter a valid date of birth."
 msgstr "Пожалуйста, введите корректную дату рождения."
 
+#. wizard.ask_birth_time
+msgid ""
+"🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
+"\n"
+"Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+"or type <b>skip</b> if you don't know."
+msgstr ""
+"🕐 Знаете ли вы <b>время рождения</b>? Это поможет сделать гороскоп точнее.\n"
+"\n"
+"Введите время в формате <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
+"или напишите <b>пропустить</b>, если не знаете."
+
+#. wizard.invalid_time_format
+msgid ""
+"Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+"or type <b>skip</b> if you don't know your birth time."
+msgstr ""
+"Неверный формат времени. Введите время как <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
+"или напишите <b>пропустить</b>, если не знаете время рождения."
+
 #. wizard.ask_place_of_birth
 msgid ""
 "🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
@@ -99,6 +119,7 @@ msgid ""
 "✅ Your profile is ready, <b>{name}</b>!\n"
 "\n"
 "📅 Date of birth: {dob}\n"
+"{birth_time_line}"
 "🏠 Born in: {place_of_birth}\n"
 "📍 Living in: {place_of_living}\n"
 "\n"
@@ -107,10 +128,15 @@ msgstr ""
 "✅ Ваш профиль готов, <b>{name}</b>!\n"
 "\n"
 "📅 Дата рождения: {dob}\n"
+"{birth_time_line}"
 "🏠 Место рождения: {place_of_birth}\n"
 "📍 Место проживания: {place_of_living}\n"
 "\n"
 "🔮 Генерирую ваш первый гороскоп... Пожалуйста, подождите."
+
+#. wizard.birth_time_line
+msgid "🕐 Birth time: {birth_time}\n"
+msgstr "🕐 Время рождения: {birth_time}\n"
 
 #. horoscope.no_profile
 msgid ""

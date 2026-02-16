@@ -1,4 +1,5 @@
-from datetime import date, datetime
+import re
+from datetime import date, datetime, time
 from typing import Any, Optional
 
 from django.conf import settings
@@ -56,6 +57,30 @@ def parse_date(text: str) -> Optional[date]:
     for fmt in DATE_FORMATS:
         try:
             return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+TIME_FORMATS = [
+    "%H:%M",     # 24-hour: 14:30
+    "%H.%M",     # 24-hour with dot: 14.30
+    "%I:%M %p",  # 12-hour: 2:30 PM
+    "%I:%M%p",   # 12-hour no space: 2:30PM
+]
+
+
+def parse_time(text: str) -> Optional[time]:
+    """Parse a time string trying multiple common formats.
+
+    Returns time object if parsing succeeds, None otherwise.
+    """
+    text = text.strip()
+    # Normalize whitespace around AM/PM
+    text = re.sub(r'\s*(AM|PM|am|pm)\s*', r' \1', text).strip()
+    for fmt in TIME_FORMATS:
+        try:
+            return datetime.strptime(text, fmt).time()
         except ValueError:
             continue
     return None

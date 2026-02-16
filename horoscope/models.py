@@ -9,6 +9,7 @@ class UserProfile(models.Model):
     date_of_birth = models.DateField()
     place_of_birth = models.CharField(max_length=255)
     place_of_living = models.CharField(max_length=255)
+    birth_time = models.TimeField(null=True, blank=True)
     preferred_language = models.CharField(
         max_length=5,
         choices=Language.choices,

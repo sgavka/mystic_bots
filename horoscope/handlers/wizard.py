@@ -15,7 +15,7 @@ from core.entities import UserEntity
 from horoscope.callbacks import LanguageCallback
 from horoscope.keyboards import language_keyboard
 from horoscope.states import WizardStates
-from horoscope.utils import map_telegram_language, parse_date, translate
+from horoscope.utils import map_telegram_language, parse_date, parse_time, translate
 from telegram_bot.app_context import AppContext
 
 WIZARD_CHOOSE_LANGUAGE = _("🌍 Please choose your language:")
@@ -55,6 +55,18 @@ WIZARD_DOB_IN_FUTURE = _("Date of birth must be in the past. Please try again.")
 
 WIZARD_DOB_TOO_OLD = _("Please enter a valid date of birth.")
 
+WIZARD_ASK_BIRTH_TIME = _(
+    "🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
+    "\n"
+    "Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+    "or type <b>skip</b> if you don't know."
+)
+
+WIZARD_INVALID_TIME_FORMAT = _(
+    "Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+    "or type <b>skip</b> if you don't know your birth time."
+)
+
 WIZARD_ASK_PLACE_OF_BIRTH = _(
     "🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
     "\n"
@@ -73,11 +85,14 @@ WIZARD_PROFILE_READY = _(
     "✅ Your profile is ready, <b>{name}</b>!\n"
     "\n"
     "📅 Date of birth: {dob}\n"
+    "{birth_time_line}"
     "🏠 Born in: {place_of_birth}\n"
     "📍 Living in: {place_of_living}\n"
     "\n"
     "🔮 Generating your first horoscope... Please wait a moment."
 )
+
+WIZARD_BIRTH_TIME_LINE = _("🕐 Birth time: {birth_time}\n")
 
 ERROR_PROFILE_CREATION_FAILED = _("😔 Something went wrong while creating your profile. Please try again with /start")
 
@@ -163,6 +178,28 @@ async def process_date_of_birth(message: Message, state: FSMContext, app_context
         return
 
     await state.update_data(date_of_birth=date_of_birth.isoformat())
+    await app_context.send_message(text=translate(WIZARD_ASK_BIRTH_TIME, lang))
+    await state.set_state(WizardStates.WAITING_BIRTH_TIME)
+
+
+@router.message(WizardStates.WAITING_BIRTH_TIME, F.text)
+async def process_birth_time(message: Message, state: FSMContext, app_context: AppContext, **kwargs):
+    data = await state.get_data()
+    lang = data.get('preferred_language', 'en')
+    text = message.text.strip().lower()
+
+    if text in ('skip', 'пропустить', 'пропустити', 'überspringen', '-'):
+        await state.update_data(birth_time=None)
+        await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
+        await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
+        return
+
+    birth_time = parse_time(message.text.strip())
+    if not birth_time:
+        await app_context.send_message(text=translate(WIZARD_INVALID_TIME_FORMAT, lang))
+        return
+
+    await state.update_data(birth_time=birth_time.isoformat())
     await app_context.send_message(text=translate(WIZARD_ASK_PLACE_OF_BIRTH, lang))
     await state.set_state(WizardStates.WAITING_PLACE_OF_BIRTH)
 
@@ -200,6 +237,7 @@ async def process_place_of_living(
 
     name = data['name']
     date_of_birth = data['date_of_birth']
+    birth_time_str = data.get('birth_time')
     place_of_birth = data['place_of_birth']
     place_of_living = place
 
@@ -207,12 +245,15 @@ async def process_place_of_living(
 
     @sync_to_async
     def _create_profile():
+        from datetime import time as time_type
+        birth_time = time_type.fromisoformat(birth_time_str) if birth_time_str else None
         return user_profile_repo.create_profile(
             telegram_uid=user.telegram_uid,
             name=name,
             date_of_birth=date.fromisoformat(date_of_birth),
             place_of_birth=place_of_birth,
             place_of_living=place_of_living,
+            birth_time=birth_time,
             preferred_language=lang,
         )
 
@@ -227,12 +268,21 @@ async def process_place_of_living(
 
     await state.clear()
 
+    birth_time_line = ""
+    if profile.birth_time:
+        birth_time_line = translate(
+            WIZARD_BIRTH_TIME_LINE,
+            lang,
+            birth_time=profile.birth_time.strftime('%H:%M'),
+        )
+
     await app_context.send_message(
         text=translate(
             WIZARD_PROFILE_READY,
             lang,
             name=profile.name,
             dob=profile.date_of_birth.strftime('%d.%m.%Y'),
+            birth_time_line=birth_time_line,
             place_of_birth=profile.place_of_birth,
             place_of_living=profile.place_of_living,
         ),

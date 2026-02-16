@@ -317,7 +317,7 @@ class TestWizardDateOfBirth:
         responses = await user.send_message("15.03.1990")
 
         assert len(responses) == 1
-        assert "place of birth" in responses[0].text.lower()
+        assert "birth time" in responses[0].text.lower()
 
     async def test_invalid_format(self, client):
         user = await self._enter_dob_step(client)
@@ -331,21 +331,21 @@ class TestWizardDateOfBirth:
         responses = await user.send_message("1990-03-15")
 
         assert len(responses) == 1
-        assert "place of birth" in responses[0].text.lower()
+        assert "birth time" in responses[0].text.lower()
 
     async def test_slash_format_accepted(self, client):
         user = await self._enter_dob_step(client)
         responses = await user.send_message("15/03/1990")
 
         assert len(responses) == 1
-        assert "place of birth" in responses[0].text.lower()
+        assert "birth time" in responses[0].text.lower()
 
     async def test_dash_format_accepted(self, client):
         user = await self._enter_dob_step(client)
         responses = await user.send_message("15-03-1990")
 
         assert len(responses) == 1
-        assert "place of birth" in responses[0].text.lower()
+        assert "birth time" in responses[0].text.lower()
 
     async def test_future_date(self, client):
         user = await self._enter_dob_step(client)
@@ -366,6 +366,49 @@ class TestWizardDateOfBirth:
 # Wizard: place of birth step
 # ---------------------------------------------------------------------------
 
+class TestWizardBirthTime:
+
+    async def _enter_birth_time_step(self, client):
+        profile_repo = _mock_profile_repo(profile=None)
+        container.horoscope.user_profile_repository.override(
+            providers.Object(profile_repo)
+        )
+        user = client.create_user(first_name="John")
+        await user.send_command("start")
+        await _select_language(user, "en")
+        await user.send_message("Alice")
+        await user.send_message("15.03.1990")
+        return user
+
+    async def test_valid_time(self, client):
+        user = await self._enter_birth_time_step(client)
+        responses = await user.send_message("14:30")
+
+        assert len(responses) == 1
+        assert "place of birth" in responses[0].text.lower()
+
+    async def test_skip(self, client):
+        user = await self._enter_birth_time_step(client)
+        responses = await user.send_message("skip")
+
+        assert len(responses) == 1
+        assert "place of birth" in responses[0].text.lower()
+
+    async def test_invalid_time(self, client):
+        user = await self._enter_birth_time_step(client)
+        responses = await user.send_message("not-a-time")
+
+        assert len(responses) == 1
+        assert "HH:MM" in responses[0].text
+
+    async def test_12_hour_format(self, client):
+        user = await self._enter_birth_time_step(client)
+        responses = await user.send_message("2:30 PM")
+
+        assert len(responses) == 1
+        assert "place of birth" in responses[0].text.lower()
+
+
 class TestWizardPlaceOfBirth:
 
     async def _enter_pob_step(self, client):
@@ -378,6 +421,7 @@ class TestWizardPlaceOfBirth:
         await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
+        await user.send_message("skip")  # skip birth time
         return user
 
     async def test_valid_place(self, client):
@@ -419,6 +463,7 @@ class TestWizardPlaceOfLiving:
         await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
+        await user.send_message("skip")  # skip birth time
         await user.send_message("London")
         return user, profile_repo
 
@@ -477,13 +522,17 @@ class TestWizardFullFlow:
 
         # Step 4: date of birth
         responses = await user.send_message("15.03.1990")
+        assert "birth time" in responses[0].text.lower()
+
+        # Step 5: birth time (skip)
+        responses = await user.send_message("skip")
         assert "place of birth" in responses[0].text.lower()
 
-        # Step 5: place of birth
+        # Step 6: place of birth
         responses = await user.send_message("London")
         assert "place of living" in responses[0].text.lower() or "living" in responses[0].text.lower()
 
-        # Step 6: place of living → profile created, horoscope queued
+        # Step 7: place of living → profile created, horoscope queued
         with patch('horoscope.tasks.generate_horoscope_task') as mock_task:
             responses = await user.send_message("Berlin")
 
@@ -817,6 +866,7 @@ class TestErrorHandling:
         await _select_language(user, "en")
         await user.send_message("Alice")
         await user.send_message("15.03.1990")
+        await user.send_message("skip")  # skip birth time
         await user.send_message("London")
 
         with patch('horoscope.tasks.generate_horoscope_task') as mock_task:

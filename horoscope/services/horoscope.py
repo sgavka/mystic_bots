@@ -85,6 +85,7 @@ class HoroscopeService:
             place_of_living=profile.place_of_living,
             target_date=target_date,
             language=language,
+            birth_time=profile.birth_time,
         )
         return result.full_text, result.teaser_text, result.extended_teaser_text, result
 

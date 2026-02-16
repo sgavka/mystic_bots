@@ -1,3 +1,4 @@
+from datetime import time
 from typing import Optional
 
 from asgiref.sync import sync_to_async
@@ -33,6 +34,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
         date_of_birth: str,
         place_of_birth: str,
         place_of_living: str,
+        birth_time: Optional[time] = None,
         preferred_language: str = 'en',
     ) -> UserProfileEntity:
         profile = UserProfile.objects.create(
@@ -41,6 +43,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
             date_of_birth=date_of_birth,
             place_of_birth=place_of_birth,
             place_of_living=place_of_living,
+            birth_time=birth_time,
             preferred_language=preferred_language,
         )
         return UserProfileEntity.from_model(profile)
@@ -52,6 +55,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
         date_of_birth: str,
         place_of_birth: str,
         place_of_living: str,
+        birth_time: Optional[time] = None,
         preferred_language: str = 'en',
     ) -> UserProfileEntity:
         return await sync_to_async(self.create_profile)(
@@ -60,6 +64,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
             date_of_birth,
             place_of_birth,
             place_of_living,
+            birth_time,
             preferred_language,
         )
 

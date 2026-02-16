@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import Optional
 
 from core.base_entity import BaseEntity
@@ -10,6 +10,7 @@ class UserProfileEntity(BaseEntity):
     date_of_birth: date
     place_of_birth: str
     place_of_living: str
+    birth_time: Optional[time] = None
     preferred_language: str = 'en'
     created_at: datetime
     updated_at: datetime

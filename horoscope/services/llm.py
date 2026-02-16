@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, time
+from typing import Optional
 
 from django.conf import settings
 
@@ -31,7 +32,7 @@ Write a personalized horoscope for the following person:
 - Name: {name}
 - Zodiac sign: {zodiac_sign}
 - Date of birth: {date_of_birth}
-- Place of birth: {place_of_birth}
+{birth_time_line}- Place of birth: {place_of_birth}
 - Current place of living: {place_of_living}
 - Horoscope date: {target_date}
 
@@ -87,15 +88,21 @@ class LLMService:
         place_of_living: str,
         target_date: date,
         language: str = 'en',
+        birth_time: Optional[time] = None,
     ) -> LLMResult:
         import litellm
 
         language_name = settings.HOROSCOPE_LANGUAGE_NAMES.get(language, 'English')
 
+        birth_time_line = ""
+        if birth_time:
+            birth_time_line = f"- Birth time: {birth_time.strftime('%H:%M')}\n"
+
         prompt = HOROSCOPE_PROMPT.format(
             name=name,
             zodiac_sign=zodiac_sign,
             date_of_birth=date_of_birth.strftime('%B %d, %Y'),
+            birth_time_line=birth_time_line,
             place_of_birth=place_of_birth,
             place_of_living=place_of_living,
             target_date=target_date.isoformat(),
