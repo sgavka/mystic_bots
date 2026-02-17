@@ -1,0 +1,31 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: root
+          password: ${{ secrets.PRODUCTION_PASSWORD }}
+          port: 22
+          script: |
+            cd ${{ secrets.PRODUCTION_PROJECT_PATH }}
+            git config --local --unset-all credential.helper
+            git config --local --add credential.helper '!f() { echo "username=x-access-token"; echo "password=${{ secrets.GIT_PAT }}"; }; f'
+            git pull origin master
+            docker compose -f docker-compose-prod.yml build
+            docker compose -f docker-compose-prod.yml down -v
+            docker compose -f docker-compose-prod.yml run bot_horoscope python manage.py migrate
+            docker rm $(docker ps -a -f status=exited -f status=created -q)
+            docker compose -f docker-compose-prod.yml up -d
