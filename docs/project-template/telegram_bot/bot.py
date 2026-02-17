@@ -48,7 +48,8 @@ def create_storage() -> Union[RedisStorage, MemoryStorage]:
         redis = Redis(
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
+            db=settings.REDIS_BOT_DB,
+            password=settings.REDIS_PASSWORD,
             decode_responses=True
         )
         return RedisStorage(redis=redis)
