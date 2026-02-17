@@ -8,9 +8,6 @@ services:
       - .env
     environment:
       - PYTHONOPTIMIZE=2
-    depends_on:
-      - db
-      - redis
     restart: unless-stopped
 
   celery_worker:
@@ -22,9 +19,6 @@ services:
       - .env
     environment:
       - PYTHONOPTIMIZE=2
-    depends_on:
-      - db
-      - redis
     restart: unless-stopped
 
   celery_beat:
@@ -36,7 +30,4 @@ services:
       - .env
     environment:
       - PYTHONOPTIMIZE=2
-    depends_on:
-      - db
-      - redis
     restart: unless-stopped
