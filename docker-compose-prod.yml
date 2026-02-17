@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: "python manage.py start_bot --bot horoscope"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - .env
     environment:
@@ -15,6 +17,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: "celery -A config.celery worker --loglevel=info"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - .env
     environment:
@@ -26,6 +30,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: "celery -A config.celery beat --loglevel=info"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - .env
     environment:
