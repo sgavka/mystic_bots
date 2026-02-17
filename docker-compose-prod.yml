@@ -11,6 +11,11 @@ services:
     environment:
       - PYTHONOPTIMIZE=2
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "3"
 
   celery_worker:
     build:
@@ -24,6 +29,11 @@ services:
     environment:
       - PYTHONOPTIMIZE=2
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "3"
 
   celery_beat:
     build:
@@ -37,3 +47,8 @@ services:
     environment:
       - PYTHONOPTIMIZE=2
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "3"
