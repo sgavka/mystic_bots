@@ -154,31 +154,31 @@
   <!-- ====== RIGHT SIDE: Text Content ====== -->
 
   <!-- Main headline -->
-  <text x="1200" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">منجّمك</text>
-  <text x="1200" y="420" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">الشخصي</text>
+  <text x="1350" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">منجّمك</text>
+  <text x="1350" y="420" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">الشخصي</text>
 
   <!-- Accent line under headline -->
-  <line x1="1000" y1="460" x2="1400" y2="460" stroke="url(#accentLine)" stroke-width="2.5"/>
+  <line x1="1100" y1="460" x2="1600" y2="460" stroke="url(#accentLine)" stroke-width="2.5"/>
 
-  <!-- Feature points -->
+  <!-- Feature points (RTL: star on right, text flows left) -->
   <g font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="36" fill="#d8b4fe">
     <!-- Point 1 -->
-    <g transform="translate(960, 540)">
-      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
-      <text x="70" y="0" direction="rtl">أبراج يومية مبنية على</text>
-      <text x="70" y="48" direction="rtl">خريطتك الفلكية</text>
+    <g transform="translate(0, 540)">
+      <text x="1570" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+      <text x="1540" y="0" direction="rtl">أبراج يومية مبنية على</text>
+      <text x="1540" y="48" direction="rtl">خريطتك الفلكية</text>
     </g>
 
     <!-- Point 2 -->
-    <g transform="translate(960, 670)">
-      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
-      <text x="70" y="0" direction="rtl">اطرح أسئلة متابعة</text>
+    <g transform="translate(0, 670)">
+      <text x="1570" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+      <text x="1540" y="0" direction="rtl">اطرح أسئلة متابعة</text>
     </g>
 
     <!-- Point 3 -->
-    <g transform="translate(960, 770)">
-      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
-      <text x="70" y="0" direction="rtl">رؤى فلكية مخصصة</text>
+    <g transform="translate(0, 770)">
+      <text x="1570" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+      <text x="1540" y="0" direction="rtl">رؤى فلكية مخصصة</text>
     </g>
   </g>
 
