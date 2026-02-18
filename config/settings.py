@@ -104,6 +104,8 @@ LANGUAGES = [
     ('de', 'German'),
     ('hi', 'Hindi'),
     ('ar', 'Arabic'),
+    ('it', 'Italian'),
+    ('fr', 'French'),
 ]
 
 LOCALE_PATHS = [
@@ -165,7 +167,7 @@ REPORTS_CHAT_ID = int(_reports_chat_id) if _reports_chat_id and _reports_chat_id
 
 # Horoscope configuration
 
-_DEFAULT_HOROSCOPE_LANGUAGES = 'en:English:🇬🇧,ru:Русский:🇷🇺,uk:Українська:🇺🇦,de:Deutsch:🇩🇪,hi:हिन्दी:🇮🇳,ar:العربية:🇸🇦'
+_DEFAULT_HOROSCOPE_LANGUAGES = 'en:English:🇬🇧,ru:Русский:🇷🇺,uk:Українська:🇺🇦,de:Deutsch:🇩🇪,hi:हिन्दी:🇮🇳,ar:العربية:🇸🇦,it:Italiano:🇮🇹,fr:Français:🇫🇷'
 
 
 def _parse_horoscope_languages(raw: str) -> tuple[dict[str, str], dict[str, str]]:

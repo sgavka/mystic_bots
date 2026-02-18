@@ -102,8 +102,16 @@ class TestTranslationFunction:
         result = translate(WIZARD_WELCOME, "ar")
         assert "مرحبًا" in result
 
-    def test_unsupported_language_falls_back_to_en(self):
+    def test_basic_translation_it(self):
+        result = translate(WIZARD_WELCOME, "it")
+        assert "Benvenuto" in result
+
+    def test_basic_translation_fr(self):
         result = translate(WIZARD_WELCOME, "fr")
+        assert "Bienvenue" in result
+
+    def test_unsupported_language_falls_back_to_en(self):
+        result = translate(WIZARD_WELCOME, "ja")
         en_result = translate(WIZARD_WELCOME, "en")
         assert result == en_result
 
@@ -141,6 +149,12 @@ class TestMapTelegramLanguage:
     def test_arabic(self):
         assert map_telegram_language("ar") == "ar"
 
+    def test_italian(self):
+        assert map_telegram_language("it") == "it"
+
+    def test_french(self):
+        assert map_telegram_language("fr") == "fr"
+
     def test_english(self):
         assert map_telegram_language("en") == "en"
 
@@ -148,8 +162,8 @@ class TestMapTelegramLanguage:
         assert map_telegram_language(None) == "en"
 
     def test_unsupported_defaults_to_en(self):
-        assert map_telegram_language("fr") == "en"
         assert map_telegram_language("ja") == "en"
+        assert map_telegram_language("ko") == "en"
 
     def test_case_insensitive(self):
         assert map_telegram_language("RU") == "ru"
@@ -194,7 +208,7 @@ class TestParseDate:
 
 
 class TestTranslationCompleteness:
-    """Verify all message constants have all 6 language translations."""
+    """Verify all message constants have all language translations."""
 
     def test_all_messages_have_all_languages(self):
         for msg in _ALL_MESSAGE_CONSTANTS:

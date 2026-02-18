@@ -2,10 +2,13 @@
 
 ## Next step
 
-All tasks complete. Idle.
+Implementing TASK_063 — Add Italian and French languages with translations.
 
 ## Tasks
 
+- [ ] **TASK_063** (processing) — Add Italian and French languages with translations
+- [ ] **TASK_064** (new) — Create copies of ad SVG logo in all project languages
+- [ ] **TASK_065** (new) — Add Loki logging integration from redgifs_downloader_bot
 - [x] **TASK_062** (complete) — Fix: prevent duplicate horoscope sending on service restart
 - [x] **TASK_061** (complete) — Refactor: remove Celery from prod, replace tasks with async background execution
 - [x] **TASK_056** (complete) — Full test coverage for all handlers

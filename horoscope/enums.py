@@ -19,3 +19,5 @@ class Language(models.TextChoices):
     DE = 'de', 'German'
     HI = 'hi', 'Hindi'
     AR = 'ar', 'Arabic'
+    IT = 'it', 'Italian'
+    FR = 'fr', 'French'
