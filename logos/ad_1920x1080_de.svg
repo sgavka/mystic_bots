@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <radialGradient id="bgMain" cx="30%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1a0533"/>
+      <stop offset="100%" stop-color="#05000d"/>
+    </radialGradient>
+    <radialGradient id="glowLeft" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowRight" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="logoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <radialGradient id="logoBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a0533"/>
+      <stop offset="100%" stop-color="#0a0114"/>
+    </radialGradient>
+    <filter id="starGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="bigGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#7c3aed" flood-opacity="0.5"/>
+    </filter>
+    <linearGradient id="dividerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#a78bfa" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#bgMain)"/>
+
+  <!-- Ambient glows -->
+  <ellipse cx="480" cy="540" rx="500" ry="450" fill="url(#glowLeft)"/>
+  <ellipse cx="1400" cy="400" rx="600" ry="500" fill="url(#glowRight)"/>
+
+  <!-- Background stars scattered across the canvas -->
+  <g filter="url(#starGlow)" fill="#e9d5ff">
+    <circle cx="100" cy="80" r="1.5" opacity="0.7"/>
+    <circle cx="250" cy="150" r="1" opacity="0.5"/>
+    <circle cx="400" cy="50" r="2" opacity="0.6"/>
+    <circle cx="550" cy="200" r="1" opacity="0.4"/>
+    <circle cx="700" cy="80" r="1.5" opacity="0.5"/>
+    <circle cx="850" cy="180" r="1" opacity="0.6"/>
+    <circle cx="1050" cy="60" r="2" opacity="0.5"/>
+    <circle cx="1200" cy="120" r="1" opacity="0.7"/>
+    <circle cx="1350" cy="50" r="1.5" opacity="0.4"/>
+    <circle cx="1500" cy="160" r="1" opacity="0.6"/>
+    <circle cx="1650" cy="80" r="2" opacity="0.5"/>
+    <circle cx="1800" cy="140" r="1.5" opacity="0.7"/>
+    <circle cx="150" cy="950" r="1" opacity="0.5"/>
+    <circle cx="350" cy="1000" r="1.5" opacity="0.6"/>
+    <circle cx="600" cy="980" r="1" opacity="0.4"/>
+    <circle cx="900" cy="950" r="2" opacity="0.5"/>
+    <circle cx="1100" cy="1000" r="1" opacity="0.6"/>
+    <circle cx="1400" cy="960" r="1.5" opacity="0.5"/>
+    <circle cx="1600" cy="1010" r="1" opacity="0.7"/>
+    <circle cx="1850" cy="950" r="1.5" opacity="0.4"/>
+    <circle cx="80" cy="400" r="1" opacity="0.5"/>
+    <circle cx="50" cy="600" r="1.5" opacity="0.6"/>
+    <circle cx="1870" cy="350" r="1" opacity="0.5"/>
+    <circle cx="1890" cy="600" r="2" opacity="0.4"/>
+    <circle cx="1850" cy="800" r="1" opacity="0.6"/>
+    <circle cx="750" cy="920" r="1.5" opacity="0.5"/>
+    <circle cx="1300" cy="880" r="1" opacity="0.4"/>
+  </g>
+
+  <!-- Decorative star shapes in background -->
+  <g filter="url(#starGlow)" opacity="0.3">
+    <polygon points="180,300 183,310 193,310 185,316 188,326 180,320 172,326 175,316 167,310 177,310" fill="#c4b5fd"/>
+    <polygon points="1750,250 1753,260 1763,260 1755,266 1758,276 1750,270 1742,276 1745,266 1737,260 1747,260" fill="#ddd6fe"/>
+    <polygon points="1600,850 1603,860 1613,860 1605,866 1608,876 1600,870 1592,876 1595,866 1587,860 1597,860" fill="#e9d5ff"/>
+    <polygon points="120,750 123,760 133,760 125,766 128,776 120,770 112,776 115,766 107,760 117,760" fill="#c4b5fd"/>
+  </g>
+
+  <!-- ====== LEFT SIDE: Logo ====== -->
+  <g transform="translate(480, 540) scale(1.65)">
+    <!-- Logo glow -->
+    <circle cx="0" cy="0" r="220" fill="url(#logoGlow)" opacity="0.5"/>
+
+    <!-- Logo circle background -->
+    <circle cx="0" cy="0" r="190" fill="url(#logoBg)" stroke="#7c3aed" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="185" fill="none" stroke="#a78bfa" stroke-width="0.5" stroke-dasharray="4 6"/>
+
+    <!-- Inner glow -->
+    <circle cx="0" cy="0" r="160" fill="url(#logoGlow)"/>
+
+    <!-- Crescent Moon -->
+    <g transform="translate(0, -40)">
+      <circle cx="0" cy="0" r="55" fill="url(#moonGrad)"/>
+      <circle cx="18" cy="-12" r="45" fill="url(#logoBg)"/>
+    </g>
+
+    <!-- Stars inside logo -->
+    <g filter="url(#starGlow)" fill="#fef3c7">
+      <polygon points="100,-100 105,-85 120,-85 108,-76 112,-60 100,-70 88,-60 92,-76 80,-85 95,-85" fill="#e9d5ff"/>
+      <polygon points="-80,-110 -77,-100 -67,-100 -75,-94 -72,-84 -80,-90 -88,-84 -85,-94 -93,-100 -83,-100" fill="#c4b5fd"/>
+      <polygon points="120,20 123,28 131,28 125,33 127,41 120,36 113,41 115,33 109,28 117,28" fill="#ddd6fe"/>
+      <polygon points="-100,50 -97,58 -89,58 -95,63 -93,71 -100,66 -107,71 -105,63 -111,58 -103,58" fill="#c4b5fd"/>
+      <circle cx="-50" cy="-60" r="2" fill="#e9d5ff"/>
+      <circle cx="80" cy="-30" r="1.5" fill="#fef3c7"/>
+      <circle cx="140" cy="-40" r="1" fill="#ddd6fe"/>
+      <circle cx="-110" cy="-20" r="1.5" fill="#e9d5ff"/>
+      <circle cx="60" cy="-120" r="2" fill="#fef3c7"/>
+      <circle cx="-40" cy="80" r="1.5" fill="#ddd6fe"/>
+      <circle cx="130" cy="80" r="1" fill="#c4b5fd"/>
+      <circle cx="-120" cy="-70" r="1" fill="#e9d5ff"/>
+    </g>
+
+    <!-- Sparkle trails -->
+    <g stroke="#a78bfa" stroke-width="0.5" opacity="0.6">
+      <line x1="-60" y1="-100" x2="-40" y2="-70"/>
+      <line x1="110" y1="-90" x2="90" y2="-50"/>
+      <line x1="-100" y1="40" x2="-70" y2="60"/>
+    </g>
+
+    <!-- Logo text -->
+    <text x="0" y="110" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#e9d5ff" letter-spacing="4">IHR</text>
+    <text x="0" y="150" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#a78bfa" letter-spacing="8">HOROSKOP</text>
+
+    <!-- Decorative dots -->
+    <g fill="#7c3aed" opacity="0.6">
+      <circle cx="-40" cy="125" r="1.5"/>
+      <circle cx="0" cy="125" r="1.5"/>
+      <circle cx="40" cy="125" r="1.5"/>
+    </g>
+  </g>
+
+  <!-- ====== RIGHT SIDE: Text Content ====== -->
+
+  <!-- Main headline -->
+  <text x="1200" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="82" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2">Ihr Persönlicher</text>
+  <text x="1200" y="420" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="82" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2">Astrologe</text>
+
+  <!-- Accent line under headline -->
+  <line x1="1000" y1="460" x2="1400" y2="460" stroke="url(#accentLine)" stroke-width="2.5"/>
+
+  <!-- Feature points -->
+  <g font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="36" fill="#d8b4fe">
+    <!-- Point 1 -->
+    <g transform="translate(960, 540)">
+      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+      <text x="70" y="0">Tägliche Horoskope basierend</text>
+      <text x="70" y="48">auf Ihrem Geburtshoroskop</text>
+    </g>
+
+    <!-- Point 2 -->
+    <g transform="translate(960, 670)">
+      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+      <text x="70" y="0">Stellen Sie Rückfragen</text>
+    </g>
+
+    <!-- Point 3 -->
+    <g transform="translate(960, 770)">
+      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+      <text x="70" y="0">Personalisierte himmlische Einblicke</text>
+    </g>
+  </g>
+
+  <!-- Subtle border -->
+  <rect x="30" y="30" width="1860" height="1020" rx="8" fill="none" stroke="#7c3aed" stroke-width="0.5" opacity="0.3"/>
+</svg>

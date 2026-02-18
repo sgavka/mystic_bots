@@ -2,12 +2,12 @@
 
 ## Next step
 
-Implementing TASK_063 — Add Italian and French languages with translations.
+Implementing TASK_064 — Create copies of ad SVG logo in all project languages.
 
 ## Tasks
 
-- [ ] **TASK_063** (processing) — Add Italian and French languages with translations
-- [ ] **TASK_064** (new) — Create copies of ad SVG logo in all project languages
+- [x] **TASK_063** (complete) — Add Italian and French languages with translations
+- [ ] **TASK_064** (processing) — Create copies of ad SVG logo in all project languages
 - [ ] **TASK_065** (new) — Add Loki logging integration from redgifs_downloader_bot
 - [x] **TASK_062** (complete) — Fix: prevent duplicate horoscope sending on service restart
 - [x] **TASK_061** (complete) — Refactor: remove Celery from prod, replace tasks with async background execution
