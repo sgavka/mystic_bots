@@ -99,8 +99,8 @@ USE_TZ = True
 
 LANGUAGES = [
     ('en', 'English'),
-    ('ru', 'Russian'),
-    ('uk', 'Ukrainian'),
+    # ('ru', 'Russian'),
+    # ('uk', 'Ukrainian'),
     ('de', 'German'),
     ('hi', 'Hindi'),
     ('ar', 'Arabic'),
