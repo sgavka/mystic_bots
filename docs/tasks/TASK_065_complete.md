@@ -4,7 +4,7 @@
 yes
 
 ## Commit ID
-_(not yet completed)_
+e59ccdd
 
 ## Branch name
 _(none)_
@@ -13,11 +13,11 @@ _(none)_
 Port Loki logging handler from redgifs_downloader_bot, add settings/env vars for Loki configuration.
 
 ## Checklist
-- [ ] Create core/loki_logger.py with LokiHandlerWrapper class
-- [ ] Add LOKI_* env vars to config/settings.py
-- [ ] Add LOGGING dict to config/settings.py
-- [ ] Update .env.example with Loki env vars
-- [ ] Run tests to verify nothing breaks
+- [x] Create core/loki_logger.py with LokiHandlerWrapper class
+- [x] Add LOKI_* env vars to config/settings.py
+- [x] Add LOGGING dict to config/settings.py
+- [x] Update .env.example with Loki env vars
+- [x] Run tests to verify nothing breaks
 
 ## Investigation
 - Source: /home/sgavka/projects/python-projects/redgifs_downloader_bot/core/loki_logger.py

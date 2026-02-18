@@ -10,7 +10,6 @@ from dependency_injector.wiring import Provide, inject
 
 from core.containers import ApplicationContainer
 from core.entities import UserEntity
-from core.enums import BotSlug
 from core.repositories import UserRepository
 from telegram_bot.helpers import fix_unserializable_values_in_raw
 from telegram_bot.repositories import MessageHistoryRepository

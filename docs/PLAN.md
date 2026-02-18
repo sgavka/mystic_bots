@@ -2,13 +2,13 @@
 
 ## Next step
 
-Implementing TASK_065 — Add Loki logging integration from redgifs_downloader_bot.
+All tasks complete. Idle.
 
 ## Tasks
 
 - [x] **TASK_063** (complete) — Add Italian and French languages with translations
 - [x] **TASK_064** (complete) — Create copies of ad SVG logo in all project languages
-- [ ] **TASK_065** (processing) — Add Loki logging integration from redgifs_downloader_bot
+- [x] **TASK_065** (complete) — Add Loki logging integration from redgifs_downloader_bot
 - [x] **TASK_062** (complete) — Fix: prevent duplicate horoscope sending on service restart
 - [x] **TASK_061** (complete) — Refactor: remove Celery from prod, replace tasks with async background execution
 - [x] **TASK_056** (complete) — Full test coverage for all handlers
