@@ -4,7 +4,7 @@
 yes
 
 ## Commit ID
-_(not yet completed)_
+826efc9
 
 ## Branch name
 _(none)_
@@ -13,14 +13,14 @@ _(none)_
 Create translated copies of logos/ad_1920x1080.svg for all languages in the project (en, ru, uk, de, hi, ar, it, fr).
 
 ## Checklist
-- [ ] Create ad_1920x1080_en.svg (rename/copy original)
-- [ ] Create ad_1920x1080_ru.svg with Russian text
-- [ ] Create ad_1920x1080_uk.svg with Ukrainian text
-- [ ] Create ad_1920x1080_de.svg with German text
-- [ ] Create ad_1920x1080_hi.svg with Hindi text
-- [ ] Create ad_1920x1080_ar.svg with Arabic text
-- [ ] Create ad_1920x1080_it.svg with Italian text
-- [ ] Create ad_1920x1080_fr.svg with French text
+- [x] Create ad_1920x1080_en.svg (rename/copy original)
+- [x] Create ad_1920x1080_ru.svg with Russian text
+- [x] Create ad_1920x1080_uk.svg with Ukrainian text
+- [x] Create ad_1920x1080_de.svg with German text
+- [x] Create ad_1920x1080_hi.svg with Hindi text
+- [x] Create ad_1920x1080_ar.svg with Arabic text
+- [x] Create ad_1920x1080_it.svg with Italian text
+- [x] Create ad_1920x1080_fr.svg with French text
 
 ## Investigation
 Text elements to translate in the SVG:

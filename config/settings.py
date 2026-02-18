@@ -207,30 +207,57 @@ LLM_BASE_URL = os.environ.get('LLM_BASE_URL', '')
 LLM_TIMEOUT = int(os.environ.get('LLM_TIMEOUT', '30'))
 
 
+# Grafana Loki logging configuration (optional)
+
+LOKI_URL = os.environ.get('LOKI_URL', '')
+LOKI_BEARER_TOKEN = os.environ.get('LOKI_BEARER_TOKEN', '')
+LOKI_APPLICATION_NAME = os.environ.get('LOKI_APPLICATION_NAME', '')
+LOKI_ENABLED = all([LOKI_URL, LOKI_BEARER_TOKEN, LOKI_APPLICATION_NAME])
+
+
 # Logging configuration
+
+_loki_handler = {
+    'level': 'WARNING',
+    'class': 'core.loki_logger.LokiHandlerWrapper',
+    'formatter': 'loki',
+}
+
+_handlers_list = ['console', 'loki'] if LOKI_ENABLED else ['console']
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
             'style': '{',
         },
-        'simple': {
-            'format': '{levelname} {message}',
+        'loki': {
+            'format': '{message}',
             'style': '{',
         },
     },
     'handlers': {
         'console': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        **(
+            {'loki': _loki_handler} if LOKI_ENABLED else {}
+        ),
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': _handlers_list,
         'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': _handlers_list,
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
 

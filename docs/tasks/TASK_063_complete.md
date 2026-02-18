@@ -4,7 +4,7 @@
 yes
 
 ## Commit ID
-_(not yet completed)_
+f8f0fe2
 
 ## Branch name
 _(none)_
@@ -13,14 +13,14 @@ _(none)_
 Add Italian (it) and French (fr) languages to the bot with full translations.
 
 ## Checklist
-- [ ] Add IT and FR to Language enum in horoscope/enums.py
-- [ ] Add Italian and French to LANGUAGES in config/settings.py
-- [ ] Update _DEFAULT_HOROSCOPE_LANGUAGES in config/settings.py
-- [ ] Create locale/it/LC_MESSAGES/django.po with Italian translations
-- [ ] Create locale/fr/LC_MESSAGES/django.po with French translations
-- [ ] Compile .mo files
-- [ ] Add tests for language mapping
-- [ ] Run all tests
+- [x] Add IT and FR to Language enum in horoscope/enums.py
+- [x] Add Italian and French to LANGUAGES in config/settings.py
+- [x] Update _DEFAULT_HOROSCOPE_LANGUAGES in config/settings.py
+- [x] Create locale/it/LC_MESSAGES/django.po with Italian translations
+- [x] Create locale/fr/LC_MESSAGES/django.po with French translations
+- [x] Compile .mo files
+- [x] Add tests for language mapping
+- [x] Run all tests (328 passed)
 
 ## Investigation
 - Follow same pattern as TASK_058 (Hindi/Arabic)
