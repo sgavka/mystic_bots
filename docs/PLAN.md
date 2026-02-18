@@ -2,11 +2,11 @@
 
 ## Next step
 
-Investigate and implement TASK_062.
+All tasks complete. Idle.
 
 ## Tasks
 
-- [ ] **TASK_062** (processing) — Fix: prevent duplicate horoscope sending on service restart
+- [x] **TASK_062** (complete) — Fix: prevent duplicate horoscope sending on service restart
 - [x] **TASK_061** (complete) — Refactor: remove Celery from prod, replace tasks with async background execution
 - [x] **TASK_056** (complete) — Full test coverage for all handlers
 - [x] **TASK_057** (complete) — Add optional birth time to user profile

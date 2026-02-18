@@ -4,7 +4,7 @@
 yes
 
 ## Commit ID
-_(not yet completed)_
+030ec27
 
 ## Branch name
 _(none)_
@@ -15,8 +15,8 @@ Prevent `send_daily_horoscope_notifications` and `send_periodic_teaser_notificat
 ## Checklist
 - [x] Add `sent_at` check in `send_daily_horoscope_notifications`
 - [x] Add `sent_at` check in `send_periodic_teaser_notifications`
-- [ ] Add/update tests
-- [ ] Verify tests pass
+- [x] Add/update tests
+- [x] Verify tests pass
 
 ## Investigation
 **Root cause**: Both sending tasks fetch today's horoscope and send it without checking if `horoscope.sent_at` is already set. When the service restarts, the scheduler immediately runs all tasks again, causing duplicate sends.
