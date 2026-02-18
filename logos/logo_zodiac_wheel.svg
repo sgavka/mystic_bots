@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0c0a1d"/>
+    </radialGradient>
+    <linearGradient id="ring2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+    <linearGradient id="innerRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="200" cy="200" r="195" fill="url(#bg2)"/>
+
+  <!-- Outer decorative ring -->
+  <circle cx="200" cy="200" r="180" fill="none" stroke="url(#ring2)" stroke-width="2"/>
+  <circle cx="200" cy="200" r="175" fill="none" stroke="#7c3aed" stroke-width="0.5"/>
+
+  <!-- Zodiac wheel outer ring -->
+  <circle cx="200" cy="200" r="150" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+  <circle cx="200" cy="200" r="115" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+
+  <!-- Division lines (12 segments) -->
+  <g stroke="#7c3aed" stroke-width="1" opacity="0.7">
+    <line x1="200" y1="50" x2="200" y2="85"/>
+    <line x1="275" y1="75" x2="252" y2="103"/>
+    <line x1="325" y1="125" x2="303" y2="143"/>
+    <line x1="350" y1="200" x2="315" y2="200"/>
+    <line x1="325" y1="275" x2="303" y2="257"/>
+    <line x1="275" y1="325" x2="252" y2="297"/>
+    <line x1="200" y1="350" x2="200" y2="315"/>
+    <line x1="125" y1="325" x2="148" y2="297"/>
+    <line x1="75" y1="275" x2="97" y2="257"/>
+    <line x1="50" y1="200" x2="85" y2="200"/>
+    <line x1="75" y1="125" x2="97" y2="143"/>
+    <line x1="125" y1="75" x2="148" y2="103"/>
+  </g>
+
+  <!-- Zodiac symbols (Unicode) placed around the wheel -->
+  <g font-family="serif" font-size="20" fill="#e9d5ff" text-anchor="middle" dominant-baseline="central">
+    <!-- Aries ♈ -->
+    <text x="200" y="65" font-size="18">&#x2648;</text>
+    <!-- Taurus ♉ -->
+    <text x="268" y="88" font-size="18">&#x2649;</text>
+    <!-- Gemini ♊ -->
+    <text x="315" y="135" font-size="18">&#x264A;</text>
+    <!-- Cancer ♋ -->
+    <text x="335" y="200" font-size="18">&#x264B;</text>
+    <!-- Leo ♌ -->
+    <text x="315" y="268" font-size="18">&#x264C;</text>
+    <!-- Virgo ♍ -->
+    <text x="268" y="315" font-size="18">&#x264D;</text>
+    <!-- Libra ♎ -->
+    <text x="200" y="338" font-size="18">&#x264E;</text>
+    <!-- Scorpio ♏ -->
+    <text x="132" y="315" font-size="18">&#x264F;</text>
+    <!-- Sagittarius ♐ -->
+    <text x="85" y="268" font-size="18">&#x2650;</text>
+    <!-- Capricorn ♑ -->
+    <text x="65" y="200" font-size="18">&#x2651;</text>
+    <!-- Aquarius ♒ -->
+    <text x="85" y="132" font-size="18">&#x2652;</text>
+    <!-- Pisces ♓ -->
+    <text x="132" y="88" font-size="18">&#x2653;</text>
+  </g>
+
+  <!-- Inner circle with sun symbol -->
+  <circle cx="200" cy="200" r="50" fill="none" stroke="url(#innerRing)" stroke-width="1.5"/>
+
+  <!-- Central sun -->
+  <circle cx="200" cy="200" r="20" fill="#f59e0b" opacity="0.8"/>
+  <circle cx="200" cy="200" r="15" fill="#fbbf24"/>
+
+  <!-- Sun rays -->
+  <g stroke="#f59e0b" stroke-width="1.5" opacity="0.6">
+    <line x1="200" y1="175" x2="200" y2="155"/>
+    <line x1="200" y1="225" x2="200" y2="245"/>
+    <line x1="175" y1="200" x2="155" y2="200"/>
+    <line x1="225" y1="200" x2="245" y2="200"/>
+    <line x1="182" y1="182" x2="168" y2="168"/>
+    <line x1="218" y1="218" x2="232" y2="232"/>
+    <line x1="218" y1="182" x2="232" y2="168"/>
+    <line x1="182" y1="218" x2="168" y2="232"/>
+  </g>
+
+  <!-- Corner stars -->
+  <g fill="#e9d5ff" opacity="0.4">
+    <circle cx="30" cy="30" r="1.5"/>
+    <circle cx="370" cy="30" r="1"/>
+    <circle cx="30" cy="370" r="1"/>
+    <circle cx="370" cy="370" r="1.5"/>
+    <circle cx="45" cy="100" r="1"/>
+    <circle cx="355" cy="300" r="1"/>
+  </g>
+
+  <!-- Text below wheel -->
+  <text x="200" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#a78bfa" letter-spacing="6">MYSTIC HOROSCOPE</text>
+</svg>

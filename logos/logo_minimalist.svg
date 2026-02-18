@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Clean background -->
+  <rect width="400" height="400" rx="20" fill="#0f0722"/>
+
+  <!-- Crescent moon - main element -->
+  <g transform="translate(200, 165)">
+    <circle cx="0" cy="0" r="80" fill="url(#moonGrad)"/>
+    <circle cx="28" cy="-20" r="65" fill="#0f0722"/>
+  </g>
+
+  <!-- Single star nestled in the crescent -->
+  <g transform="translate(235, 115)">
+    <polygon points="0,-18 5,-6 18,-6 8,3 12,16 0,9 -12,16 -8,3 -18,-6 -5,-6" fill="url(#starGrad)"/>
+  </g>
+
+  <!-- Three small dots -->
+  <g fill="#a78bfa" opacity="0.5">
+    <circle cx="185" cy="275" r="2"/>
+    <circle cx="200" cy="275" r="2"/>
+    <circle cx="215" cy="275" r="2"/>
+  </g>
+
+  <!-- Text -->
+  <text x="200" y="310" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="300" font-size="32" fill="#e9d5ff" letter-spacing="8">MYSTIC</text>
+  <text x="200" y="345" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="200" font-size="14" fill="#7c3aed" letter-spacing="10">HOROSCOPE</text>
+</svg>
