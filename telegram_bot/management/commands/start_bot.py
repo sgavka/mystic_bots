@@ -62,6 +62,7 @@ class Command(BaseCommand):
         dispatcher = create_dispatcher(storage=storage)
 
         self._bot = bot
+        self._scheduler = None
 
         try:
             setup_dispatcher(dispatcher=dispatcher, bot_instance=bot)
@@ -80,12 +81,55 @@ class Command(BaseCommand):
 
     async def on_startup(self):
         logger = logging.getLogger(__name__)
+
+        from telegram_bot.scheduler import BackgroundScheduler
+        from horoscope.tasks import (
+            generate_daily_for_all_users,
+            send_daily_horoscope_notifications,
+            send_periodic_teaser_notifications,
+            send_expiry_reminders,
+            send_expired_notifications,
+        )
+
+        self._scheduler = BackgroundScheduler(bot=self._bot)
+
+        daily_interval = settings.SCHEDULER_DAILY_INTERVAL_SECONDS
+
+        self._scheduler.schedule(
+            func=generate_daily_for_all_users,
+            interval_seconds=daily_interval,
+            name="generate-daily-horoscopes",
+        )
+        self._scheduler.schedule(
+            func=send_daily_horoscope_notifications,
+            interval_seconds=daily_interval,
+            name="send-daily-horoscope-notifications",
+        )
+        self._scheduler.schedule(
+            func=send_periodic_teaser_notifications,
+            interval_seconds=daily_interval,
+            name="send-periodic-teaser-notifications",
+        )
+        self._scheduler.schedule(
+            func=send_expiry_reminders,
+            interval_seconds=daily_interval,
+            name="send-expiry-reminders",
+        )
+        self._scheduler.schedule(
+            func=send_expired_notifications,
+            interval_seconds=daily_interval,
+            name="send-expired-notifications",
+        )
+
         logger.info("=" * 60)
         logger.info("Bot startup complete")
+        logger.info(f"Background scheduler started with {daily_interval}s interval")
         logger.info("=" * 60)
 
     async def on_shutdown(self):
         logger = logging.getLogger(__name__)
+        if self._scheduler:
+            await self._scheduler.shutdown()
         logger.info("=" * 60)
         logger.info("Bot shutting down...")
         logger.info("=" * 60)

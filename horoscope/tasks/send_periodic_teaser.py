@@ -1,22 +1,14 @@
 import logging
 from datetime import date
 
-from celery import shared_task
+from aiogram import Bot
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task(
-    name='horoscope.send_periodic_teaser_notifications',
-    autoretry_for=(Exception,),
-    retry_backoff=True,
-    retry_backoff_max=600,
-    max_retries=3,
-    retry_jitter=True,
-)
-def send_periodic_teaser_notifications_task():
+async def send_periodic_teaser_notifications(bot: Bot) -> int:
     """
-    Celery beat task: send periodic extended teaser horoscopes to non-subscribers.
+    Send periodic extended teaser horoscopes to non-subscribers.
     Only sends to users who:
     - Do NOT have an active subscription
     - Have been active within HOROSCOPE_ACTIVITY_WINDOW_DAYS
@@ -43,28 +35,28 @@ def send_periodic_teaser_notifications_task():
     subscription_repo = container.horoscope.subscription_repository()
     user_repo = container.core.user_repository()
 
-    profiles = user_profile_repo.all()
+    profiles = await user_profile_repo.aall()
 
     count = 0
     for profile in profiles:
-        has_subscription = subscription_repo.has_active_subscription(
+        has_subscription = await subscription_repo.ahas_active_subscription(
             telegram_uid=profile.user_telegram_uid,
         )
         if has_subscription:
             continue
 
-        user = user_repo.get(profile.user_telegram_uid)
+        user = await user_repo.aget(profile.user_telegram_uid)
         if not user:
             continue
 
         if not user.last_activity or user.last_activity < activity_cutoff:
             continue
 
-        last_sent = horoscope_repo.get_last_sent_at(telegram_uid=profile.user_telegram_uid)
+        last_sent = await horoscope_repo.aget_last_sent_at(telegram_uid=profile.user_telegram_uid)
         if last_sent and last_sent >= interval_cutoff:
             continue
 
-        horoscope = horoscope_repo.get_by_user_and_date(
+        horoscope = await horoscope_repo.aget_by_user_and_date(
             telegram_uid=profile.user_telegram_uid,
             target_date=today,
         )
@@ -80,16 +72,17 @@ def send_periodic_teaser_notifications_task():
         ), lang)
         keyboard = subscribe_keyboard(language=lang)
 
-        success = send_message(
+        success = await send_message(
+            bot=bot,
             telegram_uid=profile.user_telegram_uid,
             text=text,
             reply_markup=keyboard,
         )
         if success:
-            horoscope_repo.mark_sent(horoscope_id=horoscope.id)
+            await horoscope_repo.amark_sent(horoscope_id=horoscope.id)
             count += 1
         else:
-            horoscope_repo.mark_failed_to_send(horoscope_id=horoscope.id)
+            await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope.id)
 
     logger.info(f"Sent periodic teaser horoscope to {count} non-subscribers on {today}")
     return count

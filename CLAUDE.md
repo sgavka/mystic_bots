@@ -2,7 +2,7 @@
 
 <overview>
   Project name, concept, stack, and detailed structure are in PROJECT_INFO.md.
-  <stack>Python 3.12+, Aiogram 3.x, Django 6.0, Pydantic 2.x, PostgreSQL 18, Redis 7, Celery, dependency-injector, Docker, uv</stack>
+  <stack>Python 3.12+, Aiogram 3.x, Django 6.0, Pydantic 2.x, PostgreSQL 18, Redis 7, dependency-injector, Docker, uv</stack>
 </overview>
 
 <principles>
@@ -39,7 +39,7 @@ Each app must have:
 - states.py (FSM states, for bot apps)
 - callbacks.py (callback data classes, for bot apps)
 - keyboards.py (inline keyboard builders, for bot apps)
-- tasks/ (Celery tasks, optional)
+- tasks/ (background tasks, optional)
 - tests/ (test suite)
 </app_structure>
 
@@ -62,7 +62,6 @@ project_root/
 ├── config/                    # Django project config
 │   ├── settings.py
 │   ├── settings_test.py
-│   ├── celery.py
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
@@ -101,7 +100,7 @@ project_root/
 │   ├── callbacks.py           # Callback data structures
 │   ├── keyboards.py           # Inline keyboard builders
 │   ├── states.py              # FSM states
-│   ├── tasks/                 # Celery tasks
+│   ├── tasks/                 # Background tasks
 │   ├── handlers/
 │   ├── repositories/
 │   ├── services/
@@ -274,7 +273,7 @@ Middleware registration order is defined in telegram_bot/bot.py:setup_middleware
 AppContext (telegram_bot/app_context.py) is the REQUIRED way to send all outgoing messages.
 It wraps bot message operations and automatically logs every sent message to MessageHistory.
 AppContext is injected by AppContextMiddleware as 'app_context' handler parameter.
-For sending outside handler flow (background tasks, Celery), use AppContext.for_user() factory.
+For sending outside handler flow (background tasks), use AppContext.for_user() factory.
 </description>
 
     <rules>
@@ -431,7 +430,7 @@ await app_context.send_message(text="Done!")
 - Outgoing messages are logged automatically by AppContext — ALWAYS use AppContext to send messages
 - NEVER use bot.send_message(), message.answer(), message.reply() directly — these bypass logging
 - ALWAYS use app_context.send_message(), app_context.edit_message(), app_context.send_photo(), etc.
-- For sending messages outside handler flow (background tasks, Celery), use AppContext.for_user()
+- For sending messages outside handler flow (background tasks), use AppContext.for_user()
 - Raw message data MUST be sanitized with fix_unserializable_values_in_raw() before DB storage
 </requirements>
 </message_logging_rules>
@@ -475,13 +474,14 @@ await app_context.send_message(text="Done!")
     </enum_fields>
   </database>
 
-<celery_tasks>
+<background_tasks>
 <requirements>
 - Tasks must be idempotent
-- Use Redis as broker
-- Keep handlers lightweight — offload heavy processing to Celery tasks
+- Keep handlers lightweight — offload heavy processing to async background tasks
+- Background tasks are scheduled via BackgroundScheduler (telegram_bot/scheduler.py)
+- One-off tasks use asyncio.create_task() in handlers
 </requirements>
-</celery_tasks>
+</background_tasks>
 
   <deployment>
     <docker>
@@ -582,7 +582,7 @@ logger.error(f"Processing failed: {e}")  # Missing traceback
 <commands>
   <critical_rule>
     The project MUST ALWAYS be run inside Docker containers. NEVER use system Python or locally installed interpreters.
-    NEVER run commands directly (python, uv, django, celery, etc.).
+    NEVER run commands directly (python, uv, django, etc.).
     ALWAYS use `make` commands which run everything inside Docker containers.
     This ensures consistent environment and proper dependency resolution.
     If Docker is not running, start it first. Do NOT fall back to system Python under any circumstances.
@@ -629,10 +629,6 @@ make format             # Format code with ruff
 make type-check         # Check types with mypy
 </code_quality>
 
-  <celery>
-make celery-worker      # Start Celery worker
-make celery-beat        # Start Celery beat
-  </celery>
 </commands>
 
 <commit_rules>

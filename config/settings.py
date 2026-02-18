@@ -126,44 +126,11 @@ REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', '')
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 REDIS_BOT_DB = int(os.environ.get('REDIS_BOT_DB', 0))
-REDIS_CELERY_DB = int(os.environ.get('REDIS_CELERY_DB', 0))
 
 
-# Celery configuration
+# Background scheduler configuration
 
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_DB}')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', CELERY_BROKER_URL)
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-CELERY_BEAT_SCHEDULE = {
-    'generate-daily-horoscopes': {
-        'task': 'horoscope.generate_daily_for_all_users',
-        'schedule': 60 * 60 * 24,  # every 24 hours
-        'options': {'queue': 'default'},
-    },
-    'send-daily-horoscope-notifications': {
-        'task': 'horoscope.send_daily_horoscope_notifications',
-        'schedule': 60 * 60 * 24,  # every 24 hours (offset by crontab in prod)
-        'options': {'queue': 'default'},
-    },
-    'send-expiry-reminders': {
-        'task': 'horoscope.send_expiry_reminders',
-        'schedule': 60 * 60 * 24,  # every 24 hours
-        'options': {'queue': 'default'},
-    },
-    'send-expired-notifications': {
-        'task': 'horoscope.send_expired_notifications',
-        'schedule': 60 * 60 * 24,  # every 24 hours
-        'options': {'queue': 'default'},
-    },
-    'send-periodic-teaser-notifications': {
-        'task': 'horoscope.send_periodic_teaser_notifications',
-        'schedule': 60 * 60 * 24,  # every 24 hours
-        'options': {'queue': 'default'},
-    },
-}
+SCHEDULER_DAILY_INTERVAL_SECONDS = int(os.environ.get('SCHEDULER_DAILY_INTERVAL_SECONDS', str(60 * 60 * 24)))
 
 
 # Bot configuration

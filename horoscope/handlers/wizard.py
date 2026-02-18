@@ -308,12 +308,15 @@ async def process_place_of_living(
         ),
     )
 
-    # Trigger Celery task to generate first horoscope
-    from horoscope.tasks import generate_horoscope_task
+    # Trigger background task to generate first horoscope
+    import asyncio
+
+    from horoscope.tasks.generate_horoscope import generate_horoscope
     today = datetime.now().date()
-    generate_horoscope_task.delay(
+    asyncio.create_task(generate_horoscope(
+        bot=message.bot,
         telegram_uid=user.telegram_uid,
         target_date=today.isoformat(),
         horoscope_type='first',
-    )
+    ))
     logger.info(f"First horoscope generation task queued for user {user.telegram_uid}")

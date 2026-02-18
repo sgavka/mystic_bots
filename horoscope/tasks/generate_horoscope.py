@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from celery import shared_task
+from aiogram import Bot
 from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
@@ -13,22 +13,20 @@ TASK_FIRST_HOROSCOPE_READY = _(
 )
 
 
-@shared_task(
-    name='horoscope.generate_for_user',
-    autoretry_for=(Exception,),
-    retry_backoff=True,
-    retry_backoff_max=600,
-    max_retries=3,
-    retry_jitter=True,
-)
-def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type: str = 'daily'):
+async def generate_horoscope(
+    bot: Bot,
+    telegram_uid: int,
+    target_date: str,
+    horoscope_type: str = 'daily',
+) -> None:
     """
-    Celery task to generate a horoscope for a specific user and date.
+    Generate a horoscope for a specific user and date, then send it.
 
     Args:
-        telegram_uid: User's Telegram UID
-        target_date: ISO format date string (YYYY-MM-DD)
-        horoscope_type: Type of horoscope ('daily' or 'first')
+        bot: The Bot instance for sending messages.
+        telegram_uid: User's Telegram UID.
+        target_date: ISO format date string (YYYY-MM-DD).
+        horoscope_type: Type of horoscope ('daily' or 'first').
     """
     from core.containers import container
 
@@ -36,7 +34,7 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
     service = container.horoscope.horoscope_service()
 
     try:
-        horoscope = service.generate_for_user(
+        horoscope = await service.agenerate_for_user(
             telegram_uid=telegram_uid,
             target_date=parsed_date,
             horoscope_type=horoscope_type,
@@ -47,27 +45,28 @@ def generate_horoscope_task(telegram_uid: int, target_date: str, horoscope_type:
         )
 
         if horoscope_type == 'first':
-            _send_first_horoscope(
+            await _send_first_horoscope(
+                bot=bot,
                 telegram_uid=telegram_uid,
                 horoscope_id=horoscope.id,
                 full_text=horoscope.full_text,
             )
         else:
-            _send_daily_horoscope(
+            await _send_daily_horoscope(
+                bot=bot,
                 telegram_uid=telegram_uid,
                 horoscope_id=horoscope.id,
                 full_text=horoscope.full_text,
                 teaser_text=horoscope.teaser_text,
                 extended_teaser_text=horoscope.extended_teaser_text,
             )
-
-        return horoscope.id
     except ValueError as e:
         logger.error(f"Failed to generate horoscope for user {telegram_uid}", exc_info=e)
-        raise e
+        raise
 
 
-def _send_daily_horoscope(
+async def _send_daily_horoscope(
+    bot: Bot,
     telegram_uid: int,
     horoscope_id: int,
     full_text: str,
@@ -86,8 +85,8 @@ def _send_daily_horoscope(
     subscription_repo = container.horoscope.subscription_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
 
-    has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
-    profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
+    has_subscription = await subscription_repo.ahas_active_subscription(telegram_uid=telegram_uid)
+    profile = await user_profile_repo.aget_by_telegram_uid(telegram_uid)
     lang = profile.preferred_language if profile else 'en'
 
     if has_subscription:
@@ -105,19 +104,25 @@ def _send_daily_horoscope(
         ), lang)
         keyboard = subscribe_keyboard(language=lang)
 
-    success = send_message(
+    success = await send_message(
+        bot=bot,
         telegram_uid=telegram_uid,
         text=text,
         reply_markup=keyboard,
     )
     if success:
-        horoscope_repo.mark_sent(horoscope_id=horoscope_id)
+        await horoscope_repo.amark_sent(horoscope_id=horoscope_id)
     else:
-        horoscope_repo.mark_failed_to_send(horoscope_id=horoscope_id)
+        await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope_id)
         logger.error(f"Failed to deliver daily horoscope to user {telegram_uid}")
 
 
-def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) -> None:
+async def _send_first_horoscope(
+    bot: Bot,
+    telegram_uid: int,
+    horoscope_id: int,
+    full_text: str,
+) -> None:
     """Send the first horoscope to the user after profile setup."""
     from django.utils.translation import gettext_lazy as _
 
@@ -128,10 +133,10 @@ def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) 
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
-    profile = user_profile_repo.get_by_telegram_uid(telegram_uid)
+    profile = await user_profile_repo.aget_by_telegram_uid(telegram_uid)
     lang = profile.preferred_language if profile else 'en'
 
-    has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
+    has_subscription = await subscription_repo.ahas_active_subscription(telegram_uid=telegram_uid)
     followup_hint = ""
     if has_subscription:
         followup_hint = translate(_(
@@ -141,9 +146,13 @@ def _send_first_horoscope(telegram_uid: int, horoscope_id: int, full_text: str) 
         ), lang)
 
     text = translate(TASK_FIRST_HOROSCOPE_READY, lang, text=full_text + followup_hint)
-    success = send_message(telegram_uid=telegram_uid, text=text)
+    success = await send_message(
+        bot=bot,
+        telegram_uid=telegram_uid,
+        text=text,
+    )
     if success:
-        horoscope_repo.mark_sent(horoscope_id=horoscope_id)
+        await horoscope_repo.amark_sent(horoscope_id=horoscope_id)
     else:
-        horoscope_repo.mark_failed_to_send(horoscope_id=horoscope_id)
+        await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope_id)
         logger.error(f"Failed to deliver first horoscope to user {telegram_uid}")

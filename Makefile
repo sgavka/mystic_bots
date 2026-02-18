@@ -140,26 +140,6 @@ uv-lock:
 	docker compose $(DOCKER_FILE_PART) run --rm $(RUN_CONTAINER) uv lock
 
 # =============================================================================
-# Celery
-# =============================================================================
-
-.PHONY: celery-worker
-celery-worker:
-	docker compose $(DOCKER_FILE_PART) up -d celery-worker
-
-.PHONY: celery-beat
-celery-beat:
-	docker compose $(DOCKER_FILE_PART) up -d celery-beat
-
-.PHONY: celery-logs
-celery-logs:
-	docker compose $(DOCKER_FILE_PART) logs -f celery-worker celery-beat
-
-.PHONY: celery-restart
-celery-restart:
-	docker compose $(DOCKER_FILE_PART) restart celery-worker celery-beat
-
-# =============================================================================
 # Testing
 # =============================================================================
 
@@ -270,12 +250,6 @@ help:
 	@echo "  make uv-add         - Add new dependency"
 	@echo "  make uv-update      - Update dependencies (upgrade all)"
 	@echo "  make uv-lock        - Regenerate lock file"
-	@echo ""
-	@echo "Celery:"
-	@echo "  make celery-worker  - Start Celery worker"
-	@echo "  make celery-beat    - Start Celery beat scheduler"
-	@echo "  make celery-logs    - View Celery logs"
-	@echo "  make celery-restart - Restart Celery services"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test           - Run tests"

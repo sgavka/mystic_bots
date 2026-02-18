@@ -6,9 +6,9 @@
     Telegram bot platform for generating personalized horoscopes. Users go through a wizard
     (name → birth date → birth place → living place), receive their first horoscope, and then
     get daily horoscopes. Free users see a teaser (few lines); subscribers get the full horoscope.
-    Horoscope generation runs via Celery task queue.
+    Horoscope generation runs via async background tasks in the bot's event loop.
   </description>
-  <stack>Python 3.12+, Aiogram 3.x, Django 5.2, Pydantic 2.x, PostgreSQL 17, Redis 7, Celery, dependency-injector, Docker, uv</stack>
+  <stack>Python 3.12+, Aiogram 3.x, Django 5.2, Pydantic 2.x, PostgreSQL 17, Redis 7, dependency-injector, Docker, uv</stack>
   <package_manager>uv</package_manager>
 </project>
 
@@ -53,8 +53,7 @@
 
   <dir name="config/" description="Django project config">
     <file name="settings.py">Django settings</file>
-    <file name="celery.py">Celery app configuration</file>
-    <file name="urls.py">URL routing</file>
+<file name="urls.py">URL routing</file>
     <file name="wsgi.py">WSGI application</file>
     <file name="asgi.py">ASGI application</file>
   </dir>
@@ -98,8 +97,8 @@
     <file name="keyboards.py">Inline keyboard builders</file>
     <file name="states.py">FSM states (wizard)</file>
     <dir name="tasks/">
-      <file name="generate_horoscope.py">Celery task for horoscope generation</file>
-      <file name="send_daily_horoscope.py">Celery task for daily sending</file>
+      <file name="generate_horoscope.py">Async task for horoscope generation</file>
+      <file name="send_daily_horoscope.py">Async task for daily sending</file>
     </dir>
     <dir name="handlers/">
       <file name="wizard.py">Onboarding wizard</file>

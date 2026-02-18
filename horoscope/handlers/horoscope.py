@@ -44,12 +44,15 @@ async def view_horoscope_handler(message: Message, user: UserEntity, app_context
     if not horoscope:
         has_subscription = await subscription_repo.ahas_active_subscription(user.telegram_uid)
         if has_subscription:
-            from horoscope.tasks.generate_horoscope import generate_horoscope_task
+            import asyncio
 
-            generate_horoscope_task.delay(
+            from horoscope.tasks.generate_horoscope import generate_horoscope
+
+            asyncio.create_task(generate_horoscope(
+                bot=message.bot,
                 telegram_uid=user.telegram_uid,
                 target_date=today.isoformat(),
-            )
+            ))
             await app_context.send_message(text=translate(_(
                 "🔮 Your horoscope is being generated right now!\n"
                 "Please check back in a minute."

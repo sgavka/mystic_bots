@@ -16,39 +16,3 @@ services:
       options:
         max-size: "100m"
         max-file: "3"
-
-  celery_worker:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    command: "celery -A config.celery worker --loglevel=info"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    env_file:
-      - .env
-    environment:
-      - PYTHONOPTIMIZE=2
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: "100m"
-        max-file: "3"
-
-  celery_beat:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    command: "celery -A config.celery beat --loglevel=info"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    env_file:
-      - .env
-    environment:
-      - PYTHONOPTIMIZE=2
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: "100m"
-        max-file: "3"

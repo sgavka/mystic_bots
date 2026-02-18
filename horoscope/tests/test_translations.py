@@ -1,9 +1,9 @@
 """
-Tests for the translation system and Celery tasks.
+Tests for the translation system and background tasks.
 """
 
 from datetime import date, datetime, timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from django.conf import settings
@@ -214,12 +214,12 @@ class TestTranslationCompleteness:
             assert lang in settings.HOROSCOPE_LANGUAGE_FLAGS
 
 
-class TestCeleryTasks:
-    """Tests for Celery tasks with mocked dependencies."""
+class TestBackgroundTasks:
+    """Tests for background tasks with mocked dependencies."""
 
     @pytest.mark.django_db
-    def test_generate_horoscope_task_success(self):
-        from horoscope.tasks.generate_horoscope import generate_horoscope_task
+    async def test_generate_horoscope_success(self):
+        from horoscope.tasks.generate_horoscope import generate_horoscope
 
         mock_horoscope = MagicMock()
         mock_horoscope.id = 42
@@ -228,28 +228,32 @@ class TestCeleryTasks:
         mock_horoscope.extended_teaser_text = "Extended teaser text"
 
         mock_service = MagicMock()
-        mock_service.generate_for_user.return_value = mock_horoscope
+        mock_service.agenerate_for_user = AsyncMock(return_value=mock_horoscope)
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.generate_horoscope._send_daily_horoscope',
+            new_callable=AsyncMock,
         ) as mock_send:
             mock_container.horoscope.horoscope_service.return_value = mock_service
 
-            result = generate_horoscope_task(
+            await generate_horoscope(
+                bot=mock_bot,
                 telegram_uid=12345,
                 target_date="2024-06-15",
                 horoscope_type="daily",
             )
 
-        assert result == 42
-        mock_service.generate_for_user.assert_called_once_with(
+        mock_service.agenerate_for_user.assert_called_once_with(
             telegram_uid=12345,
             target_date=date(2024, 6, 15),
             horoscope_type="daily",
         )
         mock_send.assert_called_once_with(
+            bot=mock_bot,
             telegram_uid=12345,
             horoscope_id=42,
             full_text="Your horoscope text",
@@ -258,11 +262,13 @@ class TestCeleryTasks:
         )
 
     @pytest.mark.django_db
-    def test_generate_horoscope_task_value_error(self):
-        from horoscope.tasks.generate_horoscope import generate_horoscope_task
+    async def test_generate_horoscope_value_error(self):
+        from horoscope.tasks.generate_horoscope import generate_horoscope
 
         mock_service = MagicMock()
-        mock_service.generate_for_user.side_effect = ValueError("No profile")
+        mock_service.agenerate_for_user = AsyncMock(side_effect=ValueError("No profile"))
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
@@ -270,73 +276,77 @@ class TestCeleryTasks:
             mock_container.horoscope.horoscope_service.return_value = mock_service
 
             with pytest.raises(ValueError, match="No profile"):
-                generate_horoscope_task(
+                await generate_horoscope(
+                    bot=mock_bot,
                     telegram_uid=12345,
                     target_date="2024-06-15",
                 )
 
     @pytest.mark.django_db
-    def test_generate_horoscope_task_first_sends_message(self):
-        from horoscope.tasks.generate_horoscope import generate_horoscope_task
+    async def test_generate_horoscope_first_sends_message(self):
+        from horoscope.tasks.generate_horoscope import generate_horoscope
 
         mock_horoscope = MagicMock()
         mock_horoscope.id = 42
         mock_horoscope.full_text = "First horoscope"
 
         mock_service = MagicMock()
-        mock_service.generate_for_user.return_value = mock_horoscope
+        mock_service.agenerate_for_user = AsyncMock(return_value=mock_horoscope)
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.generate_horoscope._send_first_horoscope',
+            new_callable=AsyncMock,
         ) as mock_send:
             mock_container.horoscope.horoscope_service.return_value = mock_service
 
-            result = generate_horoscope_task(
+            await generate_horoscope(
+                bot=mock_bot,
                 telegram_uid=12345,
                 target_date="2024-06-15",
                 horoscope_type="first",
             )
 
-        assert result == 42
         mock_send.assert_called_once_with(
+            bot=mock_bot,
             telegram_uid=12345,
             horoscope_id=42,
             full_text="First horoscope",
         )
 
     @pytest.mark.django_db
-    def test_generate_daily_for_all_users_task(self):
-        from horoscope.tasks.send_daily_horoscope import (
-            generate_daily_for_all_users_task,
-        )
+    async def test_generate_daily_for_all_users(self):
+        from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.get_all_telegram_uids.return_value = [111, 222, 333]
+        mock_profile_repo.aget_all_telegram_uids = AsyncMock(return_value=[111, 222, 333])
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.has_active_subscription.return_value = True
+        mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=True)
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
-            'horoscope.tasks.generate_horoscope.generate_horoscope_task'
+            'horoscope.tasks.generate_horoscope.generate_horoscope',
+            new_callable=AsyncMock,
         ) as mock_task:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 
-            result = generate_daily_for_all_users_task()
+            result = await generate_daily_for_all_users(mock_bot)
 
         assert result == 3
-        assert mock_task.delay.call_count == 3
+        assert mock_task.call_count == 3
 
     @pytest.mark.django_db
-    def test_send_daily_horoscope_notifications_task(self):
+    async def test_send_daily_horoscope_notifications(self):
         from horoscope.entities import HoroscopeEntity, UserProfileEntity
-        from horoscope.tasks.send_daily_horoscope import (
-            send_daily_horoscope_notifications_task,
-        )
+        from horoscope.tasks.send_daily_horoscope import send_daily_horoscope_notifications
 
         profile = UserProfileEntity(
             user_telegram_uid=12345,
@@ -359,25 +369,29 @@ class TestCeleryTasks:
         )
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.all.return_value = [profile]
+        mock_profile_repo.aall = AsyncMock(return_value=[profile])
 
         mock_horoscope_repo = MagicMock()
-        mock_horoscope_repo.get_by_user_and_date.return_value = horoscope
+        mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
+        mock_horoscope_repo.amark_sent = AsyncMock()
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.has_active_subscription.return_value = True
+        mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=True)
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.messaging.send_message',
+            new_callable=AsyncMock,
             return_value=True,
         ) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 
-            result = send_daily_horoscope_notifications_task()
+            result = await send_daily_horoscope_notifications(mock_bot)
 
         assert result == 1
         mock_send.assert_called_once()
@@ -385,15 +399,13 @@ class TestCeleryTasks:
         assert call_kwargs['telegram_uid'] == 12345
         assert "Full text" in call_kwargs['text']
         assert "just type your message" in call_kwargs['text']
-        mock_horoscope_repo.mark_sent.assert_called_once_with(horoscope_id=1)
+        mock_horoscope_repo.amark_sent.assert_called_once_with(horoscope_id=1)
 
     @pytest.mark.django_db
-    def test_send_daily_horoscope_non_subscriber_skipped(self):
+    async def test_send_daily_horoscope_non_subscriber_skipped(self):
         """Non-subscribers are skipped by daily notification task (they get periodic teasers instead)."""
         from horoscope.entities import UserProfileEntity
-        from horoscope.tasks.send_daily_horoscope import (
-            send_daily_horoscope_notifications_task,
-        )
+        from horoscope.tasks.send_daily_horoscope import send_daily_horoscope_notifications
 
         profile = UserProfileEntity(
             user_telegram_uid=12345,
@@ -407,37 +419,42 @@ class TestCeleryTasks:
         )
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.all.return_value = [profile]
+        mock_profile_repo.aall = AsyncMock(return_value=[profile])
 
         mock_horoscope_repo = MagicMock()
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.has_active_subscription.return_value = False
+        mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.messaging.send_message',
+            new_callable=AsyncMock,
             return_value=True,
         ) as mock_send:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 
-            result = send_daily_horoscope_notifications_task()
+            result = await send_daily_horoscope_notifications(mock_bot)
 
         assert result == 0
         mock_send.assert_not_called()
-        mock_horoscope_repo.get_by_user_and_date.assert_not_called()
+        mock_horoscope_repo.aget_by_user_and_date.assert_not_called()
 
     @pytest.mark.django_db
-    def test_send_expiry_reminders_task_no_expiring(self):
-        from horoscope.tasks.subscription_reminders import send_expiry_reminders_task
+    async def test_send_expiry_reminders_no_expiring(self):
+        from horoscope.tasks.subscription_reminders import send_expiry_reminders
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.get_expiring_soon.return_value = []
+        mock_subscription_repo.aget_expiring_soon = AsyncMock(return_value=[])
 
         mock_profile_repo = MagicMock()
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
@@ -445,14 +462,14 @@ class TestCeleryTasks:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
 
-            result = send_expiry_reminders_task()
+            result = await send_expiry_reminders(mock_bot)
 
         assert result == 0
 
     @pytest.mark.django_db
-    def test_send_expiry_reminders_task_with_expiring(self):
+    async def test_send_expiry_reminders_with_expiring(self):
         from horoscope.entities import SubscriptionEntity, UserProfileEntity
-        from horoscope.tasks.subscription_reminders import send_expiry_reminders_task
+        from horoscope.tasks.subscription_reminders import send_expiry_reminders
 
         now = timezone.now()
         sub = SubscriptionEntity(
@@ -476,40 +493,45 @@ class TestCeleryTasks:
         )
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.get_expiring_soon.return_value = [sub]
+        mock_subscription_repo.aget_expiring_soon = AsyncMock(return_value=[sub])
+        mock_subscription_repo.amark_reminded = AsyncMock()
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.get_by_telegram_uid.return_value = profile
+        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.messaging.send_messages_batch',
+            new_callable=AsyncMock,
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
 
-            result = send_expiry_reminders_task()
+            result = await send_expiry_reminders(mock_bot)
 
         assert result == 1
         mock_send.assert_called_once()
-        mock_subscription_repo.mark_reminded.assert_called_once_with(
+        mock_subscription_repo.amark_reminded.assert_called_once_with(
             subscription_ids=[1],
         )
 
     @pytest.mark.django_db
-    def test_send_expired_notifications_task_no_expired(self):
-        from horoscope.tasks.subscription_reminders import (
-            send_expired_notifications_task,
-        )
+    async def test_send_expired_notifications_no_expired(self):
+        from horoscope.tasks.subscription_reminders import send_expired_notifications
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.get_recently_expired_unnotified.return_value = []
+        mock_subscription_repo.aget_recently_expired_unnotified = AsyncMock(return_value=[])
 
         mock_profile_repo = MagicMock()
 
         mock_service = MagicMock()
+        mock_service.aexpire_overdue_subscriptions = AsyncMock()
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
@@ -518,17 +540,15 @@ class TestCeleryTasks:
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.subscription_service.return_value = mock_service
 
-            result = send_expired_notifications_task()
+            result = await send_expired_notifications(mock_bot)
 
         assert result == 0
-        mock_service.expire_overdue_subscriptions.assert_called_once()
+        mock_service.aexpire_overdue_subscriptions.assert_called_once()
 
     @pytest.mark.django_db
-    def test_send_expired_notifications_task_with_expired(self):
+    async def test_send_expired_notifications_with_expired(self):
         from horoscope.entities import SubscriptionEntity, UserProfileEntity
-        from horoscope.tasks.subscription_reminders import (
-            send_expired_notifications_task,
-        )
+        from horoscope.tasks.subscription_reminders import send_expired_notifications
 
         now = timezone.now()
         sub = SubscriptionEntity(
@@ -552,28 +572,33 @@ class TestCeleryTasks:
         )
 
         mock_subscription_repo = MagicMock()
-        mock_subscription_repo.get_recently_expired_unnotified.return_value = [sub]
+        mock_subscription_repo.aget_recently_expired_unnotified = AsyncMock(return_value=[sub])
+        mock_subscription_repo.amark_reminded = AsyncMock()
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.get_by_telegram_uid.return_value = profile
+        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
 
         mock_service = MagicMock()
+        mock_service.aexpire_overdue_subscriptions = AsyncMock()
+
+        mock_bot = MagicMock()
 
         with patch(
             'core.containers.container'
         ) as mock_container, patch(
             'horoscope.tasks.messaging.send_messages_batch',
+            new_callable=AsyncMock,
             return_value=1,
         ) as mock_send:
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.subscription_service.return_value = mock_service
 
-            result = send_expired_notifications_task()
+            result = await send_expired_notifications(mock_bot)
 
         assert result == 1
         mock_send.assert_called_once()
-        mock_subscription_repo.mark_reminded.assert_called_once_with(
+        mock_subscription_repo.amark_reminded.assert_called_once_with(
             subscription_ids=[1],
         )
 

@@ -470,14 +470,14 @@ class TestWizardPlaceOfLiving:
     async def test_valid_place_creates_profile(self, client):
         user, profile_repo = await self._enter_pol_step(client)
 
-        with patch('horoscope.tasks.generate_horoscope_task') as mock_task:
+        with patch('horoscope.tasks.generate_horoscope.generate_horoscope', new_callable=AsyncMock) as mock_task:
             responses = await user.send_message("Berlin")
 
             assert len(responses) == 1
             assert "profile is ready" in responses[0].text.lower()
             assert "Alice" in responses[0].text
             profile_repo.create_profile.assert_called_once()
-            mock_task.delay.assert_called_once()
+            mock_task.assert_called_once()
 
     async def test_place_too_short(self, client):
         user, _ = await self._enter_pol_step(client)
@@ -534,7 +534,7 @@ class TestWizardFullFlow:
         assert "place of living" in responses[0].text.lower() or "living" in responses[0].text.lower()
 
         # Step 7: place of living → profile created, horoscope queued
-        with patch('horoscope.tasks.generate_horoscope_task') as mock_task:
+        with patch('horoscope.tasks.generate_horoscope.generate_horoscope', new_callable=AsyncMock) as mock_task:
             responses = await user.send_message("Berlin")
 
             assert "profile is ready" in responses[0].text.lower()
@@ -542,7 +542,7 @@ class TestWizardFullFlow:
             assert "15.03.1990" in responses[0].text
             assert "London" in responses[0].text
             assert "Berlin" in responses[0].text
-            mock_task.delay.assert_called_once()
+            mock_task.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
@@ -584,7 +584,7 @@ class TestHoroscopeView:
         assert len(responses) == 1
         assert "not ready" in responses[0].text.lower()
 
-    @patch('horoscope.tasks.generate_horoscope.generate_horoscope_task')
+    @patch('horoscope.tasks.generate_horoscope.generate_horoscope', new_callable=AsyncMock)
     async def test_no_horoscope_today_with_subscription_triggers_generation(self, mock_task, client):
         profile_repo = _mock_profile_repo(profile=_make_profile())
         horoscope_repo = _mock_horoscope_repo(horoscope=None)
@@ -604,7 +604,7 @@ class TestHoroscopeView:
 
         assert len(responses) == 1
         assert "generated" in responses[0].text.lower() or "generating" in responses[0].text.lower()
-        mock_task.delay.assert_called_once()
+        mock_task.assert_called_once()
 
     async def test_subscriber_sees_full_text(self, client):
         full_text = "Full horoscope for today."
@@ -870,12 +870,12 @@ class TestErrorHandling:
         await user.click_button("skip_birth_time")  # skip birth time
         await user.send_message("London")
 
-        with patch('horoscope.tasks.generate_horoscope_task') as mock_task:
+        with patch('horoscope.tasks.generate_horoscope.generate_horoscope', new_callable=AsyncMock) as mock_task:
             responses = await user.send_message("Berlin")
 
             assert len(responses) == 1
             assert "went wrong" in responses[0].text.lower() or "/start" in responses[0].text
-            mock_task.delay.assert_not_called()
+            mock_task.assert_not_called()
 
     async def test_subscription_activation_failure(self):
         from horoscope.handlers.subscription import successful_payment_handler

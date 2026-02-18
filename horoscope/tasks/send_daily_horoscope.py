@@ -1,25 +1,16 @@
 import logging
 from datetime import date
 
-from celery import shared_task
+from aiogram import Bot
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task(
-    name='horoscope.generate_daily_for_all_users',
-    autoretry_for=(Exception,),
-    retry_backoff=True,
-    retry_backoff_max=600,
-    max_retries=3,
-    retry_jitter=True,
-)
-def generate_daily_for_all_users_task():
+async def generate_daily_for_all_users(bot: Bot) -> int:
     """
-    Celery beat task: generate daily horoscopes for users with profiles.
+    Generate daily horoscopes for users with profiles.
     - Subscribers: always generate
     - Non-subscribers: only generate if active within HOROSCOPE_ACTIVITY_WINDOW_DAYS
-    Runs once daily (configured in Celery beat schedule).
     """
     from datetime import timedelta
 
@@ -27,51 +18,47 @@ def generate_daily_for_all_users_task():
     from django.utils import timezone
 
     from core.containers import container
-    from horoscope.tasks.generate_horoscope import generate_horoscope_task
+    from horoscope.tasks.generate_horoscope import generate_horoscope
 
     today = date.today()
     user_profile_repo = container.horoscope.user_profile_repository()
     subscription_repo = container.horoscope.subscription_repository()
     user_repo = container.core.user_repository()
-    telegram_uids = user_profile_repo.get_all_telegram_uids()
+    telegram_uids = await user_profile_repo.aget_all_telegram_uids()
 
     activity_cutoff = timezone.now() - timedelta(days=settings.HOROSCOPE_ACTIVITY_WINDOW_DAYS)
 
     count = 0
     for telegram_uid in telegram_uids:
-        has_subscription = subscription_repo.has_active_subscription(telegram_uid=telegram_uid)
+        has_subscription = await subscription_repo.ahas_active_subscription(telegram_uid=telegram_uid)
 
         if not has_subscription:
-            user = user_repo.get(telegram_uid)
+            user = await user_repo.aget(telegram_uid)
             if not user:
                 continue
             if not user.last_activity or user.last_activity < activity_cutoff:
                 continue
 
-        generate_horoscope_task.delay(
-            telegram_uid=telegram_uid,
-            target_date=today.isoformat(),
-            horoscope_type='daily',
-        )
-        count += 1
+        try:
+            await generate_horoscope(
+                bot=bot,
+                telegram_uid=telegram_uid,
+                target_date=today.isoformat(),
+                horoscope_type='daily',
+            )
+            count += 1
+        except Exception as e:
+            # Individual user failure must not stop generation for other users
+            logger.error(f"Failed to generate daily horoscope for user {telegram_uid}", exc_info=e)
 
-    logger.info(f"Queued daily horoscope generation for {count} users on {today}")
+    logger.info(f"Generated daily horoscopes for {count} users on {today}")
     return count
 
 
-@shared_task(
-    name='horoscope.send_daily_horoscope_notifications',
-    autoretry_for=(Exception,),
-    retry_backoff=True,
-    retry_backoff_max=600,
-    max_retries=3,
-    retry_jitter=True,
-)
-def send_daily_horoscope_notifications_task():
+async def send_daily_horoscope_notifications(bot: Bot) -> int:
     """
-    Celery beat task: send daily horoscope notifications to subscribers only.
+    Send daily horoscope notifications to subscribers only.
     Non-subscribers receive periodic teasers via a separate task.
-    Runs after generation is expected to be complete.
     """
     from django.utils.translation import gettext_lazy as _
 
@@ -84,17 +71,17 @@ def send_daily_horoscope_notifications_task():
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
 
-    profiles = user_profile_repo.all()
+    profiles = await user_profile_repo.aall()
 
     count = 0
     for profile in profiles:
-        has_subscription = subscription_repo.has_active_subscription(
+        has_subscription = await subscription_repo.ahas_active_subscription(
             telegram_uid=profile.user_telegram_uid,
         )
         if not has_subscription:
             continue
 
-        horoscope = horoscope_repo.get_by_user_and_date(
+        horoscope = await horoscope_repo.aget_by_user_and_date(
             telegram_uid=profile.user_telegram_uid,
             target_date=today,
         )
@@ -109,15 +96,16 @@ def send_daily_horoscope_notifications_task():
             "💬 You can ask questions about your horoscope — just type your message!"
         ), lang)
 
-        success = send_message(
+        success = await send_message(
+            bot=bot,
             telegram_uid=profile.user_telegram_uid,
             text=text,
         )
         if success:
-            horoscope_repo.mark_sent(horoscope_id=horoscope.id)
+            await horoscope_repo.amark_sent(horoscope_id=horoscope.id)
             count += 1
         else:
-            horoscope_repo.mark_failed_to_send(horoscope_id=horoscope.id)
+            await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope.id)
 
     logger.info(f"Sent daily horoscope to {count} subscribers on {today}")
     return count

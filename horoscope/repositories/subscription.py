@@ -127,6 +127,9 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
         )
         return [SubscriptionEntity.from_model(s) for s in subs]
 
+    async def aget_expiring_soon(self, days: int) -> list[SubscriptionEntity]:
+        return await sync_to_async(self.get_expiring_soon)(days)
+
     def get_recently_expired_unnotified(self) -> list[SubscriptionEntity]:
         subs = Subscription.objects.filter(
             status=SubscriptionStatus.EXPIRED,
@@ -134,10 +137,16 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
         )
         return [SubscriptionEntity.from_model(s) for s in subs]
 
+    async def aget_recently_expired_unnotified(self) -> list[SubscriptionEntity]:
+        return await sync_to_async(self.get_recently_expired_unnotified)()
+
     def mark_reminded(self, subscription_ids: list[int]) -> int:
         return Subscription.objects.filter(
             id__in=subscription_ids,
         ).update(reminder_sent_at=timezone.now())
+
+    async def amark_reminded(self, subscription_ids: list[int]) -> int:
+        return await sync_to_async(self.mark_reminded)(subscription_ids)
 
     def count_active(self) -> int:
         return Subscription.objects.filter(
