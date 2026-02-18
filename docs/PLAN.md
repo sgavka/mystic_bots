@@ -2,13 +2,11 @@
 
 ## Next step
 
-Implementing TASK_061 — Remove Celery, replace with async background tasks.
-
-Current status: Implementing TASK_061 — writing code
+All tasks complete. Idle.
 
 ## Tasks
 
-- [ ] **TASK_061** (new) — Refactor: remove Celery from prod, replace tasks with async background execution
+- [x] **TASK_061** (complete) — Refactor: remove Celery from prod, replace tasks with async background execution
 - [x] **TASK_056** (complete) — Full test coverage for all handlers
 - [x] **TASK_057** (complete) — Add optional birth time to user profile
 - [x] **TASK_058** (complete) — Add Hindi and Arabic languages
