@@ -89,6 +89,9 @@ async def send_daily_horoscope_notifications(bot: Bot) -> int:
             logger.warning(f"No horoscope found for user {profile.user_telegram_uid} on {today}")
             continue
 
+        if horoscope.sent_at is not None:
+            continue
+
         lang = profile.preferred_language
         text = horoscope.full_text + translate(_(
             "\n"

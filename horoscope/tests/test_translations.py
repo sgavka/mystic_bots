@@ -446,6 +446,60 @@ class TestBackgroundTasks:
         mock_horoscope_repo.aget_by_user_and_date.assert_not_called()
 
     @pytest.mark.django_db
+    async def test_send_daily_horoscope_skips_already_sent(self):
+        """Horoscopes that already have sent_at set should not be sent again."""
+        from horoscope.entities import HoroscopeEntity, UserProfileEntity
+        from horoscope.tasks.send_daily_horoscope import send_daily_horoscope_notifications
+
+        profile = UserProfileEntity(
+            user_telegram_uid=12345,
+            name="Test",
+            date_of_birth=date(1990, 5, 15),
+            place_of_birth="London",
+            place_of_living="Berlin",
+            preferred_language="en",
+            created_at=datetime(2024, 1, 1),
+            updated_at=datetime(2024, 1, 1),
+        )
+        horoscope = HoroscopeEntity(
+            id=1,
+            user_telegram_uid=12345,
+            horoscope_type="daily",
+            date=date.today(),
+            full_text="Full text",
+            teaser_text="Teaser",
+            sent_at=timezone.now(),
+            created_at=datetime(2024, 1, 1),
+        )
+
+        mock_profile_repo = MagicMock()
+        mock_profile_repo.aall = AsyncMock(return_value=[profile])
+
+        mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
+
+        mock_subscription_repo = MagicMock()
+        mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=True)
+
+        mock_bot = MagicMock()
+
+        with patch(
+            'core.containers.container'
+        ) as mock_container, patch(
+            'horoscope.tasks.messaging.send_message',
+            new_callable=AsyncMock,
+            return_value=True,
+        ) as mock_send:
+            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
+            mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
+
+            result = await send_daily_horoscope_notifications(mock_bot)
+
+        assert result == 0
+        mock_send.assert_not_called()
+
+    @pytest.mark.django_db
     async def test_send_expiry_reminders_no_expiring(self):
         from horoscope.tasks.subscription_reminders import send_expiry_reminders
 
