@@ -1,31 +1,55 @@
 en:
 🔮 Your Personal Astrologer ✨
-⭐ Daily horoscopes based on your birth chart | 💬 Ask follow-up questions | 🌙 Personalized celestial insights
+
+⭐ Daily horoscopes based on your birth chart
+💬 Ask follow-up questions
+🌙 Personalized celestial insights
 
 ru:
 🔮 Ваш Личный Астролог ✨
-⭐ Ежедневные гороскопы на основе вашей натальной карты | 💬 Задавайте уточняющие вопросы | 🌙 Персонализированные небесные прогнозы
+
+⭐ Ежедневные гороскопы на основе вашей натальной карты
+💬 Задавайте уточняющие вопросы
+🌙 Персонализированные небесные прогнозы
 
 uk:
 🔮 Ваш Особистий Астролог ✨
-⭐ Щоденні гороскопи на основі вашої натальної карти | 💬 Ставте уточнюючі питання | 🌙 Персоналізовані небесні прогнози
+
+⭐ Щоденні гороскопи на основі вашої натальної карти
+💬 Ставте уточнюючі питання
+🌙 Персоналізовані небесні прогнози
 
 de:
 🔮 Ihr Persönlicher Astrologe ✨
-⭐ Tägliche Horoskope basierend auf Ihrem Geburtshoroskop | 💬 Stellen Sie Rückfragen | 🌙 Personalisierte himmlische Einblicke
+
+⭐ Tägliche Horoskope basierend auf Ihrem Geburtshoroskop
+💬 Stellen Sie Rückfragen
+🌙 Personalisierte himmlische Einblicke
 
 hi:
 🔮 आपका व्यक्तिगत ज्योतिषी ✨
-⭐ आपकी जन्म कुंडली पर आधारित दैनिक राशिफल | 💬 अनुवर्ती प्रश्न पूछें | 🌙 व्यक्तिगत खगोलीय अंतर्दृष्टि
+
+⭐ आपकी जन्म कुंडली पर आधारित दैनिक राशिफल
+💬 अनुवर्ती प्रश्न पूछें
+🌙 व्यक्तिगत खगोलीय अंतर्दृष्टि
 
 it:
 🔮 Il Tuo Astrologo Personale ✨
-⭐ Oroscopi giornalieri basati sulla tua carta natale | 💬 Fai domande di approfondimento | 🌙 Previsioni celesti personalizzate
+
+⭐ Oroscopi giornalieri basati sulla tua carta natale
+💬 Fai domande di approfondimento
+🌙 Previsioni celesti personalizzate
 
 fr:
 🔮 Votre Astrologue Personnel ✨
-⭐ Horoscopes quotidiens basés sur votre thème astral | 💬 Posez des questions de suivi | 🌙 Prévisions célestes personnalisées
+
+⭐ Horoscopes quotidiens basés sur votre thème astral
+💬 Posez des questions de suivi
+🌙 Prévisions célestes personnalisées
 
 ar:
 🔮 منجّمك الشخصي ✨
-⭐ أبراج يومية مبنية على خريطتك الفلكية | 💬 اطرح أسئلة متابعة | 🌙 رؤى فلكية مخصصة
+
+⭐ أبراج يومية مبنية على خريطتك الفلكية
+💬 اطرح أسئلة متابعة
+🌙 رؤى فلكية مخصصة
