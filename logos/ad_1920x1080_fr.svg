@@ -99,7 +99,7 @@
   </g>
 
   <!-- ====== LEFT SIDE: Logo ====== -->
-  <g transform="translate(480, 540) scale(1.65)">
+  <g transform="translate(480, 540) scale(2.0)">
     <!-- Logo glow -->
     <circle cx="0" cy="0" r="220" fill="url(#logoGlow)" opacity="0.5"/>
 
@@ -154,31 +154,32 @@
   <!-- ====== RIGHT SIDE: Text Content ====== -->
 
   <!-- Main headline -->
-  <text x="1200" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="82" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2">Votre Astrologue</text>
-  <text x="1200" y="420" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="82" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2">Personnel</text>
+  <text x="1350" y="180" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="148" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2">Votre Astrologue</text>
+  <text x="1350" y="360" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="148" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2">Personnel</text>
 
   <!-- Accent line under headline -->
-  <line x1="1000" y1="460" x2="1400" y2="460" stroke="url(#accentLine)" stroke-width="2.5"/>
+  <line x1="1100" y1="420" x2="1600" y2="420" stroke="url(#accentLine)" stroke-width="2.5"/>
 
   <!-- Feature points -->
-  <g font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="36" fill="#d8b4fe">
+  <g font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="65" fill="#d8b4fe">
     <!-- Point 1 -->
-    <g transform="translate(960, 540)">
-      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
-      <text x="70" y="0">Horoscopes quotidiens basés</text>
-      <text x="70" y="48">sur votre thème astral</text>
+    <g transform="translate(860, 500)">
+      <text x="30" y="0" fill="#e9d5ff" font-size="54">&#9734;</text>
+      <text x="70" y="0">&#xA0;Horoscopes quotidiens basés</text>
+      <text x="70" y="75">&#xA0;sur votre thème astral</text>
     </g>
 
     <!-- Point 2 -->
-    <g transform="translate(960, 670)">
-      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
-      <text x="70" y="0">Posez des questions de suivi</text>
+    <g transform="translate(860, 690)">
+      <text x="30" y="0" fill="#e9d5ff" font-size="54">&#9734;</text>
+      <text x="70" y="0">&#xA0;Posez des questions de suivi</text>
     </g>
 
     <!-- Point 3 -->
-    <g transform="translate(960, 770)">
-      <text x="30" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
-      <text x="70" y="0">Prévisions célestes personnalisées</text>
+    <g transform="translate(860, 860)">
+      <text x="30" y="0" fill="#e9d5ff" font-size="54">&#9734;</text>
+      <text x="70" y="0">&#xA0;Prévisions célestes</text>
+      <text x="70" y="75">&#xA0;personnalisées</text>
     </g>
   </g>
 

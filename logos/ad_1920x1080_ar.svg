@@ -99,7 +99,7 @@
   </g>
 
   <!-- ====== LEFT SIDE: Logo ====== -->
-  <g transform="translate(480, 540) scale(1.65)">
+  <g transform="translate(480, 540) scale(2.1)">
     <!-- Logo glow -->
     <circle cx="0" cy="0" r="220" fill="url(#logoGlow)" opacity="0.5"/>
 
@@ -154,30 +154,30 @@
   <!-- ====== RIGHT SIDE: Text Content ====== -->
 
   <!-- Main headline -->
-  <text x="1350" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">منجّمك</text>
-  <text x="1350" y="420" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">الشخصي</text>
+  <text x="1350" y="180" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="137" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">منجّمك</text>
+  <text x="1350" y="360" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="137" fill="#fef3c7" filter="url(#textShadow)" letter-spacing="2" direction="rtl">الشخصي</text>
 
   <!-- Accent line under headline -->
-  <line x1="1100" y1="460" x2="1600" y2="460" stroke="url(#accentLine)" stroke-width="2.5"/>
+  <line x1="1100" y1="420" x2="1600" y2="420" stroke="url(#accentLine)" stroke-width="2.5"/>
 
   <!-- Feature points (RTL: star on right, text flows left) -->
-  <g font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="36" fill="#d8b4fe">
+  <g font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="65" fill="#d8b4fe">
     <!-- Point 1 -->
-    <g transform="translate(0, 540)">
-      <text x="1570" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+    <g transform="translate(0, 500)">
+      <text x="1570" y="0" fill="#e9d5ff" font-size="54">&#9734;</text>
       <text x="1540" y="0" direction="rtl">أبراج يومية مبنية على</text>
-      <text x="1540" y="48" direction="rtl">خريطتك الفلكية</text>
+      <text x="1540" y="75" direction="rtl">خريطتك الفلكية</text>
     </g>
 
     <!-- Point 2 -->
-    <g transform="translate(0, 670)">
-      <text x="1570" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+    <g transform="translate(0, 690)">
+      <text x="1570" y="0" fill="#e9d5ff" font-size="54">&#9734;</text>
       <text x="1540" y="0" direction="rtl">اطرح أسئلة متابعة</text>
     </g>
 
     <!-- Point 3 -->
-    <g transform="translate(0, 770)">
-      <text x="1570" y="0" fill="#e9d5ff" font-size="30">&#9734;</text>
+    <g transform="translate(0, 860)">
+      <text x="1570" y="0" fill="#e9d5ff" font-size="54">&#9734;</text>
       <text x="1540" y="0" direction="rtl">رؤى فلكية مخصصة</text>
     </g>
   </g>
