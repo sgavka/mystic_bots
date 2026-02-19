@@ -18,15 +18,19 @@ async def generate_horoscope(
     telegram_uid: int,
     target_date: str,
     horoscope_type: str = 'daily',
+    send_after_generation: bool = True,
 ) -> None:
     """
-    Generate a horoscope for a specific user and date, then send it.
+    Generate a horoscope for a specific user and date, optionally sending it.
 
     Args:
         bot: The Bot instance for sending messages.
         telegram_uid: User's Telegram UID.
         target_date: ISO format date string (YYYY-MM-DD).
         horoscope_type: Type of horoscope ('daily' or 'first').
+        send_after_generation: If True, send the horoscope immediately after generation.
+            Set to False when generation is part of a batch job where separate
+            notification tasks handle sending.
     """
     from core.containers import container
 
@@ -44,22 +48,23 @@ async def generate_horoscope(
             f"on {target_date} (type={horoscope_type})"
         )
 
-        if horoscope_type == 'first':
-            await _send_first_horoscope(
-                bot=bot,
-                telegram_uid=telegram_uid,
-                horoscope_id=horoscope.id,
-                full_text=horoscope.full_text,
-            )
-        else:
-            await _send_daily_horoscope(
-                bot=bot,
-                telegram_uid=telegram_uid,
-                horoscope_id=horoscope.id,
-                full_text=horoscope.full_text,
-                teaser_text=horoscope.teaser_text,
-                extended_teaser_text=horoscope.extended_teaser_text,
-            )
+        if send_after_generation:
+            if horoscope_type == 'first':
+                await _send_first_horoscope(
+                    bot=bot,
+                    telegram_uid=telegram_uid,
+                    horoscope_id=horoscope.id,
+                    full_text=horoscope.full_text,
+                )
+            else:
+                await _send_daily_horoscope(
+                    bot=bot,
+                    telegram_uid=telegram_uid,
+                    horoscope_id=horoscope.id,
+                    full_text=horoscope.full_text,
+                    teaser_text=horoscope.teaser_text,
+                    extended_teaser_text=horoscope.extended_teaser_text,
+                )
     except ValueError as e:
         logger.error(f"Failed to generate horoscope for user {telegram_uid}", exc_info=e)
         raise

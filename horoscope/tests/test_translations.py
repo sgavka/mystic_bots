@@ -332,6 +332,80 @@ class TestBackgroundTasks:
         )
 
     @pytest.mark.django_db
+    async def test_generate_horoscope_skips_send_when_flag_false(self):
+        from horoscope.tasks.generate_horoscope import generate_horoscope
+
+        mock_horoscope = MagicMock()
+        mock_horoscope.id = 42
+        mock_horoscope.full_text = "Your horoscope text"
+        mock_horoscope.teaser_text = "Teaser text"
+        mock_horoscope.extended_teaser_text = "Extended teaser text"
+
+        mock_service = MagicMock()
+        mock_service.agenerate_for_user = AsyncMock(return_value=mock_horoscope)
+
+        mock_bot = MagicMock()
+
+        with patch(
+            'core.containers.container'
+        ) as mock_container, patch(
+            'horoscope.tasks.generate_horoscope._send_daily_horoscope',
+            new_callable=AsyncMock,
+        ) as mock_send_daily, patch(
+            'horoscope.tasks.generate_horoscope._send_first_horoscope',
+            new_callable=AsyncMock,
+        ) as mock_send_first:
+            mock_container.horoscope.horoscope_service.return_value = mock_service
+
+            await generate_horoscope(
+                bot=mock_bot,
+                telegram_uid=12345,
+                target_date="2024-06-15",
+                horoscope_type="daily",
+                send_after_generation=False,
+            )
+
+        mock_service.agenerate_for_user.assert_called_once()
+        mock_send_daily.assert_not_called()
+        mock_send_first.assert_not_called()
+
+    @pytest.mark.django_db
+    async def test_generate_horoscope_first_skips_send_when_flag_false(self):
+        from horoscope.tasks.generate_horoscope import generate_horoscope
+
+        mock_horoscope = MagicMock()
+        mock_horoscope.id = 42
+        mock_horoscope.full_text = "First horoscope"
+
+        mock_service = MagicMock()
+        mock_service.agenerate_for_user = AsyncMock(return_value=mock_horoscope)
+
+        mock_bot = MagicMock()
+
+        with patch(
+            'core.containers.container'
+        ) as mock_container, patch(
+            'horoscope.tasks.generate_horoscope._send_first_horoscope',
+            new_callable=AsyncMock,
+        ) as mock_send_first, patch(
+            'horoscope.tasks.generate_horoscope._send_daily_horoscope',
+            new_callable=AsyncMock,
+        ) as mock_send_daily:
+            mock_container.horoscope.horoscope_service.return_value = mock_service
+
+            await generate_horoscope(
+                bot=mock_bot,
+                telegram_uid=12345,
+                target_date="2024-06-15",
+                horoscope_type="first",
+                send_after_generation=False,
+            )
+
+        mock_service.agenerate_for_user.assert_called_once()
+        mock_send_first.assert_not_called()
+        mock_send_daily.assert_not_called()
+
+    @pytest.mark.django_db
     async def test_generate_daily_for_all_users(self):
         from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
@@ -356,6 +430,8 @@ class TestBackgroundTasks:
 
         assert result == 3
         assert mock_task.call_count == 3
+        for call in mock_task.call_args_list:
+            assert call[1]['send_after_generation'] is False
 
     @pytest.mark.django_db
     async def test_send_daily_horoscope_notifications(self):
