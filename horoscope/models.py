@@ -15,6 +15,17 @@ class UserProfile(models.Model):
         choices=Language.choices,
         default=Language.EN,
     )
+    timezone = models.CharField(
+        max_length=10,
+        default='',
+        blank=True,
+        help_text='UTC offset string, e.g. "UTC+3", "UTC-5", "UTC+0"',
+    )
+    notification_hour_utc = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='Hour (0-23) in UTC when user wants to receive notifications. Overrides per-language default.',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

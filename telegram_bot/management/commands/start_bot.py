@@ -94,22 +94,26 @@ class Command(BaseCommand):
         self._scheduler = BackgroundScheduler(bot=self._bot)
 
         daily_interval = settings.SCHEDULER_DAILY_INTERVAL_SECONDS
+        hourly_interval = settings.SCHEDULER_HOURLY_INTERVAL_SECONDS
 
+        # Horoscope generation and notification tasks run hourly
+        # to support per-user notification hours
         self._scheduler.schedule(
             func=generate_daily_for_all_users,
-            interval_seconds=daily_interval,
+            interval_seconds=hourly_interval,
             name="generate-daily-horoscopes",
         )
         self._scheduler.schedule(
             func=send_daily_horoscope_notifications,
-            interval_seconds=daily_interval,
+            interval_seconds=hourly_interval,
             name="send-daily-horoscope-notifications",
         )
         self._scheduler.schedule(
             func=send_periodic_teaser_notifications,
-            interval_seconds=daily_interval,
+            interval_seconds=hourly_interval,
             name="send-periodic-teaser-notifications",
         )
+        # Subscription tasks remain on daily interval
         self._scheduler.schedule(
             func=send_expiry_reminders,
             interval_seconds=daily_interval,
@@ -123,7 +127,10 @@ class Command(BaseCommand):
 
         logger.info("=" * 60)
         logger.info("Bot startup complete")
-        logger.info(f"Background scheduler started with {daily_interval}s interval")
+        logger.info(
+            f"Background scheduler started: "
+            f"horoscope tasks={hourly_interval}s, subscription tasks={daily_interval}s"
+        )
         logger.info("=" * 60)
 
     async def on_shutdown(self):

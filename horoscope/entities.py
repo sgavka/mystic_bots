@@ -12,6 +12,8 @@ class UserProfileEntity(BaseEntity):
     place_of_living: str
     birth_time: Optional[time] = None
     preferred_language: str = 'en'
+    timezone: str = ''
+    notification_hour_utc: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 

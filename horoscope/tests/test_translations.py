@@ -327,7 +327,7 @@ class TestBackgroundTasks:
         from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_all_telegram_uids = AsyncMock(return_value=[111, 222, 333])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111, 222, 333])
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=True)
@@ -376,7 +376,8 @@ class TestBackgroundTasks:
         )
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aall = AsyncMock(return_value=[profile])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[12345])
+        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
 
         mock_horoscope_repo = MagicMock()
         mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
@@ -411,22 +412,10 @@ class TestBackgroundTasks:
     @pytest.mark.django_db
     async def test_send_daily_horoscope_non_subscriber_skipped(self):
         """Non-subscribers are skipped by daily notification task (they get periodic teasers instead)."""
-        from horoscope.entities import UserProfileEntity
         from horoscope.tasks.send_daily_horoscope import send_daily_horoscope_notifications
 
-        profile = UserProfileEntity(
-            user_telegram_uid=12345,
-            name="Test",
-            date_of_birth=date(1990, 5, 15),
-            place_of_birth="London",
-            place_of_living="Berlin",
-            preferred_language="en",
-            created_at=datetime(2024, 1, 1),
-            updated_at=datetime(2024, 1, 1),
-        )
-
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aall = AsyncMock(return_value=[profile])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[12345])
 
         mock_horoscope_repo = MagicMock()
 
@@ -455,19 +444,9 @@ class TestBackgroundTasks:
     @pytest.mark.django_db
     async def test_send_daily_horoscope_skips_already_sent(self):
         """Horoscopes that already have sent_at set should not be sent again."""
-        from horoscope.entities import HoroscopeEntity, UserProfileEntity
+        from horoscope.entities import HoroscopeEntity
         from horoscope.tasks.send_daily_horoscope import send_daily_horoscope_notifications
 
-        profile = UserProfileEntity(
-            user_telegram_uid=12345,
-            name="Test",
-            date_of_birth=date(1990, 5, 15),
-            place_of_birth="London",
-            place_of_living="Berlin",
-            preferred_language="en",
-            created_at=datetime(2024, 1, 1),
-            updated_at=datetime(2024, 1, 1),
-        )
         horoscope = HoroscopeEntity(
             id=1,
             user_telegram_uid=12345,
@@ -480,7 +459,7 @@ class TestBackgroundTasks:
         )
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aall = AsyncMock(return_value=[profile])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[12345])
 
         mock_horoscope_repo = MagicMock()
         mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)

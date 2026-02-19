@@ -133,6 +133,7 @@ REDIS_BOT_DB = int(os.environ.get('REDIS_BOT_DB', 0))
 # Background scheduler configuration
 
 SCHEDULER_DAILY_INTERVAL_SECONDS = int(os.environ.get('SCHEDULER_DAILY_INTERVAL_SECONDS', str(60 * 60 * 24)))
+SCHEDULER_HOURLY_INTERVAL_SECONDS = int(os.environ.get('SCHEDULER_HOURLY_INTERVAL_SECONDS', str(60 * 60)))
 
 
 # Bot configuration
@@ -197,6 +198,29 @@ HOROSCOPE_TEASER_LINE_COUNT = int(os.environ.get('HOROSCOPE_TEASER_LINE_COUNT', 
 HOROSCOPE_EXTENDED_TEASER_LINE_COUNT = int(os.environ.get('HOROSCOPE_EXTENDED_TEASER_LINE_COUNT', '8'))
 HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS = int(os.environ.get('HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS', '10'))
 HOROSCOPE_ACTIVITY_WINDOW_DAYS = int(os.environ.get('HOROSCOPE_ACTIVITY_WINDOW_DAYS', '5'))
+
+# Per-language default UTC hours for horoscope generation/sending.
+# Format: "en:6,ru:5,uk:5,de:5,hi:1,ar:4,it:5,fr:5"
+# These represent morning hours (~8 AM local time) for each language's typical timezone.
+_DEFAULT_HOROSCOPE_GENERATION_HOURS = 'en:6,ru:5,uk:5,de:5,hi:1,ar:4,it:5,fr:5'
+
+
+def _parse_generation_hours(raw: str) -> dict[str, int]:
+    """Parse HOROSCOPE_GENERATION_HOURS_UTC env var into {lang_code: hour} dict."""
+    result = {}
+    for entry in raw.split(','):
+        parts = entry.strip().split(':')
+        if len(parts) == 2:
+            code = parts[0].strip()
+            hour = int(parts[1].strip())
+            result[code] = hour
+    return result
+
+
+HOROSCOPE_GENERATION_HOURS_UTC = _parse_generation_hours(
+    os.environ.get('HOROSCOPE_GENERATION_HOURS_UTC', _DEFAULT_HOROSCOPE_GENERATION_HOURS)
+)
+HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC = int(os.environ.get('HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC', '6'))
 
 
 # LLM configuration

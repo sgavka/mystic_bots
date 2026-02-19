@@ -10,3 +10,7 @@ class WizardStates(StatesGroup):
     WAITING_PLACE_OF_LIVING = State()
 
 
+class SettingsStates(StatesGroup):
+    WAITING_NOTIFICATION_HOUR = State()
+
+

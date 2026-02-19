@@ -69,6 +69,7 @@ def setup_handlers(dispatcher: Dispatcher) -> None:
     from horoscope.handlers.language import router as language_router
     from horoscope.handlers.followup import router as followup_router
     from horoscope.handlers.admin import router as admin_router
+    from horoscope.handlers.settings import router as settings_router
 
     dispatcher.errors.register(errors.error_handler)
     dispatcher.include_router(wizard_router)
@@ -76,6 +77,7 @@ def setup_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.include_router(subscription_router)
     dispatcher.include_router(language_router)
     dispatcher.include_router(admin_router)
+    dispatcher.include_router(settings_router)
     # followup_router MUST be last — it catches any text message as a followup question
     dispatcher.include_router(followup_router)
 

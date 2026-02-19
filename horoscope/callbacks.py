@@ -11,3 +11,15 @@ class LanguageCallback(CallbackData, prefix="lang"):
 
 class SkipBirthTimeCallback(CallbackData, prefix="skip_birth_time"):
     pass
+
+
+class TimezoneCallback(CallbackData, prefix="tz"):
+    offset: int
+
+
+class NotificationHourCallback(CallbackData, prefix="notif_hour"):
+    hour: int
+
+
+class ResetNotificationHourCallback(CallbackData, prefix="reset_notif"):
+    pass

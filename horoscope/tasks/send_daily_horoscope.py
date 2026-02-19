@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 async def generate_daily_for_all_users(bot: Bot) -> int:
     """
-    Generate daily horoscopes for users with profiles.
+    Generate daily horoscopes for users whose notification hour matches the current UTC hour.
     - Subscribers: always generate
     - Non-subscribers: only generate if active within HOROSCOPE_ACTIVITY_WINDOW_DAYS
     """
@@ -21,10 +21,14 @@ async def generate_daily_for_all_users(bot: Bot) -> int:
     from horoscope.tasks.generate_horoscope import generate_horoscope
 
     today = date.today()
+    current_utc_hour = timezone.now().hour
     user_profile_repo = container.horoscope.user_profile_repository()
     subscription_repo = container.horoscope.subscription_repository()
     user_repo = container.core.user_repository()
-    telegram_uids = await user_profile_repo.aget_all_telegram_uids()
+
+    telegram_uids = await user_profile_repo.aget_telegram_uids_by_notification_hour(
+        hour_utc=current_utc_hour,
+    )
 
     activity_cutoff = timezone.now() - timedelta(days=settings.HOROSCOPE_ACTIVITY_WINDOW_DAYS)
 
@@ -51,15 +55,16 @@ async def generate_daily_for_all_users(bot: Bot) -> int:
             # Individual user failure must not stop generation for other users
             logger.error(f"Failed to generate daily horoscope for user {telegram_uid}", exc_info=e)
 
-    logger.info(f"Generated daily horoscopes for {count} users on {today}")
+    logger.info(f"Generated daily horoscopes for {count} users on {today} (UTC hour={current_utc_hour})")
     return count
 
 
 async def send_daily_horoscope_notifications(bot: Bot) -> int:
     """
-    Send daily horoscope notifications to subscribers only.
-    Non-subscribers receive periodic teasers via a separate task.
+    Send daily horoscope notifications to subscribers whose notification hour
+    matches the current UTC hour.
     """
+    from django.utils import timezone
     from django.utils.translation import gettext_lazy as _
 
     from core.containers import container
@@ -67,32 +72,36 @@ async def send_daily_horoscope_notifications(bot: Bot) -> int:
     from horoscope.utils import translate
 
     today = date.today()
+    current_utc_hour = timezone.now().hour
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
 
-    profiles = await user_profile_repo.aall()
+    telegram_uids = await user_profile_repo.aget_telegram_uids_by_notification_hour(
+        hour_utc=current_utc_hour,
+    )
 
     count = 0
-    for profile in profiles:
+    for telegram_uid in telegram_uids:
         has_subscription = await subscription_repo.ahas_active_subscription(
-            telegram_uid=profile.user_telegram_uid,
+            telegram_uid=telegram_uid,
         )
         if not has_subscription:
             continue
 
         horoscope = await horoscope_repo.aget_by_user_and_date(
-            telegram_uid=profile.user_telegram_uid,
+            telegram_uid=telegram_uid,
             target_date=today,
         )
         if not horoscope:
-            logger.warning(f"No horoscope found for user {profile.user_telegram_uid} on {today}")
             continue
 
         if horoscope.sent_at is not None:
             continue
 
-        lang = profile.preferred_language
+        profile = await user_profile_repo.aget_by_telegram_uid(telegram_uid)
+        lang = profile.preferred_language if profile else 'en'
+
         text = horoscope.full_text + translate(_(
             "\n"
             "\n"
@@ -101,7 +110,7 @@ async def send_daily_horoscope_notifications(bot: Bot) -> int:
 
         success = await send_message(
             bot=bot,
-            telegram_uid=profile.user_telegram_uid,
+            telegram_uid=telegram_uid,
             text=text,
         )
         if success:
@@ -110,5 +119,5 @@ async def send_daily_horoscope_notifications(bot: Bot) -> int:
         else:
             await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope.id)
 
-    logger.info(f"Sent daily horoscope to {count} subscribers on {today}")
+    logger.info(f"Sent daily horoscope to {count} subscribers on {today} (UTC hour={current_utc_hour})")
     return count
