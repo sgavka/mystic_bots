@@ -584,7 +584,7 @@ class TestHoroscopeView:
         assert len(responses) == 1
         assert "not ready" in responses[0].text.lower()
 
-    @patch('horoscope.tasks.generate_horoscope.generate_horoscope', new_callable=AsyncMock)
+    @patch('horoscope.tasks.generate_horoscope.generate_and_send_horoscope', new_callable=AsyncMock)
     async def test_no_horoscope_today_with_subscription_triggers_generation(self, mock_task, client):
         profile_repo = _mock_profile_repo(profile=_make_profile())
         horoscope_repo = _mock_horoscope_repo(horoscope=None)

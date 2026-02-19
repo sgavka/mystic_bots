@@ -45,7 +45,6 @@ async def generate_daily_for_all_users(bot: Bot) -> int:
                 telegram_uid=telegram_uid,
                 target_date=today.isoformat(),
                 horoscope_type='daily',
-                send_after_generation=False,
             )
             count += 1
         except Exception as e:

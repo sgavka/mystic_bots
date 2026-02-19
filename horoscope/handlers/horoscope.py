@@ -46,9 +46,9 @@ async def view_horoscope_handler(message: Message, user: UserEntity, app_context
         if has_subscription:
             import asyncio
 
-            from horoscope.tasks.generate_horoscope import generate_horoscope
+            from horoscope.tasks.generate_horoscope import generate_and_send_horoscope
 
-            asyncio.create_task(generate_horoscope(
+            asyncio.create_task(generate_and_send_horoscope(
                 bot=message.bot,
                 telegram_uid=user.telegram_uid,
                 target_date=today.isoformat(),

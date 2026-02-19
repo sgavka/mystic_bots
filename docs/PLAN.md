@@ -2,10 +2,12 @@
 
 ## Next step
 
-All tasks complete. Idle.
+Pick TASK_068 to implement.
 
 ## Tasks
 
+- [x] **TASK_067** (complete) — Refactor: implement separated generation/sending from TASK_066 recommendation
+- [ ] **TASK_068** (new) — Feature: per-language UTC time for horoscope generation, user timezone/notification time settings
 - [x] **TASK_066** (complete) — Refactor: separate horoscope generation from sending in batch task
 - [x] **TASK_063** (complete) — Add Italian and French languages with translations
 - [x] **TASK_064** (complete) — Create copies of ad SVG logo in all project languages

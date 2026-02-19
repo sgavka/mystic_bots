@@ -1,4 +1,4 @@
-from horoscope.tasks.generate_horoscope import generate_horoscope
+from horoscope.tasks.generate_horoscope import generate_and_send_horoscope, generate_horoscope
 from horoscope.tasks.send_daily_horoscope import (
     generate_daily_for_all_users,
     send_daily_horoscope_notifications,
@@ -11,6 +11,7 @@ from horoscope.tasks.subscription_reminders import (
 
 __all__ = [
     'generate_horoscope',
+    'generate_and_send_horoscope',
     'generate_daily_for_all_users',
     'send_daily_horoscope_notifications',
     'send_periodic_teaser_notifications',
