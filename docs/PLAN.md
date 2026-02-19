@@ -6,6 +6,7 @@ All tasks complete. Idle.
 
 ## Tasks
 
+- [x] **TASK_066** (complete) — Refactor: separate horoscope generation from sending in batch task
 - [x] **TASK_063** (complete) — Add Italian and French languages with translations
 - [x] **TASK_064** (complete) — Create copies of ad SVG logo in all project languages
 - [x] **TASK_065** (complete) — Add Loki logging integration from redgifs_downloader_bot
