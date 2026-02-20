@@ -16,6 +16,7 @@ from core.containers import container
 from core.entities import UserEntity
 from core.enums import BotSlug
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
+from horoscope.enums import HoroscopeType
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +107,7 @@ def _make_horoscope(
     return HoroscopeEntity(
         id=1,
         user_telegram_uid=telegram_uid,
-        horoscope_type="daily",
+        horoscope_type=HoroscopeType.DAILY,
         date=date.today(),
         full_text=full_text,
         teaser_text=teaser_text,

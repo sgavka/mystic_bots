@@ -18,6 +18,7 @@ async def generate_daily_for_all_users(bot: Bot) -> int:
     from django.utils import timezone
 
     from core.containers import container
+    from horoscope.enums import HoroscopeType
     from horoscope.tasks.generate_horoscope import generate_horoscope
 
     today = date.today()
@@ -48,7 +49,7 @@ async def generate_daily_for_all_users(bot: Bot) -> int:
                 bot=bot,
                 telegram_uid=telegram_uid,
                 target_date=today.isoformat(),
-                horoscope_type='daily',
+                horoscope_type=HoroscopeType.DAILY,
             )
             count += 1
         except Exception as e:

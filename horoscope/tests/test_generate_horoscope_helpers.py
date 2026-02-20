@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from horoscope.entities import UserProfileEntity
+from horoscope.enums import HoroscopeType
 
 
 def _make_profile(
@@ -60,7 +61,7 @@ class TestGenerateAndSendHoroscope:
             bot=mock_bot,
             telegram_uid=12345,
             target_date="2024-06-15",
-            horoscope_type='daily',
+            horoscope_type=HoroscopeType.DAILY,
         )
         text = mock_send.call_args[1]['text']
         assert "Full horoscope text here" in text

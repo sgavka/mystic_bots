@@ -14,6 +14,7 @@ from django.utils import timezone
 
 from core.entities import UserEntity
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
+from horoscope.enums import HoroscopeType
 
 
 def _make_profile(telegram_uid: int = 12345) -> UserProfileEntity:
@@ -33,7 +34,7 @@ def _make_horoscope(telegram_uid: int = 12345) -> HoroscopeEntity:
     return HoroscopeEntity(
         id=1,
         user_telegram_uid=telegram_uid,
-        horoscope_type="daily",
+        horoscope_type=HoroscopeType.DAILY,
         date=date.today(),
         full_text="Full text",
         teaser_text="Teaser",
@@ -321,7 +322,7 @@ class TestSendPeriodicTeaserNotifications:
         horoscope = HoroscopeEntity(
             id=1,
             user_telegram_uid=111,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date.today(),
             full_text="Full text",
             teaser_text="Teaser",

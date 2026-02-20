@@ -4,6 +4,8 @@ from datetime import date
 from aiogram import Bot
 from django.utils.translation import gettext_lazy as _
 
+from horoscope.enums import HoroscopeType
+
 logger = logging.getLogger(__name__)
 
 TASK_FIRST_HOROSCOPE_READY = _(
@@ -17,7 +19,7 @@ async def generate_horoscope(
     bot: Bot,
     telegram_uid: int,
     target_date: str,
-    horoscope_type: str = 'daily',
+    horoscope_type: HoroscopeType = HoroscopeType.DAILY,
 ) -> None:
     """
     Generate a horoscope for a specific user and date.
@@ -47,7 +49,7 @@ async def generate_horoscope(
             f"on {target_date} (type={horoscope_type})"
         )
 
-        if horoscope_type == 'first':
+        if horoscope_type == HoroscopeType.FIRST:
             await _send_first_horoscope(
                 bot=bot,
                 telegram_uid=telegram_uid,
@@ -78,7 +80,7 @@ async def generate_and_send_horoscope(
         bot=bot,
         telegram_uid=telegram_uid,
         target_date=target_date,
-        horoscope_type='daily',
+        horoscope_type=HoroscopeType.DAILY,
     )
 
     horoscope_repo = container.horoscope.horoscope_repository()

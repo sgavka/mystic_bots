@@ -29,7 +29,7 @@ class HoroscopeService:
         self,
         telegram_uid: int,
         target_date: date,
-        horoscope_type: str = HoroscopeType.DAILY,
+        horoscope_type: HoroscopeType = HoroscopeType.DAILY,
     ) -> HoroscopeEntity:
         existing = self.horoscope_repo.get_by_user_and_date(
             telegram_uid=telegram_uid,
@@ -93,7 +93,7 @@ class HoroscopeService:
         self,
         telegram_uid: int,
         target_date: date,
-        horoscope_type: str = HoroscopeType.DAILY,
+        horoscope_type: HoroscopeType = HoroscopeType.DAILY,
     ) -> HoroscopeEntity:
         return await sync_to_async(self.generate_for_user)(
             telegram_uid,

@@ -38,6 +38,7 @@ from horoscope.handlers.wizard import (
     WIZARD_WELCOME_BACK,
 )
 from horoscope.keyboards import KEYBOARD_SKIP_BIRTH_TIME, KEYBOARD_SUBSCRIBE
+from horoscope.enums import HoroscopeType
 from horoscope.tasks.generate_horoscope import TASK_FIRST_HOROSCOPE_READY
 from horoscope.tasks.subscription_reminders import TASK_EXPIRY_REMINDER, TASK_SUBSCRIPTION_EXPIRED
 from horoscope.utils import map_telegram_language, parse_date, translate
@@ -256,13 +257,13 @@ class TestBackgroundTasks:
                 bot=mock_bot,
                 telegram_uid=12345,
                 target_date="2024-06-15",
-                horoscope_type="daily",
+                horoscope_type=HoroscopeType.DAILY,
             )
 
         mock_service.agenerate_for_user.assert_called_once_with(
             telegram_uid=12345,
             target_date=date(2024, 6, 15),
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
         )
         mock_send_first.assert_not_called()
 
@@ -312,7 +313,7 @@ class TestBackgroundTasks:
                 bot=mock_bot,
                 telegram_uid=12345,
                 target_date="2024-06-15",
-                horoscope_type="first",
+                horoscope_type=HoroscopeType.FIRST,
             )
 
         mock_send.assert_called_once_with(
@@ -348,7 +349,7 @@ class TestBackgroundTasks:
         assert result == 3
         assert mock_task.call_count == 3
         for call in mock_task.call_args_list:
-            assert call[1]['horoscope_type'] == 'daily'
+            assert call[1]['horoscope_type'] == HoroscopeType.DAILY
 
     @pytest.mark.django_db
     async def test_send_daily_horoscope_notifications(self):
@@ -368,7 +369,7 @@ class TestBackgroundTasks:
         horoscope = HoroscopeEntity(
             id=1,
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date.today(),
             full_text="Full text",
             teaser_text="Teaser",
@@ -450,7 +451,7 @@ class TestBackgroundTasks:
         horoscope = HoroscopeEntity(
             id=1,
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date.today(),
             full_text="Full text",
             teaser_text="Teaser",

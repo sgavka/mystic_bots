@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from core.containers import container
 from core.entities import UserEntity
 from horoscope.callbacks import LanguageCallback, SkipBirthTimeCallback
+from horoscope.enums import HoroscopeType
 from horoscope.keyboards import language_keyboard, skip_birth_time_keyboard
 from horoscope.states import WizardStates
 from horoscope.utils import map_telegram_language, parse_date, parse_time, translate
@@ -317,6 +318,6 @@ async def process_place_of_living(
         bot=message.bot,
         telegram_uid=user.telegram_uid,
         target_date=today.isoformat(),
-        horoscope_type='first',
+        horoscope_type=HoroscopeType.FIRST,
     ))
     logger.info(f"First horoscope generation task queued for user {user.telegram_uid}")

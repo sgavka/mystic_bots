@@ -2,6 +2,7 @@ from datetime import date, datetime, time
 from typing import Optional
 
 from core.base_entity import BaseEntity
+from horoscope.enums import HoroscopeType
 
 
 class UserProfileEntity(BaseEntity):
@@ -21,7 +22,7 @@ class UserProfileEntity(BaseEntity):
 class HoroscopeEntity(BaseEntity):
     id: int
     user_telegram_uid: int
-    horoscope_type: str
+    horoscope_type: HoroscopeType
     date: date
     full_text: str
     teaser_text: str

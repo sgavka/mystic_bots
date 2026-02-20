@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from horoscope.entities import HoroscopeEntity, UserProfileEntity
+from horoscope.enums import HoroscopeType
 from horoscope.services.horoscope import HoroscopeService
 from horoscope.services.llm import LLMResult
 
@@ -45,7 +46,7 @@ def _make_horoscope(telegram_uid: int = 12345) -> HoroscopeEntity:
     return HoroscopeEntity(
         id=42,
         user_telegram_uid=telegram_uid,
-        horoscope_type="daily",
+        horoscope_type=HoroscopeType.DAILY,
         date=date(2024, 6, 15),
         full_text="Full horoscope text",
         teaser_text="Teaser...",
@@ -141,12 +142,12 @@ class TestHoroscopeServiceGenerateForUser:
         result = service.generate_for_user(
             telegram_uid=12345,
             target_date=date(2024, 6, 15),
-            horoscope_type="first",
+            horoscope_type=HoroscopeType.FIRST,
         )
 
         assert result == new_horoscope
         call_kwargs = horoscope_repo.create_horoscope.call_args[1]
-        assert call_kwargs['horoscope_type'] == 'first'
+        assert call_kwargs['horoscope_type'] == HoroscopeType.FIRST
 
     def test_saves_llm_usage_when_llm_used(self):
         profile = _make_profile()

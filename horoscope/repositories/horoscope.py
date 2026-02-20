@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from core.repositories.base import BaseRepository
 from horoscope.entities import HoroscopeEntity
+from horoscope.enums import HoroscopeType
 from horoscope.exceptions import HoroscopeNotFoundException
 from horoscope.models import Horoscope
 
@@ -42,7 +43,7 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
     def create_horoscope(
         self,
         telegram_uid: int,
-        horoscope_type: str,
+        horoscope_type: HoroscopeType,
         target_date: date,
         full_text: str,
         teaser_text: str,
@@ -61,7 +62,7 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
     async def acreate_horoscope(
         self,
         telegram_uid: int,
-        horoscope_type: str,
+        horoscope_type: HoroscopeType,
         target_date: date,
         full_text: str,
         teaser_text: str,

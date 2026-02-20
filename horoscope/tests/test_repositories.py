@@ -9,7 +9,7 @@ import pytest
 from django.utils import timezone
 
 from horoscope.entities import HoroscopeEntity, LLMUsageEntity, SubscriptionEntity, UserProfileEntity
-from horoscope.enums import SubscriptionStatus
+from horoscope.enums import HoroscopeType, SubscriptionStatus
 from horoscope.models import Horoscope, LLMUsage, Subscription, UserProfile
 from horoscope.repositories.horoscope import HoroscopeRepository
 from horoscope.repositories.llm_usage import LLMUsageRepository
@@ -121,7 +121,7 @@ class TestHoroscopeRepository:
     def test_get_by_user_and_date_found(self):
         Horoscope.objects.create(
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date(2024, 6, 15),
             full_text="Full text",
             teaser_text="Teaser",
@@ -147,7 +147,7 @@ class TestHoroscopeRepository:
     def test_get_by_user_and_date_wrong_date(self):
         Horoscope.objects.create(
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date(2024, 6, 15),
             full_text="Full text",
             teaser_text="Teaser",
@@ -162,7 +162,7 @@ class TestHoroscopeRepository:
     def test_create_horoscope(self):
         result = self.repo.create_horoscope(
             telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             target_date=date(2024, 6, 15),
             full_text="Generated horoscope",
             teaser_text="Preview...",
@@ -176,7 +176,7 @@ class TestHoroscopeRepository:
     def test_mark_sent(self):
         horoscope = Horoscope.objects.create(
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date(2024, 6, 15),
             full_text="Full text",
             teaser_text="Teaser",
@@ -191,7 +191,7 @@ class TestHoroscopeRepository:
     def test_mark_failed_to_send(self):
         horoscope = Horoscope.objects.create(
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=date(2024, 6, 15),
             full_text="Full text",
             teaser_text="Teaser",
@@ -219,7 +219,7 @@ class TestLLMUsageRepository:
     def _create_horoscope(self, target_date=None):
         return Horoscope.objects.create(
             user_telegram_uid=12345,
-            horoscope_type="daily",
+            horoscope_type=HoroscopeType.DAILY,
             date=target_date or date(2024, 6, 15),
             full_text="Full text",
             teaser_text="Teaser...",
