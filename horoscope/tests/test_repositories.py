@@ -356,6 +356,27 @@ class TestSubscriptionRepository:
         assert result is not None
         assert Subscription.objects.filter(user_telegram_uid=12345).count() == 1
 
+    def test_activate_or_renew_extends_from_expiration_date(self):
+        """When renewing, new expiration should extend from current expiration date, not from now."""
+        future_expiration = timezone.now() + timedelta(days=10)
+        Subscription.objects.create(
+            user_telegram_uid=12345,
+            status=SubscriptionStatus.ACTIVE,
+            expires_at=future_expiration,
+        )
+
+        result = self.repo.activate_or_renew(
+            telegram_uid=12345,
+            duration_days=30,
+        )
+
+        assert result is not None
+        sub = Subscription.objects.get(user_telegram_uid=12345)
+        # Should extend from the expiration date (10 days from now + 30 days)
+        expected_min = future_expiration + timedelta(days=29)
+        expected_max = future_expiration + timedelta(days=31)
+        assert expected_min <= sub.expires_at <= expected_max
+
     def test_activate_or_renew_with_payment_charge(self):
         result = self.repo.activate_or_renew(
             telegram_uid=12345,

@@ -11,11 +11,14 @@ from django.utils import timezone
 
 from django.utils.translation import gettext_lazy as _
 
+from horoscope.entities import SubscriptionEntity, UserProfileEntity
 from horoscope.handlers.language import LANGUAGE_CHANGED, LANGUAGE_CURRENT, LANGUAGE_NO_PROFILE
 from horoscope.handlers.subscription import (
     ERROR_PAYMENT_FAILED,
+    SUBSCRIPTION_ALREADY_ACTIVE,
     SUBSCRIPTION_INVOICE_DESCRIPTION,
     SUBSCRIPTION_INVOICE_TITLE,
+    SUBSCRIPTION_NO_PROFILE,
     SUBSCRIPTION_OFFER,
     SUBSCRIPTION_PAYMENT_SUCCESS,
 )
@@ -67,7 +70,8 @@ _ALL_MESSAGE_CONSTANTS = [
         "\n"
         "🔒 Subscribe to see your full daily horoscope!"
     ),
-    SUBSCRIPTION_OFFER, SUBSCRIPTION_INVOICE_TITLE,
+    SUBSCRIPTION_OFFER, SUBSCRIPTION_ALREADY_ACTIVE,
+    SUBSCRIPTION_NO_PROFILE, SUBSCRIPTION_INVOICE_TITLE,
     SUBSCRIPTION_INVOICE_DESCRIPTION, SUBSCRIPTION_PAYMENT_SUCCESS,
     KEYBOARD_SUBSCRIBE, KEYBOARD_SKIP_BIRTH_TIME,
     TASK_FIRST_HOROSCOPE_READY, TASK_EXPIRY_REMINDER,
@@ -642,6 +646,137 @@ class TestBackgroundTasks:
         mock_subscription_repo.amark_reminded.assert_called_once_with(
             subscription_ids=[1],
         )
+
+
+class TestSubscribeCommand:
+    """Tests for /subscribe command handler."""
+
+    @pytest.mark.django_db
+    async def test_subscribe_no_profile_redirects_to_start(self):
+        from horoscope.handlers.subscription import subscribe_command
+
+        mock_user = MagicMock()
+        mock_user.telegram_uid = 12345
+        mock_user.language_code = "en"
+
+        mock_message = MagicMock()
+        mock_app_context = MagicMock()
+        mock_app_context.send_message = AsyncMock()
+
+        mock_user_profile_repo = MagicMock()
+        mock_user_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=None)
+
+        with patch('horoscope.handlers.subscription.container') as mock_container:
+            mock_container.horoscope.user_profile_repository.return_value = mock_user_profile_repo
+
+            await subscribe_command(
+                message=mock_message,
+                user=mock_user,
+                app_context=mock_app_context,
+            )
+
+        mock_app_context.send_message.assert_called_once()
+        text = mock_app_context.send_message.call_args[1]['text']
+        assert "/start" in text
+
+    @pytest.mark.django_db
+    async def test_subscribe_no_active_subscription_sends_offer(self):
+        from horoscope.handlers.subscription import subscribe_command
+
+        mock_user = MagicMock()
+        mock_user.telegram_uid = 12345
+
+        profile = UserProfileEntity(
+            user_telegram_uid=12345,
+            name="Test",
+            date_of_birth=date(1990, 5, 15),
+            place_of_birth="London",
+            place_of_living="Berlin",
+            preferred_language="en",
+            created_at=datetime(2024, 1, 1),
+            updated_at=datetime(2024, 1, 1),
+        )
+
+        mock_message = MagicMock()
+        mock_app_context = MagicMock()
+        mock_app_context.send_message = AsyncMock()
+        mock_app_context.send_invoice = AsyncMock()
+
+        mock_user_profile_repo = MagicMock()
+        mock_user_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
+
+        mock_subscription_repo = MagicMock()
+        mock_subscription_repo.aget_active_by_user = AsyncMock(return_value=None)
+
+        with patch('horoscope.handlers.subscription.container') as mock_container:
+            mock_container.horoscope.user_profile_repository.return_value = mock_user_profile_repo
+            mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
+
+            await subscribe_command(
+                message=mock_message,
+                user=mock_user,
+                app_context=mock_app_context,
+            )
+
+        mock_app_context.send_message.assert_called_once()
+        text = mock_app_context.send_message.call_args[1]['text']
+        assert "Subscribe" in text or "⭐" in text
+        mock_app_context.send_invoice.assert_called_once()
+
+    @pytest.mark.django_db
+    async def test_subscribe_with_active_subscription_shows_renewal(self):
+        from horoscope.handlers.subscription import subscribe_command
+
+        mock_user = MagicMock()
+        mock_user.telegram_uid = 12345
+
+        profile = UserProfileEntity(
+            user_telegram_uid=12345,
+            name="Test",
+            date_of_birth=date(1990, 5, 15),
+            place_of_birth="London",
+            place_of_living="Berlin",
+            preferred_language="en",
+            created_at=datetime(2024, 1, 1),
+            updated_at=datetime(2024, 1, 1),
+        )
+
+        active_sub = SubscriptionEntity(
+            id=1,
+            user_telegram_uid=12345,
+            status="active",
+            started_at=datetime(2024, 1, 1),
+            expires_at=datetime(2024, 7, 15),
+            created_at=datetime(2024, 1, 1),
+            updated_at=datetime(2024, 1, 1),
+        )
+
+        mock_message = MagicMock()
+        mock_app_context = MagicMock()
+        mock_app_context.send_message = AsyncMock()
+        mock_app_context.send_invoice = AsyncMock()
+
+        mock_user_profile_repo = MagicMock()
+        mock_user_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
+
+        mock_subscription_repo = MagicMock()
+        mock_subscription_repo.aget_active_by_user = AsyncMock(return_value=active_sub)
+
+        with patch('horoscope.handlers.subscription.container') as mock_container:
+            mock_container.horoscope.user_profile_repository.return_value = mock_user_profile_repo
+            mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
+
+            await subscribe_command(
+                message=mock_message,
+                user=mock_user,
+                app_context=mock_app_context,
+            )
+
+        mock_app_context.send_message.assert_called_once()
+        text = mock_app_context.send_message.call_args[1]['text']
+        assert "already" in text.lower() or "active" in text.lower()
+        assert "15.07.2024" in text
+        mock_app_context.send_invoice.assert_called_once()
 
 
 class TestLLMService:

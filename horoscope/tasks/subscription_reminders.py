@@ -8,13 +8,17 @@ logger = logging.getLogger(__name__)
 TASK_EXPIRY_REMINDER = _(
     "⏰ Your horoscope subscription expires in <b>{days} day(s)</b>.\n"
     "\n"
-    "Renew now to keep receiving your full daily horoscope! ✨"
+    "Renew now to keep receiving your full daily horoscope! ✨\n"
+    "\n"
+    "Use /subscribe to renew."
 )
 
 TASK_SUBSCRIPTION_EXPIRED = _(
     "⚠️ Your horoscope subscription has <b>expired</b>.\n"
     "\n"
-    "You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐"
+    "You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐\n"
+    "\n"
+    "Use /subscribe to subscribe again."
 )
 
 

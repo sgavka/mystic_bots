@@ -74,7 +74,8 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
                 user_telegram_uid=telegram_uid,
                 status=SubscriptionStatus.ACTIVE,
             )
-            sub.expires_at = timezone.now() + timedelta(days=duration_days)
+            base_date = sub.expires_at if sub.expires_at and sub.expires_at > timezone.now() else timezone.now()
+            sub.expires_at = base_date + timedelta(days=duration_days)
             if payment_charge_id:
                 sub.telegram_payment_charge_id = payment_charge_id
             sub.save()

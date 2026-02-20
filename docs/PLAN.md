@@ -6,7 +6,7 @@ Pick TASK_069 for implementation.
 
 ## Tasks
 
-- [ ] **TASK_069** (new) — Feature: add /subscribe command for subscription purchase
+- [ ] **TASK_069** (processing) — Feature: add /subscribe command for subscription purchase
 - [x] **TASK_070** (complete) — Refactor: extract horoscope type into enum (first, daily)
 - [x] **TASK_067** (complete) — Refactor: implement separated generation/sending from TASK_066 recommendation
 - [x] **TASK_068** (complete) — Feature: per-language UTC time for horoscope generation, user timezone/notification time settings

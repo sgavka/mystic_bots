@@ -1,144 +1,17 @@
 # Django translations for Mystic Bots
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-20 08:31+0000\n"
 "Language: ar\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
-#. wizard.choose_language
-msgid "🌍 Please choose your language:"
-msgstr "🌍 يرجى اختيار لغتك:"
+#: horoscope/handlers/followup.py:94
+msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
+msgstr "😔 عذرًا، لم أتمكن من إنشاء إجابة الآن. يرجى المحاولة لاحقًا."
 
-#. wizard.welcome_back
-msgid ""
-"👋 Welcome back, <b>{name}</b>!\n"
-"\n"
-"Your profile is already set up. You'll receive your daily horoscope soon ✨"
-msgstr ""
-"👋 مرحبًا بعودتك، <b>{name}</b>!\n"
-"\n"
-"ملفك الشخصي جاهز بالفعل. ستتلقى برجك اليومي قريبًا ✨"
-
-#. wizard.welcome
-msgid ""
-"✨ Welcome to <b>Mystic Horoscope</b>! ✨\n"
-"\n"
-"🔮 I'll create a personalized horoscope just for you. Let's set up your profile first.\n"
-"\n"
-"What is your <b>name</b>?"
-msgstr ""
-"✨ مرحبًا بك في <b>Mystic Horoscope</b>! ✨\n"
-"\n"
-"🔮 سأنشئ برجًا مخصصًا لك. دعنا نعد ملفك الشخصي أولاً.\n"
-"\n"
-"ما هو <b>اسمك</b>؟"
-
-#. wizard.invalid_name
-msgid "Please enter a valid name (2-100 characters)."
-msgstr "يرجى إدخال اسم صالح (2-100 حرف)."
-
-#. wizard.ask_dob
-msgid ""
-"😊 Nice to meet you, <b>{name}</b>!\n"
-"\n"
-"📅 Now, please enter your <b>full date of birth</b>.\n"
-"\n"
-"Example: <code>15.03.1990</code>"
-msgstr ""
-"😊 سعيد بلقائك، <b>{name}</b>!\n"
-"\n"
-"📅 الآن، يرجى إدخال <b>تاريخ ميلادك الكامل</b>.\n"
-"\n"
-"مثال: <code>15.03.1990</code>"
-
-#. wizard.invalid_date_format
-msgid ""
-"Invalid date format. Accepted formats:\n"
-"<code>DD.MM.YYYY</code>, <code>DD/MM/YYYY</code>, <code>DD-MM-YYYY</code>, <code>YYYY-MM-DD</code>\n"
-"\n"
-"Example: <code>15.03.1990</code>"
-msgstr ""
-"صيغة تاريخ غير صالحة. الصيغ المقبولة:\n"
-"<code>DD.MM.YYYY</code>، <code>DD/MM/YYYY</code>، <code>DD-MM-YYYY</code>، <code>YYYY-MM-DD</code>\n"
-"\n"
-"مثال: <code>15.03.1990</code>"
-
-#. wizard.dob_in_future
-msgid "Date of birth must be in the past. Please try again."
-msgstr "يجب أن يكون تاريخ الميلاد في الماضي. يرجى المحاولة مرة أخرى."
-
-#. wizard.dob_too_old
-msgid "Please enter a valid date of birth."
-msgstr "يرجى إدخال تاريخ ميلاد صالح."
-
-#. wizard.ask_birth_time
-msgid ""
-"🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
-"\n"
-"Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-"or press the button below to skip."
-msgstr ""
-"🕐 هل تعرف <b>وقت ميلادك</b>؟ يساعد في جعل البرج أكثر دقة.\n"
-"\n"
-"أدخل الوقت بصيغة <code>HH:MM</code> (مثل <code>14:30</code>)،\n"
-"أو اضغط على الزر أدناه للتخطي."
-
-#. wizard.invalid_time_format
-msgid ""
-"Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-"or press the button below to skip."
-msgstr ""
-"صيغة وقت غير صالحة. يرجى إدخال الوقت كـ <code>HH:MM</code> (مثل <code>14:30</code>)،\n"
-"أو اضغط على الزر أدناه للتخطي."
-
-#. wizard.ask_place_of_birth
-msgid ""
-"🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
-"\n"
-"Example: <code>London</code>"
-msgstr ""
-"🎯 رائع! الآن، يرجى إدخال <b>مكان ميلادك</b> (المدينة).\n"
-"\n"
-"مثال: <code>القاهرة</code>"
-
-#. wizard.invalid_city
-msgid "Please enter a valid city name (2-200 characters)."
-msgstr "يرجى إدخال اسم مدينة صالح (2-200 حرف)."
-
-#. wizard.ask_place_of_living
-msgid ""
-"📍 Almost done! Please enter your <b>current place of living</b> (city).\n"
-"\n"
-"Example: <code>New York</code>"
-msgstr ""
-"📍 أوشكنا على الانتهاء! يرجى إدخال <b>مكان إقامتك الحالي</b> (المدينة).\n"
-"\n"
-"مثال: <code>دبي</code>"
-
-#. wizard.profile_ready
-msgid ""
-"✅ Your profile is ready, <b>{name}</b>!\n"
-"\n"
-"📅 Date of birth: {dob}\n"
-"{birth_time_line}"
-"🏠 Born in: {place_of_birth}\n"
-"📍 Living in: {place_of_living}\n"
-"\n"
-"🔮 Generating your first horoscope... Please wait a moment."
-msgstr ""
-"✅ ملفك الشخصي جاهز، <b>{name}</b>!\n"
-"\n"
-"📅 تاريخ الميلاد: {dob}\n"
-"{birth_time_line}"
-"🏠 مكان الميلاد: {place_of_birth}\n"
-"📍 مكان الإقامة: {place_of_living}\n"
-"\n"
-"🔮 جارٍ إنشاء برجك الأول... يرجى الانتظار لحظة."
-
-#. wizard.birth_time_line
-msgid "🕐 Birth time: {birth_time}\n"
-msgstr "🕐 وقت الميلاد: {birth_time}\n"
-
-#. horoscope.no_profile
+#: horoscope/handlers/horoscope.py:31 horoscope/handlers/subscription.py:43
+#: horoscope/tests/test_translations.py:54
 msgid ""
 "⚠️ You haven't set up your profile yet.\n"
 "Send /start to begin the onboarding wizard."
@@ -146,15 +19,7 @@ msgstr ""
 "⚠️ لم تقم بإعداد ملفك الشخصي بعد.\n"
 "أرسل /start لبدء الإعداد."
 
-#. horoscope.not_ready
-msgid ""
-"⏳ Your horoscope for today is not ready yet.\n"
-"It will be generated soon. Please check back later."
-msgstr ""
-"⏳ برجك لهذا اليوم غير جاهز بعد.\n"
-"سيتم إنشاؤه قريبًا. يرجى المراجعة لاحقًا."
-
-#. horoscope.generating
+#: horoscope/handlers/horoscope.py:57 horoscope/tests/test_translations.py:62
 msgid ""
 "🔮 Your horoscope is being generated right now!\n"
 "Please check back in a minute."
@@ -162,7 +27,29 @@ msgstr ""
 "🔮 جارٍ إنشاء برجك الآن!\n"
 "يرجى المراجعة بعد دقيقة."
 
-#. horoscope.subscribe_cta
+#: horoscope/handlers/horoscope.py:62 horoscope/tests/test_translations.py:58
+msgid ""
+"⏳ Your horoscope for today is not ready yet.\n"
+"It will be generated soon. Please check back later."
+msgstr ""
+"⏳ برجك لهذا اليوم غير جاهز بعد.\n"
+"سيتم إنشاؤه قريبًا. يرجى المراجعة لاحقًا."
+
+#: horoscope/handlers/horoscope.py:72 horoscope/tasks/generate_horoscope.py:102
+#: horoscope/tasks/generate_horoscope.py:142
+#: horoscope/tasks/send_daily_horoscope.py:107
+msgid ""
+"\n"
+"\n"
+"💬 You can ask questions about your horoscope — just type your message!"
+msgstr ""
+"\n"
+"\n"
+"💬 يمكنك طرح أسئلة حول برجك — فقط اكتب رسالتك!"
+
+#: horoscope/handlers/horoscope.py:80
+#: horoscope/tasks/send_periodic_teaser.py:77
+#: horoscope/tests/test_translations.py:66
 msgid ""
 "\n"
 "\n"
@@ -172,7 +59,88 @@ msgstr ""
 "\n"
 "🔒 اشترك لمشاهدة برجك اليومي الكامل!"
 
-#. subscription.offer
+#: horoscope/handlers/language.py:19
+#, python-brace-format
+msgid ""
+"🌍 Your current language: <b>{lang_name}</b>\n"
+"\n"
+"Choose a new language:"
+msgstr ""
+"🌍 لغتك الحالية: <b>{lang_name}</b>\n"
+"\n"
+"اختر لغة جديدة:"
+
+#: horoscope/handlers/language.py:24
+msgid "✅ Language changed to <b>English</b> 🇬🇧"
+msgstr "✅ تم تغيير اللغة إلى <b>العربية</b> 🇸🇦"
+
+#: horoscope/handlers/language.py:27 horoscope/handlers/settings.py:26
+msgid ""
+"⚠️ You haven't set up your profile yet.\n"
+"Send /start to begin."
+msgstr ""
+"⚠️ لم تقم بإعداد ملفك الشخصي بعد.\n"
+"أرسل /start للبدء."
+
+#: horoscope/handlers/settings.py:31
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "🌍 Your current language: <b>{lang_name}</b>\n"
+#| "\n"
+#| "Choose a new language:"
+msgid ""
+"🕐 Your current timezone: <b>{timezone}</b>\n"
+"\n"
+"Choose your UTC offset:"
+msgstr ""
+"🌍 لغتك الحالية: <b>{lang_name}</b>\n"
+"\n"
+"اختر لغة جديدة:"
+
+#: horoscope/handlers/settings.py:37
+msgid ""
+"🕐 Your timezone is not set yet.\n"
+"\n"
+"Choose your UTC offset:"
+msgstr ""
+
+#: horoscope/handlers/settings.py:42
+#, python-brace-format
+msgid "✅ Timezone changed to <b>{timezone}</b>"
+msgstr ""
+
+#: horoscope/handlers/settings.py:45
+#, python-brace-format
+msgid ""
+"🔔 Your notification time: <b>{time}</b> (local time)\n"
+"\n"
+"Choose when you want to receive your daily horoscope:"
+msgstr ""
+
+#: horoscope/handlers/settings.py:51
+msgid ""
+"🔔 You're using the default notification time for your language.\n"
+"\n"
+"Choose when you want to receive your daily horoscope:"
+msgstr ""
+
+#: horoscope/handlers/settings.py:56
+#, python-brace-format
+msgid "✅ Notification time changed to <b>{time}</b> (local time)"
+msgstr ""
+
+#: horoscope/handlers/settings.py:58
+msgid "✅ Notification time reset to language default."
+msgstr ""
+
+#: horoscope/handlers/settings.py:61
+msgid ""
+"⚠️ Please set your timezone first with /timezone\n"
+"so we can show you the correct local time."
+msgstr ""
+
+#: horoscope/handlers/subscription.py:23
+#, python-brace-format
 msgid ""
 "⭐ Subscribe for <b>{days} days</b> of full daily horoscope access.\n"
 "\n"
@@ -186,15 +154,40 @@ msgstr ""
 "\n"
 "اضغط على الزر أدناه للدفع."
 
-#. subscription.invoice_title
+#: horoscope/handlers/subscription.py:31
+#, python-brace-format
+msgid ""
+"✅ You already have an active subscription.\n"
+"\n"
+"📅 Expires: <b>{expires}</b>\n"
+"\n"
+"You can renew now — the new period will start from your current expiration date.\n"
+"\n"
+"💰 Price: <b>{price} Telegram Stars</b> for <b>{days} days</b>\n"
+"\n"
+"Tap the button below to extend."
+msgstr ""
+"✅ لديك اشتراك نشط بالفعل.\n"
+"\n"
+"📅 ينتهي في: <b>{expires}</b>\n"
+"\n"
+"يمكنك التجديد الآن — ستبدأ الفترة الجديدة من تاريخ انتهاء اشتراكك الحالي.\n"
+"\n"
+"💰 السعر: <b>{price} Telegram Stars</b> لمدة <b>{days} يوم</b>\n"
+"\n"
+"اضغط الزر أدناه للتمديد."
+
+#: horoscope/handlers/subscription.py:47
 msgid "Horoscope Subscription"
 msgstr "اشتراك البرج"
 
-#. subscription.invoice_description
+#: horoscope/handlers/subscription.py:49
+#, python-brace-format
 msgid "{days}-day access to full daily horoscope"
 msgstr "وصول لمدة {days} يومًا للبرج اليومي الكامل"
 
-#. subscription.payment_success
+#: horoscope/handlers/subscription.py:52
+#, python-brace-format
 msgid ""
 "✅ Payment successful! Your subscription is now active.\n"
 "\n"
@@ -208,11 +201,164 @@ msgstr ""
 "\n"
 "استخدم /horoscope لمشاهدة برجك اليومي الكامل ✨"
 
-#. keyboard.subscribe
+#: horoscope/handlers/subscription.py:59
+msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
+msgstr "😔 حدث خطأ أثناء تفعيل اشتراكك. يرجى التواصل مع الدعم إذا استمرت المشكلة."
+
+#: horoscope/handlers/wizard.py:22
+msgid "🌍 Please choose your language:"
+msgstr "🌍 يرجى اختيار لغتك:"
+
+#: horoscope/handlers/wizard.py:25
+#, python-brace-format
+msgid ""
+"👋 Welcome back, <b>{name}</b>!\n"
+"\n"
+"Your profile is already set up. You'll receive your daily horoscope soon ✨"
+msgstr ""
+"👋 مرحبًا بعودتك، <b>{name}</b>!\n"
+"\n"
+"ملفك الشخصي جاهز بالفعل. ستتلقى برجك اليومي قريبًا ✨"
+
+#: horoscope/handlers/wizard.py:31
+msgid ""
+"✨ Welcome to <b>Mystic Horoscope</b>! ✨\n"
+"\n"
+"🔮 I'll create a personalized horoscope just for you. Let's set up your profile first.\n"
+"\n"
+"What is your <b>name</b>?"
+msgstr ""
+"✨ مرحبًا بك في <b>Mystic Horoscope</b>! ✨\n"
+"\n"
+"🔮 سأنشئ برجًا مخصصًا لك. دعنا نعد ملفك الشخصي أولاً.\n"
+"\n"
+"ما هو <b>اسمك</b>؟"
+
+#: horoscope/handlers/wizard.py:38
+msgid "Please enter a valid name (2-100 characters)."
+msgstr "يرجى إدخال اسم صالح (2-100 حرف)."
+
+#: horoscope/handlers/wizard.py:41
+#, python-brace-format
+msgid ""
+"😊 Nice to meet you, <b>{name}</b>!\n"
+"\n"
+"📅 Now, please enter your <b>full date of birth</b>.\n"
+"\n"
+"Example: <code>15.03.1990</code>"
+msgstr ""
+"😊 سعيد بلقائك، <b>{name}</b>!\n"
+"\n"
+"📅 الآن، يرجى إدخال <b>تاريخ ميلادك الكامل</b>.\n"
+"\n"
+"مثال: <code>15.03.1990</code>"
+
+#: horoscope/handlers/wizard.py:49
+msgid ""
+"Invalid date format. Accepted formats:\n"
+"<code>DD.MM.YYYY</code>, <code>DD/MM/YYYY</code>, <code>DD-MM-YYYY</code>, <code>YYYY-MM-DD</code>\n"
+"\n"
+"Example: <code>15.03.1990</code>"
+msgstr ""
+"صيغة تاريخ غير صالحة. الصيغ المقبولة:\n"
+"<code>DD.MM.YYYY</code>، <code>DD/MM/YYYY</code>، <code>DD-MM-YYYY</code>، <code>YYYY-MM-DD</code>\n"
+"\n"
+"مثال: <code>15.03.1990</code>"
+
+#: horoscope/handlers/wizard.py:55
+msgid "Date of birth must be in the past. Please try again."
+msgstr "يجب أن يكون تاريخ الميلاد في الماضي. يرجى المحاولة مرة أخرى."
+
+#: horoscope/handlers/wizard.py:57
+msgid "Please enter a valid date of birth."
+msgstr "يرجى إدخال تاريخ ميلاد صالح."
+
+#: horoscope/handlers/wizard.py:60
+msgid ""
+"🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
+"\n"
+"Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+"or press the button below to skip."
+msgstr ""
+"🕐 هل تعرف <b>وقت ميلادك</b>؟ يساعد في جعل البرج أكثر دقة.\n"
+"\n"
+"أدخل الوقت بصيغة <code>HH:MM</code> (مثل <code>14:30</code>)،\n"
+"أو اضغط على الزر أدناه للتخطي."
+
+#: horoscope/handlers/wizard.py:67
+msgid ""
+"Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+"or press the button below to skip."
+msgstr ""
+"صيغة وقت غير صالحة. يرجى إدخال الوقت كـ <code>HH:MM</code> (مثل <code>14:30</code>)،\n"
+"أو اضغط على الزر أدناه للتخطي."
+
+#: horoscope/handlers/wizard.py:72
+msgid ""
+"🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
+"\n"
+"Example: <code>London</code>"
+msgstr ""
+"🎯 رائع! الآن، يرجى إدخال <b>مكان ميلادك</b> (المدينة).\n"
+"\n"
+"مثال: <code>القاهرة</code>"
+
+#: horoscope/handlers/wizard.py:77
+msgid "Please enter a valid city name (2-200 characters)."
+msgstr "يرجى إدخال اسم مدينة صالح (2-200 حرف)."
+
+#: horoscope/handlers/wizard.py:80
+msgid ""
+"📍 Almost done! Please enter your <b>current place of living</b> (city).\n"
+"\n"
+"Example: <code>New York</code>"
+msgstr ""
+"📍 أوشكنا على الانتهاء! يرجى إدخال <b>مكان إقامتك الحالي</b> (المدينة).\n"
+"\n"
+"مثال: <code>دبي</code>"
+
+#: horoscope/handlers/wizard.py:86
+#, python-brace-format
+msgid ""
+"✅ Your profile is ready, <b>{name}</b>!\n"
+"\n"
+"📅 Date of birth: {dob}\n"
+"{birth_time_line}🏠 Born in: {place_of_birth}\n"
+"📍 Living in: {place_of_living}\n"
+"\n"
+"🔮 Generating your first horoscope... Please wait a moment."
+msgstr ""
+"✅ ملفك الشخصي جاهز، <b>{name}</b>!\n"
+"\n"
+"📅 تاريخ الميلاد: {dob}\n"
+"{birth_time_line}🏠 مكان الميلاد: {place_of_birth}\n"
+"📍 مكان الإقامة: {place_of_living}\n"
+"\n"
+"🔮 جارٍ إنشاء برجك الأول... يرجى الانتظار لحظة."
+
+#: horoscope/handlers/wizard.py:96
+#, python-brace-format
+msgid "🕐 Birth time: {birth_time}\n"
+msgstr "🕐 وقت الميلاد: {birth_time}\n"
+
+#: horoscope/handlers/wizard.py:98
+msgid "😔 Something went wrong while creating your profile. Please try again with /start"
+msgstr "😔 حدث خطأ أثناء إنشاء ملفك الشخصي. يرجى المحاولة مرة أخرى باستخدام /start"
+
+#: horoscope/keyboards.py:15
 msgid "⭐ Subscribe for full horoscope"
 msgstr "⭐ اشترك للبرج الكامل"
 
-#. task.first_horoscope_ready
+#: horoscope/keyboards.py:32
+msgid "⏭ Skip"
+msgstr "⏭ تخطي"
+
+#: horoscope/keyboards.py:53
+msgid "🔄 Reset to language default"
+msgstr ""
+
+#: horoscope/tasks/generate_horoscope.py:12
+#, python-brace-format
 msgid ""
 "🔮 Your first horoscope is ready!\n"
 "\n"
@@ -222,78 +368,37 @@ msgstr ""
 "\n"
 "{text}"
 
-#. task.expiry_reminder
+#: horoscope/tasks/subscription_reminders.py:9
+#, python-brace-format
 msgid ""
 "⏰ Your horoscope subscription expires in <b>{days} day(s)</b>.\n"
 "\n"
-"Renew now to keep receiving your full daily horoscope! ✨"
+"Renew now to keep receiving your full daily horoscope! ✨\n"
+"\n"
+"Use /subscribe to renew."
 msgstr ""
 "⏰ ينتهي اشتراك البرج الخاص بك خلال <b>{days} يوم/أيام</b>.\n"
 "\n"
-"جدد الآن للاستمرار في تلقي برجك اليومي الكامل! ✨"
+"جدد الآن للاستمرار في تلقي برجك اليومي الكامل! ✨\n"
+"\n"
+"استخدم /subscribe للتجديد."
 
-#. task.subscription_expired
+#: horoscope/tasks/subscription_reminders.py:17
 msgid ""
 "⚠️ Your horoscope subscription has <b>expired</b>.\n"
 "\n"
-"You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐"
+"You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐\n"
+"\n"
+"Use /subscribe to subscribe again."
 msgstr ""
 "⚠️ <b>انتهى</b> اشتراك البرج الخاص بك.\n"
 "\n"
-"ستشاهد الآن معاينة لبرجك اليومي. اشترك مرة أخرى للحصول على الوصول الكامل! ⭐"
-
-#. language.current
-msgid ""
-"🌍 Your current language: <b>{lang_name}</b>\n"
+"ستشاهد الآن معاينة لبرجك اليومي. اشترك مرة أخرى للحصول على الوصول الكامل! ⭐\n"
 "\n"
-"Choose a new language:"
-msgstr ""
-"🌍 لغتك الحالية: <b>{lang_name}</b>\n"
-"\n"
-"اختر لغة جديدة:"
+"استخدم /subscribe للاشتراك مرة أخرى."
 
-#. language.changed
-msgid "✅ Language changed to <b>English</b> 🇬🇧"
-msgstr "✅ تم تغيير اللغة إلى <b>العربية</b> 🇸🇦"
+#~ msgid "Horoscope for {sign} — {date}"
+#~ msgstr "برج {sign} — {date}"
 
-#. language.no_profile
-msgid ""
-"⚠️ You haven't set up your profile yet.\n"
-"Send /start to begin."
-msgstr ""
-"⚠️ لم تقم بإعداد ملفك الشخصي بعد.\n"
-"أرسل /start للبدء."
-
-#. horoscope.header
-msgid "Horoscope for {sign} — {date}"
-msgstr "برج {sign} — {date}"
-
-#. horoscope.greeting
-msgid "Dear {name},"
-msgstr "عزيزي/عزيزتي {name}،"
-
-#. error.profile_creation_failed
-msgid "😔 Something went wrong while creating your profile. Please try again with /start"
-msgstr "😔 حدث خطأ أثناء إنشاء ملفك الشخصي. يرجى المحاولة مرة أخرى باستخدام /start"
-
-#. error.payment_failed
-msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
-msgstr "😔 حدث خطأ أثناء تفعيل اشتراكك. يرجى التواصل مع الدعم إذا استمرت المشكلة."
-
-#. followup.hint
-msgid ""
-"\n"
-"\n"
-"💬 You can ask questions about your horoscope — just type your message!"
-msgstr ""
-"\n"
-"\n"
-"💬 يمكنك طرح أسئلة حول برجك — فقط اكتب رسالتك!"
-
-#. followup.error
-msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
-msgstr "😔 عذرًا، لم أتمكن من إنشاء إجابة الآن. يرجى المحاولة لاحقًا."
-
-#. keyboard.skip_birth_time
-msgid "⏭ Skip"
-msgstr "⏭ تخطي"
+#~ msgid "Dear {name},"
+#~ msgstr "عزيزي/عزيزتي {name}،"

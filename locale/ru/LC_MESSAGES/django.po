@@ -1,144 +1,17 @@
 # Django translations for Mystic Bots
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-20 08:31+0000\n"
 "Language: ru\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
-#. wizard.choose_language
-msgid "🌍 Please choose your language:"
-msgstr "🌍 Пожалуйста, выберите язык:"
+#: horoscope/handlers/followup.py:94
+msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
+msgstr "😔 Извините, не удалось сгенерировать ответ сейчас. Попробуйте позже."
 
-#. wizard.welcome_back
-msgid ""
-"👋 Welcome back, <b>{name}</b>!\n"
-"\n"
-"Your profile is already set up. You'll receive your daily horoscope soon ✨"
-msgstr ""
-"👋 С возвращением, <b>{name}</b>!\n"
-"\n"
-"Ваш профиль уже настроен. Скоро вы получите ежедневный гороскоп ✨"
-
-#. wizard.welcome
-msgid ""
-"✨ Welcome to <b>Mystic Horoscope</b>! ✨\n"
-"\n"
-"🔮 I'll create a personalized horoscope just for you. Let's set up your profile first.\n"
-"\n"
-"What is your <b>name</b>?"
-msgstr ""
-"✨ Добро пожаловать в <b>Mystic Horoscope</b>! ✨\n"
-"\n"
-"🔮 Я создам персональный гороскоп специально для вас. Давайте сначала настроим профиль.\n"
-"\n"
-"Как вас <b>зовут</b>?"
-
-#. wizard.invalid_name
-msgid "Please enter a valid name (2-100 characters)."
-msgstr "Пожалуйста, введите корректное имя (2-100 символов)."
-
-#. wizard.ask_dob
-msgid ""
-"😊 Nice to meet you, <b>{name}</b>!\n"
-"\n"
-"📅 Now, please enter your <b>full date of birth</b>.\n"
-"\n"
-"Example: <code>15.03.1990</code>"
-msgstr ""
-"😊 Приятно познакомиться, <b>{name}</b>!\n"
-"\n"
-"📅 Теперь введите вашу <b>полную дату рождения</b>.\n"
-"\n"
-"Пример: <code>15.03.1990</code>"
-
-#. wizard.invalid_date_format
-msgid ""
-"Invalid date format. Accepted formats:\n"
-"<code>DD.MM.YYYY</code>, <code>DD/MM/YYYY</code>, <code>DD-MM-YYYY</code>, <code>YYYY-MM-DD</code>\n"
-"\n"
-"Example: <code>15.03.1990</code>"
-msgstr ""
-"Неверный формат даты. Допустимые форматы:\n"
-"<code>ДД.ММ.ГГГГ</code>, <code>ДД/ММ/ГГГГ</code>, <code>ДД-ММ-ГГГГ</code>, <code>ГГГГ-ММ-ДД</code>\n"
-"\n"
-"Пример: <code>15.03.1990</code>"
-
-#. wizard.dob_in_future
-msgid "Date of birth must be in the past. Please try again."
-msgstr "Дата рождения должна быть в прошлом. Попробуйте ещё раз."
-
-#. wizard.dob_too_old
-msgid "Please enter a valid date of birth."
-msgstr "Пожалуйста, введите корректную дату рождения."
-
-#. wizard.ask_birth_time
-msgid ""
-"🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
-"\n"
-"Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-"or press the button below to skip."
-msgstr ""
-"🕐 Знаете ли вы <b>время рождения</b>? Это поможет сделать гороскоп точнее.\n"
-"\n"
-"Введите время в формате <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
-"или нажмите кнопку ниже, чтобы пропустить."
-
-#. wizard.invalid_time_format
-msgid ""
-"Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
-"or press the button below to skip."
-msgstr ""
-"Неверный формат времени. Введите время как <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
-"или нажмите кнопку ниже, чтобы пропустить."
-
-#. wizard.ask_place_of_birth
-msgid ""
-"🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
-"\n"
-"Example: <code>London</code>"
-msgstr ""
-"🎯 Отлично! Теперь введите ваше <b>место рождения</b> (город).\n"
-"\n"
-"Пример: <code>Москва</code>"
-
-#. wizard.invalid_city
-msgid "Please enter a valid city name (2-200 characters)."
-msgstr "Пожалуйста, введите корректное название города (2-200 символов)."
-
-#. wizard.ask_place_of_living
-msgid ""
-"📍 Almost done! Please enter your <b>current place of living</b> (city).\n"
-"\n"
-"Example: <code>New York</code>"
-msgstr ""
-"📍 Почти готово! Введите ваше <b>текущее место проживания</b> (город).\n"
-"\n"
-"Пример: <code>Санкт-Петербург</code>"
-
-#. wizard.profile_ready
-msgid ""
-"✅ Your profile is ready, <b>{name}</b>!\n"
-"\n"
-"📅 Date of birth: {dob}\n"
-"{birth_time_line}"
-"🏠 Born in: {place_of_birth}\n"
-"📍 Living in: {place_of_living}\n"
-"\n"
-"🔮 Generating your first horoscope... Please wait a moment."
-msgstr ""
-"✅ Ваш профиль готов, <b>{name}</b>!\n"
-"\n"
-"📅 Дата рождения: {dob}\n"
-"{birth_time_line}"
-"🏠 Место рождения: {place_of_birth}\n"
-"📍 Место проживания: {place_of_living}\n"
-"\n"
-"🔮 Генерирую ваш первый гороскоп... Пожалуйста, подождите."
-
-#. wizard.birth_time_line
-msgid "🕐 Birth time: {birth_time}\n"
-msgstr "🕐 Время рождения: {birth_time}\n"
-
-#. horoscope.no_profile
+#: horoscope/handlers/horoscope.py:31 horoscope/handlers/subscription.py:43
+#: horoscope/tests/test_translations.py:54
 msgid ""
 "⚠️ You haven't set up your profile yet.\n"
 "Send /start to begin the onboarding wizard."
@@ -146,15 +19,7 @@ msgstr ""
 "⚠️ Вы ещё не настроили свой профиль.\n"
 "Отправьте /start для начала настройки."
 
-#. horoscope.not_ready
-msgid ""
-"⏳ Your horoscope for today is not ready yet.\n"
-"It will be generated soon. Please check back later."
-msgstr ""
-"⏳ Ваш гороскоп на сегодня ещё не готов.\n"
-"Он скоро будет сгенерирован. Проверьте позже."
-
-#. horoscope.generating
+#: horoscope/handlers/horoscope.py:57 horoscope/tests/test_translations.py:62
 msgid ""
 "🔮 Your horoscope is being generated right now!\n"
 "Please check back in a minute."
@@ -162,7 +27,29 @@ msgstr ""
 "🔮 Ваш гороскоп генерируется прямо сейчас!\n"
 "Пожалуйста, проверьте через минуту."
 
-#. horoscope.subscribe_cta
+#: horoscope/handlers/horoscope.py:62 horoscope/tests/test_translations.py:58
+msgid ""
+"⏳ Your horoscope for today is not ready yet.\n"
+"It will be generated soon. Please check back later."
+msgstr ""
+"⏳ Ваш гороскоп на сегодня ещё не готов.\n"
+"Он скоро будет сгенерирован. Проверьте позже."
+
+#: horoscope/handlers/horoscope.py:72 horoscope/tasks/generate_horoscope.py:102
+#: horoscope/tasks/generate_horoscope.py:142
+#: horoscope/tasks/send_daily_horoscope.py:107
+msgid ""
+"\n"
+"\n"
+"💬 You can ask questions about your horoscope — just type your message!"
+msgstr ""
+"\n"
+"\n"
+"💬 Вы можете задавать вопросы о своём гороскопе — просто напишите сообщение!"
+
+#: horoscope/handlers/horoscope.py:80
+#: horoscope/tasks/send_periodic_teaser.py:77
+#: horoscope/tests/test_translations.py:66
 msgid ""
 "\n"
 "\n"
@@ -172,7 +59,88 @@ msgstr ""
 "\n"
 "🔒 Подпишитесь, чтобы видеть полный ежедневный гороскоп!"
 
-#. subscription.offer
+#: horoscope/handlers/language.py:19
+#, python-brace-format
+msgid ""
+"🌍 Your current language: <b>{lang_name}</b>\n"
+"\n"
+"Choose a new language:"
+msgstr ""
+"🌍 Ваш текущий язык: <b>{lang_name}</b>\n"
+"\n"
+"Выберите новый язык:"
+
+#: horoscope/handlers/language.py:24
+msgid "✅ Language changed to <b>English</b> 🇬🇧"
+msgstr "✅ Язык изменён на <b>Русский</b> 🇷🇺"
+
+#: horoscope/handlers/language.py:27 horoscope/handlers/settings.py:26
+msgid ""
+"⚠️ You haven't set up your profile yet.\n"
+"Send /start to begin."
+msgstr ""
+"⚠️ Вы ещё не настроили профиль.\n"
+"Отправьте /start для начала."
+
+#: horoscope/handlers/settings.py:31
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "🌍 Your current language: <b>{lang_name}</b>\n"
+#| "\n"
+#| "Choose a new language:"
+msgid ""
+"🕐 Your current timezone: <b>{timezone}</b>\n"
+"\n"
+"Choose your UTC offset:"
+msgstr ""
+"🌍 Ваш текущий язык: <b>{lang_name}</b>\n"
+"\n"
+"Выберите новый язык:"
+
+#: horoscope/handlers/settings.py:37
+msgid ""
+"🕐 Your timezone is not set yet.\n"
+"\n"
+"Choose your UTC offset:"
+msgstr ""
+
+#: horoscope/handlers/settings.py:42
+#, python-brace-format
+msgid "✅ Timezone changed to <b>{timezone}</b>"
+msgstr ""
+
+#: horoscope/handlers/settings.py:45
+#, python-brace-format
+msgid ""
+"🔔 Your notification time: <b>{time}</b> (local time)\n"
+"\n"
+"Choose when you want to receive your daily horoscope:"
+msgstr ""
+
+#: horoscope/handlers/settings.py:51
+msgid ""
+"🔔 You're using the default notification time for your language.\n"
+"\n"
+"Choose when you want to receive your daily horoscope:"
+msgstr ""
+
+#: horoscope/handlers/settings.py:56
+#, python-brace-format
+msgid "✅ Notification time changed to <b>{time}</b> (local time)"
+msgstr ""
+
+#: horoscope/handlers/settings.py:58
+msgid "✅ Notification time reset to language default."
+msgstr ""
+
+#: horoscope/handlers/settings.py:61
+msgid ""
+"⚠️ Please set your timezone first with /timezone\n"
+"so we can show you the correct local time."
+msgstr ""
+
+#: horoscope/handlers/subscription.py:23
+#, python-brace-format
 msgid ""
 "⭐ Subscribe for <b>{days} days</b> of full daily horoscope access.\n"
 "\n"
@@ -186,15 +154,40 @@ msgstr ""
 "\n"
 "Нажмите кнопку ниже для оплаты."
 
-#. subscription.invoice_title
+#: horoscope/handlers/subscription.py:31
+#, python-brace-format
+msgid ""
+"✅ You already have an active subscription.\n"
+"\n"
+"📅 Expires: <b>{expires}</b>\n"
+"\n"
+"You can renew now — the new period will start from your current expiration date.\n"
+"\n"
+"💰 Price: <b>{price} Telegram Stars</b> for <b>{days} days</b>\n"
+"\n"
+"Tap the button below to extend."
+msgstr ""
+"✅ У вас уже есть активная подписка.\n"
+"\n"
+"📅 Действует до: <b>{expires}</b>\n"
+"\n"
+"Вы можете продлить сейчас — новый период начнётся с даты окончания текущей подписки.\n"
+"\n"
+"💰 Цена: <b>{price} Telegram Stars</b> за <b>{days} дней</b>\n"
+"\n"
+"Нажмите кнопку ниже для продления."
+
+#: horoscope/handlers/subscription.py:47
 msgid "Horoscope Subscription"
 msgstr "Подписка на гороскоп"
 
-#. subscription.invoice_description
+#: horoscope/handlers/subscription.py:49
+#, python-brace-format
 msgid "{days}-day access to full daily horoscope"
 msgstr "Доступ к полному ежедневному гороскопу на {days} дней"
 
-#. subscription.payment_success
+#: horoscope/handlers/subscription.py:52
+#, python-brace-format
 msgid ""
 "✅ Payment successful! Your subscription is now active.\n"
 "\n"
@@ -208,11 +201,164 @@ msgstr ""
 "\n"
 "Используйте /horoscope для просмотра полного гороскопа ✨"
 
-#. keyboard.subscribe
+#: horoscope/handlers/subscription.py:59
+msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
+msgstr "😔 Что-то пошло не так при активации подписки. Пожалуйста, обратитесь в поддержку, если проблема сохранится."
+
+#: horoscope/handlers/wizard.py:22
+msgid "🌍 Please choose your language:"
+msgstr "🌍 Пожалуйста, выберите язык:"
+
+#: horoscope/handlers/wizard.py:25
+#, python-brace-format
+msgid ""
+"👋 Welcome back, <b>{name}</b>!\n"
+"\n"
+"Your profile is already set up. You'll receive your daily horoscope soon ✨"
+msgstr ""
+"👋 С возвращением, <b>{name}</b>!\n"
+"\n"
+"Ваш профиль уже настроен. Скоро вы получите ежедневный гороскоп ✨"
+
+#: horoscope/handlers/wizard.py:31
+msgid ""
+"✨ Welcome to <b>Mystic Horoscope</b>! ✨\n"
+"\n"
+"🔮 I'll create a personalized horoscope just for you. Let's set up your profile first.\n"
+"\n"
+"What is your <b>name</b>?"
+msgstr ""
+"✨ Добро пожаловать в <b>Mystic Horoscope</b>! ✨\n"
+"\n"
+"🔮 Я создам персональный гороскоп специально для вас. Давайте сначала настроим профиль.\n"
+"\n"
+"Как вас <b>зовут</b>?"
+
+#: horoscope/handlers/wizard.py:38
+msgid "Please enter a valid name (2-100 characters)."
+msgstr "Пожалуйста, введите корректное имя (2-100 символов)."
+
+#: horoscope/handlers/wizard.py:41
+#, python-brace-format
+msgid ""
+"😊 Nice to meet you, <b>{name}</b>!\n"
+"\n"
+"📅 Now, please enter your <b>full date of birth</b>.\n"
+"\n"
+"Example: <code>15.03.1990</code>"
+msgstr ""
+"😊 Приятно познакомиться, <b>{name}</b>!\n"
+"\n"
+"📅 Теперь введите вашу <b>полную дату рождения</b>.\n"
+"\n"
+"Пример: <code>15.03.1990</code>"
+
+#: horoscope/handlers/wizard.py:49
+msgid ""
+"Invalid date format. Accepted formats:\n"
+"<code>DD.MM.YYYY</code>, <code>DD/MM/YYYY</code>, <code>DD-MM-YYYY</code>, <code>YYYY-MM-DD</code>\n"
+"\n"
+"Example: <code>15.03.1990</code>"
+msgstr ""
+"Неверный формат даты. Допустимые форматы:\n"
+"<code>ДД.ММ.ГГГГ</code>, <code>ДД/ММ/ГГГГ</code>, <code>ДД-ММ-ГГГГ</code>, <code>ГГГГ-ММ-ДД</code>\n"
+"\n"
+"Пример: <code>15.03.1990</code>"
+
+#: horoscope/handlers/wizard.py:55
+msgid "Date of birth must be in the past. Please try again."
+msgstr "Дата рождения должна быть в прошлом. Попробуйте ещё раз."
+
+#: horoscope/handlers/wizard.py:57
+msgid "Please enter a valid date of birth."
+msgstr "Пожалуйста, введите корректную дату рождения."
+
+#: horoscope/handlers/wizard.py:60
+msgid ""
+"🕐 Do you know your <b>birth time</b>? It helps make the horoscope more precise.\n"
+"\n"
+"Enter time in format <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+"or press the button below to skip."
+msgstr ""
+"🕐 Знаете ли вы <b>время рождения</b>? Это поможет сделать гороскоп точнее.\n"
+"\n"
+"Введите время в формате <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
+"или нажмите кнопку ниже, чтобы пропустить."
+
+#: horoscope/handlers/wizard.py:67
+msgid ""
+"Invalid time format. Please enter time as <code>HH:MM</code> (e.g. <code>14:30</code>),\n"
+"or press the button below to skip."
+msgstr ""
+"Неверный формат времени. Введите время как <code>ЧЧ:ММ</code> (например <code>14:30</code>),\n"
+"или нажмите кнопку ниже, чтобы пропустить."
+
+#: horoscope/handlers/wizard.py:72
+msgid ""
+"🎯 Great! Now, please enter your <b>place of birth</b> (city).\n"
+"\n"
+"Example: <code>London</code>"
+msgstr ""
+"🎯 Отлично! Теперь введите ваше <b>место рождения</b> (город).\n"
+"\n"
+"Пример: <code>Москва</code>"
+
+#: horoscope/handlers/wizard.py:77
+msgid "Please enter a valid city name (2-200 characters)."
+msgstr "Пожалуйста, введите корректное название города (2-200 символов)."
+
+#: horoscope/handlers/wizard.py:80
+msgid ""
+"📍 Almost done! Please enter your <b>current place of living</b> (city).\n"
+"\n"
+"Example: <code>New York</code>"
+msgstr ""
+"📍 Почти готово! Введите ваше <b>текущее место проживания</b> (город).\n"
+"\n"
+"Пример: <code>Санкт-Петербург</code>"
+
+#: horoscope/handlers/wizard.py:86
+#, python-brace-format
+msgid ""
+"✅ Your profile is ready, <b>{name}</b>!\n"
+"\n"
+"📅 Date of birth: {dob}\n"
+"{birth_time_line}🏠 Born in: {place_of_birth}\n"
+"📍 Living in: {place_of_living}\n"
+"\n"
+"🔮 Generating your first horoscope... Please wait a moment."
+msgstr ""
+"✅ Ваш профиль готов, <b>{name}</b>!\n"
+"\n"
+"📅 Дата рождения: {dob}\n"
+"{birth_time_line}🏠 Место рождения: {place_of_birth}\n"
+"📍 Место проживания: {place_of_living}\n"
+"\n"
+"🔮 Генерирую ваш первый гороскоп... Пожалуйста, подождите."
+
+#: horoscope/handlers/wizard.py:96
+#, python-brace-format
+msgid "🕐 Birth time: {birth_time}\n"
+msgstr "🕐 Время рождения: {birth_time}\n"
+
+#: horoscope/handlers/wizard.py:98
+msgid "😔 Something went wrong while creating your profile. Please try again with /start"
+msgstr "😔 Что-то пошло не так при создании профиля. Попробуйте снова с /start"
+
+#: horoscope/keyboards.py:15
 msgid "⭐ Subscribe for full horoscope"
 msgstr "⭐ Подписаться на полный гороскоп"
 
-#. task.first_horoscope_ready
+#: horoscope/keyboards.py:32
+msgid "⏭ Skip"
+msgstr "⏭ Пропустить"
+
+#: horoscope/keyboards.py:53
+msgid "🔄 Reset to language default"
+msgstr ""
+
+#: horoscope/tasks/generate_horoscope.py:12
+#, python-brace-format
 msgid ""
 "🔮 Your first horoscope is ready!\n"
 "\n"
@@ -222,78 +368,37 @@ msgstr ""
 "\n"
 "{text}"
 
-#. task.expiry_reminder
+#: horoscope/tasks/subscription_reminders.py:9
+#, python-brace-format
 msgid ""
 "⏰ Your horoscope subscription expires in <b>{days} day(s)</b>.\n"
 "\n"
-"Renew now to keep receiving your full daily horoscope! ✨"
+"Renew now to keep receiving your full daily horoscope! ✨\n"
+"\n"
+"Use /subscribe to renew."
 msgstr ""
 "⏰ Ваша подписка на гороскоп истекает через <b>{days} дн.</b>\n"
 "\n"
-"Продлите сейчас, чтобы продолжить получать полный ежедневный гороскоп! ✨"
+"Продлите сейчас, чтобы продолжить получать полный ежедневный гороскоп! ✨\n"
+"\n"
+"Используйте /subscribe для продления."
 
-#. task.subscription_expired
+#: horoscope/tasks/subscription_reminders.py:17
 msgid ""
 "⚠️ Your horoscope subscription has <b>expired</b>.\n"
 "\n"
-"You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐"
+"You'll now see a preview of your daily horoscope. Subscribe again to get full access! ⭐\n"
+"\n"
+"Use /subscribe to subscribe again."
 msgstr ""
 "⚠️ Ваша подписка на гороскоп <b>истекла</b>.\n"
 "\n"
-"Теперь вы видите только превью гороскопа. Подпишитесь снова для полного доступа! ⭐"
-
-#. language.current
-msgid ""
-"🌍 Your current language: <b>{lang_name}</b>\n"
+"Теперь вы видите только превью гороскопа. Подпишитесь снова для полного доступа! ⭐\n"
 "\n"
-"Choose a new language:"
-msgstr ""
-"🌍 Ваш текущий язык: <b>{lang_name}</b>\n"
-"\n"
-"Выберите новый язык:"
+"Используйте /subscribe для повторной подписки."
 
-#. language.changed
-msgid "✅ Language changed to <b>English</b> 🇬🇧"
-msgstr "✅ Язык изменён на <b>Русский</b> 🇷🇺"
+#~ msgid "Horoscope for {sign} — {date}"
+#~ msgstr "Гороскоп для {sign} — {date}"
 
-#. language.no_profile
-msgid ""
-"⚠️ You haven't set up your profile yet.\n"
-"Send /start to begin."
-msgstr ""
-"⚠️ Вы ещё не настроили профиль.\n"
-"Отправьте /start для начала."
-
-#. horoscope.header
-msgid "Horoscope for {sign} — {date}"
-msgstr "Гороскоп для {sign} — {date}"
-
-#. horoscope.greeting
-msgid "Dear {name},"
-msgstr "Дорогой(ая) {name},"
-
-#. error.profile_creation_failed
-msgid "😔 Something went wrong while creating your profile. Please try again with /start"
-msgstr "😔 Что-то пошло не так при создании профиля. Попробуйте снова с /start"
-
-#. error.payment_failed
-msgid "😔 Something went wrong while activating your subscription. Please contact support if the issue persists."
-msgstr "😔 Что-то пошло не так при активации подписки. Пожалуйста, обратитесь в поддержку, если проблема сохранится."
-
-#. followup.hint
-msgid ""
-"\n"
-"\n"
-"💬 You can ask questions about your horoscope — just type your message!"
-msgstr ""
-"\n"
-"\n"
-"💬 Вы можете задавать вопросы о своём гороскопе — просто напишите сообщение!"
-
-#. followup.error
-msgid "😔 Sorry, I couldn't generate an answer right now. Please try again later."
-msgstr "😔 Извините, не удалось сгенерировать ответ сейчас. Попробуйте позже."
-
-#. keyboard.skip_birth_time
-msgid "⏭ Skip"
-msgstr "⏭ Пропустить"
+#~ msgid "Dear {name},"
+#~ msgstr "Дорогой(ая) {name},"

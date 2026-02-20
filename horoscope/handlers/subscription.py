@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.types import (
     CallbackQuery,
     LabeledPrice,
@@ -15,7 +16,7 @@ from core.containers import container
 from core.entities import UserEntity
 from horoscope.callbacks import SubscribeCallback
 from horoscope.handlers.utils import aget_user_language
-from horoscope.utils import translate
+from horoscope.utils import map_telegram_language, translate
 from telegram_bot.app_context import AppContext
 
 SUBSCRIPTION_OFFER = _(
@@ -24,6 +25,23 @@ SUBSCRIPTION_OFFER = _(
     "💰 Price: <b>{price} Telegram Stars</b>\n"
     "\n"
     "Tap the button below to pay."
+)
+
+SUBSCRIPTION_ALREADY_ACTIVE = _(
+    "✅ You already have an active subscription.\n"
+    "\n"
+    "📅 Expires: <b>{expires}</b>\n"
+    "\n"
+    "You can renew now — the new period will start from your current expiration date.\n"
+    "\n"
+    "💰 Price: <b>{price} Telegram Stars</b> for <b>{days} days</b>\n"
+    "\n"
+    "Tap the button below to extend."
+)
+
+SUBSCRIPTION_NO_PROFILE = _(
+    "⚠️ You haven't set up your profile yet.\n"
+    "Send /start to begin the onboarding wizard."
 )
 
 SUBSCRIPTION_INVOICE_TITLE = _("Horoscope Subscription")
@@ -43,6 +61,56 @@ ERROR_PAYMENT_FAILED = _("😔 Something went wrong while activating your subscr
 logger = logging.getLogger(__name__)
 
 router = Router()
+
+
+@router.message(Command("subscribe"))
+async def subscribe_command(message: Message, user: UserEntity, app_context: AppContext, **kwargs):
+    user_profile_repo = container.horoscope.user_profile_repository()
+    subscription_repo = container.horoscope.subscription_repository()
+
+    profile = await user_profile_repo.aget_by_telegram_uid(user.telegram_uid)
+    if not profile:
+        lang = map_telegram_language(user.language_code)
+        await app_context.send_message(text=translate(SUBSCRIPTION_NO_PROFILE, lang))
+        return
+
+    lang = profile.preferred_language
+
+    active_sub = await subscription_repo.aget_active_by_user(user.telegram_uid)
+    if active_sub:
+        await app_context.send_message(
+            text=translate(
+                SUBSCRIPTION_ALREADY_ACTIVE,
+                lang,
+                expires=active_sub.expires_at.strftime('%d.%m.%Y'),
+                price=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS,
+                days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
+            ),
+        )
+    else:
+        await app_context.send_message(
+            text=translate(
+                SUBSCRIPTION_OFFER,
+                lang,
+                days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
+                price=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS,
+            ),
+        )
+
+    await app_context.send_invoice(
+        title=translate(SUBSCRIPTION_INVOICE_TITLE, lang),
+        description=translate(
+            SUBSCRIPTION_INVOICE_DESCRIPTION,
+            lang,
+            days=settings.HOROSCOPE_SUBSCRIPTION_DURATION_DAYS,
+        ),
+        payload=f"subscription_{user.telegram_uid}",
+        currency="XTR",
+        prices=[LabeledPrice(
+            label="Subscription",
+            amount=settings.HOROSCOPE_SUBSCRIPTION_PRICE_STARS,
+        )],
+    )
 
 
 @router.callback_query(SubscribeCallback.filter())
