@@ -4,7 +4,7 @@
 yes
 
 ## Commit ID
-_(not yet completed)_
+52f982d
 
 ## Branch name
 _(none)_
@@ -13,10 +13,10 @@ _(none)_
 Horoscopes are being generated but not sent due to a race condition between the generate and send tasks, combined with hour-based filtering in the send task.
 
 ## Checklist
-- [ ] Fix `send_daily_horoscope_notifications` to find unsent horoscopes regardless of current hour
-- [ ] Fix `send_periodic_teaser_notifications` to find unsent horoscopes regardless of current hour
-- [ ] Add tests for the fix
-- [ ] Update PLAN.md
+- [x] Fix `send_daily_horoscope_notifications` to find unsent horoscopes regardless of current hour
+- [x] Fix `send_periodic_teaser_notifications` to find unsent horoscopes regardless of current hour
+- [x] Add tests for the fix
+- [x] Update PLAN.md
 
 ## Investigation
 
