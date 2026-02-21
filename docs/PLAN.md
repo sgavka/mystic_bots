@@ -2,11 +2,11 @@
 
 ## Next step
 
-Implementing TASK_072 — optimize get_telegram_uids_by_notification_hour query.
+TASK_072 complete. TASK_073 waiting for clarification (no task file exists yet).
 
 ## Tasks
 
-- [ ] **TASK_072** (processing) — Improvement: optimize get_telegram_uids_by_notification_hour query
+- [x] **TASK_072** (complete) — Improvement: optimize get_telegram_uids_by_notification_hour query
 - [ ] **TASK_073** (waiting_for_clarification) — Improvement: add offset between generate and send scheduler tasks
 - [x] **TASK_071** (complete) — Fix: horoscope generated but not sent to users
 - [x] **TASK_069** (complete) — Feature: add /subscribe command for subscription purchase
