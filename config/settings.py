@@ -242,7 +242,7 @@ LOKI_ENABLED = all([LOKI_URL, LOKI_BEARER_TOKEN, LOKI_APPLICATION_NAME])
 # Logging configuration
 
 _loki_handler = {
-    'level': 'WARNING',
+    'level': 'INFO',
     'class': 'core.loki_logger.LokiHandlerWrapper',
     'formatter': 'loki',
 }
