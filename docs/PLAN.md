@@ -2,13 +2,12 @@
 
 ## Next step
 
-All implementable tasks complete. Created improvement tasks 075-077 from code review. Waiting for clarification on all new tasks.
+TASK_078 complete. All implementable tasks done. Tasks 075-077 skipped.
 
 ## Tasks
-
-- [ ] **TASK_075** (waiting_for_clarification) — Improvement: batch queries in background tasks to fix N+1 problem
-- [ ] **TASK_076** (waiting_for_clarification) — Refactor: extract user language helper and standardize fallback
-- [ ] **TASK_077** (waiting_for_clarification) — Refactor: register LLMService in DI container
+- [ ] **TASK_075** (skip) — Improvement: batch queries in background tasks to fix N+1 problem
+- [ ] **TASK_076** (skip) — Refactor: extract user language helper and standardize fallback
+- [ ] **TASK_077** (skip) — Refactor: register LLMService in DI container
 - [x] **TASK_074** (complete) — Improvement: two-phase teaser sending (daily then periodic)
 - [x] **TASK_072** (complete) — Improvement: optimize get_telegram_uids_by_notification_hour query
 - [ ] **TASK_073** (waiting_for_clarification / skipped) — Improvement: add offset between generate and send scheduler tasks

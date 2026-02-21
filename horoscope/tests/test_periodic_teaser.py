@@ -15,8 +15,8 @@ from django.conf import settings
 from django.utils import timezone
 
 from core.entities import UserEntity
-from horoscope.entities import HoroscopeEntity, UserProfileEntity
-from horoscope.enums import HoroscopeType
+from horoscope.entities import HoroscopeEntity, SubscriptionEntity, UserProfileEntity
+from horoscope.enums import HoroscopeType, SubscriptionStatus
 
 
 def _make_profile(
@@ -177,12 +177,28 @@ class TestGenerateDailyFiltersByActivity:
         mock_task.assert_not_called()
 
 
+def _make_subscription(
+    expires_at: datetime | None = None,
+    status: str = SubscriptionStatus.EXPIRED,
+) -> SubscriptionEntity:
+    return SubscriptionEntity(
+        id=1,
+        user_telegram_uid=111,
+        status=status,
+        started_at=datetime(2024, 1, 1),
+        expires_at=expires_at,
+        created_at=datetime(2024, 1, 1),
+        updated_at=datetime(2024, 1, 1),
+    )
+
+
 def _setup_common_mocks(
     telegram_uid: int = 111,
     profile_created_at: datetime | None = None,
     last_activity: datetime | None = None,
     last_sent_at: datetime | None = None,
     horoscope: HoroscopeEntity | None = None,
+    latest_subscription: SubscriptionEntity | None = None,
 ) -> dict:
     """Set up common mocks for send_periodic_teaser_notifications tests."""
     if last_activity is None:
@@ -207,6 +223,7 @@ def _setup_common_mocks(
 
     mock_subscription_repo = MagicMock()
     mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
+    mock_subscription_repo.aget_latest_by_user = AsyncMock(return_value=latest_subscription)
 
     user_entity = _make_user_entity(
         telegram_uid=telegram_uid,
@@ -258,6 +275,90 @@ class TestSendPeriodicTeaserNotifications:
 
         mocks = _setup_common_mocks(
             profile_created_at=timezone.now() - timedelta(days=settings.HOROSCOPE_TEASER_DAILY_DAYS),
+        )
+
+        mock_bot = MagicMock()
+
+        with patch('core.containers.container') as mock_container, \
+             patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
+            mock_container.horoscope.user_profile_repository.return_value = mocks['profile_repo']
+            mock_container.horoscope.horoscope_repository.return_value = mocks['horoscope_repo']
+            mock_container.horoscope.subscription_repository.return_value = mocks['subscription_repo']
+            mock_container.core.user_repository.return_value = mocks['user_repo']
+
+            result = await send_periodic_teaser_notifications(mock_bot)
+
+        assert result == 1
+        text = mock_send.call_args[1]['text']
+        assert "Teaser" in text
+        assert "Extended teaser content" not in text
+
+    @pytest.mark.django_db
+    async def test_phase1_uses_subscription_expires_at_as_reference(self):
+        """When user has expired subscription, Phase 1 reference is subscription expires_at."""
+        from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
+
+        subscription = _make_subscription(
+            expires_at=timezone.now() - timedelta(days=2),
+        )
+        mocks = _setup_common_mocks(
+            profile_created_at=timezone.now() - timedelta(days=60),
+            latest_subscription=subscription,
+        )
+
+        mock_bot = MagicMock()
+
+        with patch('core.containers.container') as mock_container, \
+             patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
+            mock_container.horoscope.user_profile_repository.return_value = mocks['profile_repo']
+            mock_container.horoscope.horoscope_repository.return_value = mocks['horoscope_repo']
+            mock_container.horoscope.subscription_repository.return_value = mocks['subscription_repo']
+            mock_container.core.user_repository.return_value = mocks['user_repo']
+
+            result = await send_periodic_teaser_notifications(mock_bot)
+
+        assert result == 1
+        text = mock_send.call_args[1]['text']
+        assert "Teaser" in text
+        assert "Extended teaser content" not in text
+
+    @pytest.mark.django_db
+    async def test_phase2_when_subscription_expired_long_ago(self):
+        """When subscription expired more than HOROSCOPE_TEASER_DAILY_DAYS ago, use Phase 2."""
+        from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
+
+        subscription = _make_subscription(
+            expires_at=timezone.now() - timedelta(days=20),
+        )
+        mocks = _setup_common_mocks(
+            profile_created_at=timezone.now() - timedelta(days=60),
+            latest_subscription=subscription,
+            last_sent_at=None,
+        )
+
+        mock_bot = MagicMock()
+
+        with patch('core.containers.container') as mock_container, \
+             patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
+            mock_container.horoscope.user_profile_repository.return_value = mocks['profile_repo']
+            mock_container.horoscope.horoscope_repository.return_value = mocks['horoscope_repo']
+            mock_container.horoscope.subscription_repository.return_value = mocks['subscription_repo']
+            mock_container.core.user_repository.return_value = mocks['user_repo']
+
+            result = await send_periodic_teaser_notifications(mock_bot)
+
+        assert result == 1
+        text = mock_send.call_args[1]['text']
+        assert "Extended teaser content" in text
+
+    @pytest.mark.django_db
+    async def test_phase1_falls_back_to_registration_without_subscription(self):
+        """When user has no subscription, Phase 1 reference is profile.created_at."""
+        from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
+
+        mocks = _setup_common_mocks(
+            profile_created_at=timezone.now() - timedelta(days=2),
+            latest_subscription=None,
         )
 
         mock_bot = MagicMock()

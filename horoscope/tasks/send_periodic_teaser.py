@@ -72,9 +72,18 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
             continue
 
         lang = profile.preferred_language or 'en'
-        days_since_registration = (now - profile.created_at).days
 
-        if days_since_registration <= settings.HOROSCOPE_TEASER_DAILY_DAYS:
+        latest_subscription = await subscription_repo.aget_latest_by_user(
+            telegram_uid=telegram_uid,
+        )
+        reference_date = (
+            latest_subscription.expires_at
+            if latest_subscription and latest_subscription.expires_at
+            else profile.created_at
+        )
+        days_since_reference = (now - reference_date).days
+
+        if days_since_reference <= settings.HOROSCOPE_TEASER_DAILY_DAYS:
             # Phase 1: first N days — send short teaser daily
             text = horoscope.teaser_text
         else:

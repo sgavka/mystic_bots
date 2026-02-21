@@ -31,6 +31,19 @@ class SubscriptionRepository(BaseRepository[Subscription, SubscriptionEntity]):
     async def aget_by_charge_id(self, charge_id: str) -> Optional[SubscriptionEntity]:
         return await sync_to_async(self.get_by_charge_id)(charge_id)
 
+    def get_latest_by_user(self, telegram_uid: int) -> Optional[SubscriptionEntity]:
+        sub = (
+            Subscription.objects.filter(user_telegram_uid=telegram_uid)
+            .order_by("-expires_at")
+            .first()
+        )
+        if sub is None:
+            return None
+        return SubscriptionEntity.from_model(sub)
+
+    async def aget_latest_by_user(self, telegram_uid: int) -> Optional[SubscriptionEntity]:
+        return await sync_to_async(self.get_latest_by_user)(telegram_uid)
+
     def get_active_by_user(self, telegram_uid: int) -> Optional[SubscriptionEntity]:
         try:
             sub = Subscription.objects.get(

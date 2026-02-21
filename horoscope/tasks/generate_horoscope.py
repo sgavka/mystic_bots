@@ -72,7 +72,11 @@ async def generate_and_send_horoscope(
     Used for on-demand generation when a subscriber requests /horoscope
     but today's horoscope hasn't been generated yet.
     """
+    from django.conf import settings
+    from django.utils import timezone
+
     from core.containers import container
+    from horoscope.keyboards import subscribe_keyboard
     from horoscope.tasks.messaging import send_message
     from horoscope.utils import translate
 
@@ -85,6 +89,7 @@ async def generate_and_send_horoscope(
 
     horoscope_repo = container.horoscope.horoscope_repository()
     user_profile_repo = container.horoscope.user_profile_repository()
+    subscription_repo = container.horoscope.subscription_repository()
 
     parsed_date = date.fromisoformat(target_date)
     horoscope = await horoscope_repo.aget_by_user_and_date(
@@ -98,16 +103,46 @@ async def generate_and_send_horoscope(
     profile = await user_profile_repo.aget_by_telegram_uid(telegram_uid)
     lang = profile.preferred_language if profile else 'en'
 
-    text = horoscope.full_text + translate(_(
-        "\n"
-        "\n"
-        "💬 You can ask questions about your horoscope — just type your message!"
-    ), lang)
+    has_subscription = await subscription_repo.ahas_active_subscription(
+        telegram_uid=telegram_uid,
+    )
+
+    if has_subscription:
+        text = horoscope.full_text + translate(_(
+            "\n"
+            "\n"
+            "💬 You can ask questions about your horoscope — just type your message!"
+        ), lang)
+        reply_markup = None
+    else:
+        now = timezone.now()
+        latest_subscription = await subscription_repo.aget_latest_by_user(
+            telegram_uid=telegram_uid,
+        )
+        reference_date = (
+            latest_subscription.expires_at
+            if latest_subscription and latest_subscription.expires_at
+            else profile.created_at if profile else now
+        )
+        days_since_reference = (now - reference_date).days
+
+        if days_since_reference <= settings.HOROSCOPE_TEASER_DAILY_DAYS:
+            text = horoscope.teaser_text
+        else:
+            text = horoscope.extended_teaser_text
+
+        text += translate(_(
+            "\n"
+            "\n"
+            "\U0001f512 Subscribe to see your full daily horoscope!"
+        ), lang)
+        reply_markup = subscribe_keyboard(language=lang)
 
     success = await send_message(
         bot=bot,
         telegram_uid=telegram_uid,
         text=text,
+        reply_markup=reply_markup,
     )
     if success:
         await horoscope_repo.amark_sent(horoscope_id=horoscope.id)
