@@ -42,23 +42,29 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
         target_date=today,
     )
 
+    logger.info(f"Found {len(telegram_uids)} unsent horoscopes for today")
+
     count = 0
     for telegram_uid in telegram_uids:
         has_subscription = await subscription_repo.ahas_active_subscription(
             telegram_uid=telegram_uid,
         )
         if has_subscription:
+            logger.info(f"Skipping user {telegram_uid} with active subscription")
             continue
 
         user = await user_repo.aget(telegram_uid)
         if not user:
+            logger.error(f"User {telegram_uid} not found")
             continue
 
         if not user.last_activity or user.last_activity < activity_cutoff:
+            logger.info(f"Skipping user {telegram_uid} with inactive activity")
             continue
 
         last_sent = await horoscope_repo.aget_last_sent_at(telegram_uid=telegram_uid)
         if last_sent and last_sent >= interval_cutoff:
+            logger.info(f"Skipping user {telegram_uid} with recent periodic teaser")
             continue
 
         horoscope = await horoscope_repo.aget_by_user_and_date(
@@ -66,9 +72,11 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
             target_date=today,
         )
         if not horoscope:
+            logger.error(f"Horoscope not found after generation for user {telegram_uid} on {today}")
             continue
 
         if horoscope.sent_at is not None:
+            logger.info(f"Skipping user {telegram_uid} with sent periodic teaser")
             continue
 
         profile = await user_profile_repo.aget_by_telegram_uid(telegram_uid)
