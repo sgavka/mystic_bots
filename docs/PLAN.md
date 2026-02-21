@@ -2,7 +2,7 @@
 
 ## Next step
 
-TASK_072 complete. TASK_073 waiting for clarification (no task file exists yet).
+All implementable tasks complete. TASK_073 waiting for clarification. Linter clean, 363 tests passing, 92% coverage. Fixed scheduler bug (func=30*60 → send_periodic_teaser_notifications).
 
 ## Tasks
 
