@@ -8,14 +8,13 @@ logger = logging.getLogger(__name__)
 
 async def send_periodic_teaser_notifications(bot: Bot) -> int:
     """
-    Send periodic extended teaser horoscopes to non-subscribers who have generated
-    but unsent horoscopes.
-    Queries all unsent horoscopes for today regardless of current hour to avoid race
-    conditions between generation and sending tasks.
+    Send teaser horoscopes to non-subscribers using a two-phase approach:
+    - First HOROSCOPE_TEASER_DAILY_DAYS days after registration: send short teaser daily
+    - After that: send extended teaser every HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS days
+
     Only sends to users who:
     - Do NOT have an active subscription
     - Have been active within HOROSCOPE_ACTIVITY_WINDOW_DAYS
-    - Have not received a periodic teaser in the last HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS
     """
     from datetime import timedelta
 
@@ -31,7 +30,6 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
     today = date.today()
     now = timezone.now()
     activity_cutoff = now - timedelta(days=settings.HOROSCOPE_ACTIVITY_WINDOW_DAYS)
-    interval_cutoff = now - timedelta(days=settings.HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS)
 
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
@@ -70,12 +68,30 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
             continue
 
         profile = await user_profile_repo.aget_by_telegram_uid(telegram_uid)
-        lang = profile.preferred_language if profile else 'en'
+        if not profile:
+            continue
 
-        text = horoscope.teaser_text + translate(_(
+        lang = profile.preferred_language or 'en'
+        days_since_registration = (now - profile.created_at).days
+
+        if days_since_registration <= settings.HOROSCOPE_TEASER_DAILY_DAYS:
+            # Phase 1: first N days — send short teaser daily
+            text = horoscope.teaser_text
+        else:
+            # Phase 2: after N days — send extended teaser every M days
+            last_sent_at = await horoscope_repo.aget_last_sent_at(
+                telegram_uid=telegram_uid,
+            )
+            if last_sent_at is not None:
+                days_since_last_sent = (now - last_sent_at).days
+                if days_since_last_sent < settings.HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS:
+                    continue
+            text = horoscope.extended_teaser_text
+
+        text += translate(_(
             "\n"
             "\n"
-            "🔒 Subscribe to see your full daily horoscope!"
+            "\U0001f512 Subscribe to see your full daily horoscope!"
         ), lang)
         keyboard = subscribe_keyboard(language=lang)
 

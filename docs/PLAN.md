@@ -2,12 +2,13 @@
 
 ## Next step
 
-All implementable tasks complete. TASK_073 waiting for clarification. Linter clean, 363 tests passing, 92% coverage. Fixed scheduler bug (func=30*60 → send_periodic_teaser_notifications).
+Implementing TASK_074: two-phase teaser sending (daily first 5 days, then periodic every 5 days).
 
 ## Tasks
 
+- [ ] **TASK_074** (processing) — Improvement: two-phase teaser sending (daily then periodic)
 - [x] **TASK_072** (complete) — Improvement: optimize get_telegram_uids_by_notification_hour query
-- [ ] **TASK_073** (waiting_for_clarification) — Improvement: add offset between generate and send scheduler tasks
+- [ ] **TASK_073** (waiting_for_clarification / skipped) — Improvement: add offset between generate and send scheduler tasks
 - [x] **TASK_071** (complete) — Fix: horoscope generated but not sent to users
 - [x] **TASK_069** (complete) — Feature: add /subscribe command for subscription purchase
 - [x] **TASK_070** (complete) — Refactor: extract horoscope type into enum (first, daily)
