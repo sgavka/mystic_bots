@@ -381,10 +381,10 @@ class TestBackgroundTasks:
         )
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[12345])
         mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
 
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[12345])
         mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
         mock_horoscope_repo.amark_sent = AsyncMock()
 
@@ -419,10 +419,8 @@ class TestBackgroundTasks:
         """Non-subscribers are skipped by daily notification task (they get periodic teasers instead)."""
         from horoscope.tasks.send_daily_horoscope import send_daily_horoscope_notifications
 
-        mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[12345])
-
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[12345])
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
@@ -436,7 +434,6 @@ class TestBackgroundTasks:
             new_callable=AsyncMock,
             return_value=True,
         ) as mock_send:
-            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 
@@ -463,10 +460,8 @@ class TestBackgroundTasks:
             created_at=datetime(2024, 1, 1),
         )
 
-        mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[12345])
-
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[12345])
         mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
 
         mock_subscription_repo = MagicMock()
@@ -481,7 +476,6 @@ class TestBackgroundTasks:
             new_callable=AsyncMock,
             return_value=True,
         ) as mock_send:
-            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 

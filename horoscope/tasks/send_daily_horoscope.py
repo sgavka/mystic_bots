@@ -62,10 +62,10 @@ async def generate_daily_for_all_users(bot: Bot) -> int:
 
 async def send_daily_horoscope_notifications(bot: Bot) -> int:
     """
-    Send daily horoscope notifications to subscribers whose notification hour
-    matches the current UTC hour.
+    Send daily horoscope notifications to subscribers who have generated but unsent horoscopes.
+    Queries all unsent horoscopes for today regardless of current hour to avoid race conditions
+    between generation and sending tasks.
     """
-    from django.utils import timezone
     from django.utils.translation import gettext_lazy as _
 
     from core.containers import container
@@ -73,13 +73,12 @@ async def send_daily_horoscope_notifications(bot: Bot) -> int:
     from horoscope.utils import translate
 
     today = date.today()
-    current_utc_hour = timezone.now().hour
     user_profile_repo = container.horoscope.user_profile_repository()
     horoscope_repo = container.horoscope.horoscope_repository()
     subscription_repo = container.horoscope.subscription_repository()
 
-    telegram_uids = await user_profile_repo.aget_telegram_uids_by_notification_hour(
-        hour_utc=current_utc_hour,
+    telegram_uids = await horoscope_repo.aget_unsent_telegram_uids_for_date(
+        target_date=today,
     )
 
     count = 0
@@ -120,5 +119,5 @@ async def send_daily_horoscope_notifications(bot: Bot) -> int:
         else:
             await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope.id)
 
-    logger.info(f"Sent daily horoscope to {count} subscribers on {today} (UTC hour={current_utc_hour})")
+    logger.info(f"Sent daily horoscope to {count} subscribers on {today}")
     return count

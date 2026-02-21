@@ -8,8 +8,10 @@ logger = logging.getLogger(__name__)
 
 async def send_periodic_teaser_notifications(bot: Bot) -> int:
     """
-    Send periodic extended teaser horoscopes to non-subscribers whose notification
-    hour matches the current UTC hour.
+    Send periodic extended teaser horoscopes to non-subscribers who have generated
+    but unsent horoscopes.
+    Queries all unsent horoscopes for today regardless of current hour to avoid race
+    conditions between generation and sending tasks.
     Only sends to users who:
     - Do NOT have an active subscription
     - Have been active within HOROSCOPE_ACTIVITY_WINDOW_DAYS
@@ -28,7 +30,6 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
 
     today = date.today()
     now = timezone.now()
-    current_utc_hour = now.hour
     activity_cutoff = now - timedelta(days=settings.HOROSCOPE_ACTIVITY_WINDOW_DAYS)
     interval_cutoff = now - timedelta(days=settings.HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS)
 
@@ -37,8 +38,8 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
     subscription_repo = container.horoscope.subscription_repository()
     user_repo = container.core.user_repository()
 
-    telegram_uids = await user_profile_repo.aget_telegram_uids_by_notification_hour(
-        hour_utc=current_utc_hour,
+    telegram_uids = await horoscope_repo.aget_unsent_telegram_uids_for_date(
+        target_date=today,
     )
 
     count = 0
@@ -92,5 +93,5 @@ async def send_periodic_teaser_notifications(bot: Bot) -> int:
         else:
             await horoscope_repo.amark_failed_to_send(horoscope_id=horoscope.id)
 
-    logger.info(f"Sent periodic teaser horoscope to {count} non-subscribers on {today} (UTC hour={current_utc_hour})")
+    logger.info(f"Sent periodic teaser horoscope to {count} non-subscribers on {today}")
     return count

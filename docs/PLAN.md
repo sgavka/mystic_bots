@@ -6,6 +6,7 @@ All tasks complete. Idle.
 
 ## Tasks
 
+- [x] **TASK_071** (complete) — Fix: horoscope generated but not sent to users
 - [x] **TASK_069** (complete) — Feature: add /subscribe command for subscription purchase
 - [x] **TASK_070** (complete) — Refactor: extract horoscope type into enum (first, daily)
 - [x] **TASK_067** (complete) — Refactor: implement separated generation/sending from TASK_066 recommendation

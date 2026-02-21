@@ -102,6 +102,19 @@ class HoroscopeRepository(BaseRepository[Horoscope, HoroscopeEntity]):
     async def aget_last_sent_at(self, telegram_uid: int) -> Optional[datetime]:
         return await sync_to_async(self.get_last_sent_at)(telegram_uid)
 
+    def get_unsent_telegram_uids_for_date(self, target_date: date) -> list[int]:
+        """Get telegram UIDs that have generated but unsent horoscopes for the given date."""
+        return list(
+            Horoscope.objects.filter(
+                date=target_date,
+                sent_at__isnull=True,
+                failed_to_send_at__isnull=True,
+            ).values_list('user_telegram_uid', flat=True)
+        )
+
+    async def aget_unsent_telegram_uids_for_date(self, target_date: date) -> list[int]:
+        return await sync_to_async(self.get_unsent_telegram_uids_for_date)(target_date)
+
     def count_created_since(self, since: date) -> int:
         return Horoscope.objects.filter(created_at__date__gte=since).count()
 

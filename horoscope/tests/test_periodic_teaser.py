@@ -64,7 +64,7 @@ class TestGenerateDailyFiltersByActivity:
         from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])  # used by generate task
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
@@ -94,7 +94,7 @@ class TestGenerateDailyFiltersByActivity:
         from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])  # used by generate task
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
@@ -124,7 +124,7 @@ class TestGenerateDailyFiltersByActivity:
         from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])  # used by generate task
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=True)
@@ -146,7 +146,7 @@ class TestGenerateDailyFiltersByActivity:
         from horoscope.tasks.send_daily_horoscope import generate_daily_for_all_users
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
+        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])  # used by generate task
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
@@ -181,10 +181,10 @@ class TestSendPeriodicTeaserNotifications:
         horoscope = _make_horoscope(telegram_uid=111)
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
         mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
 
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[111])
         mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
         mock_horoscope_repo.aget_last_sent_at = AsyncMock(return_value=None)
         mock_horoscope_repo.amark_sent = AsyncMock()
@@ -220,11 +220,8 @@ class TestSendPeriodicTeaserNotifications:
     async def test_skips_subscriber(self):
         from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
 
-        profile = _make_profile(telegram_uid=111)
-
-        mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
-        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
+        mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[111])
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=True)
@@ -233,7 +230,7 @@ class TestSendPeriodicTeaserNotifications:
 
         with patch('core.containers.container') as mock_container, \
              patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
-            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
 
             result = await send_periodic_teaser_notifications(mock_bot)
@@ -245,11 +242,8 @@ class TestSendPeriodicTeaserNotifications:
     async def test_skips_inactive_user(self):
         from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
 
-        profile = _make_profile(telegram_uid=111)
-
-        mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
-        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
+        mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[111])
 
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
@@ -265,7 +259,7 @@ class TestSendPeriodicTeaserNotifications:
 
         with patch('core.containers.container') as mock_container, \
              patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
-            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
+            mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.core.user_repository.return_value = mock_user_repo
 
@@ -278,12 +272,6 @@ class TestSendPeriodicTeaserNotifications:
     async def test_skips_recently_sent(self):
         from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
 
-        profile = _make_profile(telegram_uid=111)
-
-        mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
-        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
-
         mock_subscription_repo = MagicMock()
         mock_subscription_repo.ahas_active_subscription = AsyncMock(return_value=False)
 
@@ -295,6 +283,7 @@ class TestSendPeriodicTeaserNotifications:
         mock_user_repo.aget = AsyncMock(return_value=user_entity)
 
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[111])
         mock_horoscope_repo.aget_last_sent_at = AsyncMock(
             return_value=timezone.now() - timedelta(days=2),
         )
@@ -303,7 +292,6 @@ class TestSendPeriodicTeaserNotifications:
 
         with patch('core.containers.container') as mock_container, \
              patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
-            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.core.user_repository.return_value = mock_user_repo
@@ -318,7 +306,6 @@ class TestSendPeriodicTeaserNotifications:
         """Horoscopes that already have sent_at set should not be sent again."""
         from horoscope.tasks.send_periodic_teaser import send_periodic_teaser_notifications
 
-        profile = _make_profile(telegram_uid=111)
         horoscope = HoroscopeEntity(
             id=1,
             user_telegram_uid=111,
@@ -331,11 +318,8 @@ class TestSendPeriodicTeaserNotifications:
             created_at=datetime(2024, 1, 1),
         )
 
-        mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
-        mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
-
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[111])
         mock_horoscope_repo.aget_by_user_and_date = AsyncMock(return_value=horoscope)
         mock_horoscope_repo.aget_last_sent_at = AsyncMock(return_value=None)
 
@@ -353,7 +337,6 @@ class TestSendPeriodicTeaserNotifications:
 
         with patch('core.containers.container') as mock_container, \
              patch('horoscope.tasks.messaging.send_message', new_callable=AsyncMock, return_value=True) as mock_send:
-            mock_container.horoscope.user_profile_repository.return_value = mock_profile_repo
             mock_container.horoscope.horoscope_repository.return_value = mock_horoscope_repo
             mock_container.horoscope.subscription_repository.return_value = mock_subscription_repo
             mock_container.core.user_repository.return_value = mock_user_repo
@@ -371,7 +354,6 @@ class TestSendPeriodicTeaserNotifications:
         horoscope = _make_horoscope(telegram_uid=111)
 
         mock_profile_repo = MagicMock()
-        mock_profile_repo.aget_telegram_uids_by_notification_hour = AsyncMock(return_value=[111])
         mock_profile_repo.aget_by_telegram_uid = AsyncMock(return_value=profile)
 
         mock_subscription_repo = MagicMock()
@@ -385,6 +367,7 @@ class TestSendPeriodicTeaserNotifications:
         mock_user_repo.aget = AsyncMock(return_value=user_entity)
 
         mock_horoscope_repo = MagicMock()
+        mock_horoscope_repo.aget_unsent_telegram_uids_for_date = AsyncMock(return_value=[111])
         mock_horoscope_repo.aget_last_sent_at = AsyncMock(
             return_value=timezone.now() - timedelta(
                 days=settings.HOROSCOPE_PERIODIC_TEASER_INTERVAL_DAYS + 1,
