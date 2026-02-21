@@ -1,6 +1,6 @@
 from datetime import date, time
 from typing import Optional
-
+from config import settings
 from asgiref.sync import sync_to_async
 
 from core.repositories.base import BaseRepository
@@ -117,8 +117,6 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
 
     def get_telegram_uids_by_notification_hour(self, hour_utc: int) -> list[int]:
         """Get telegram UIDs of users whose effective notification hour matches the given UTC hour."""
-        from django.conf import settings as django_settings
-
         result = []
         # Users with explicit notification_hour_utc set
         explicit = list(
@@ -131,9 +129,9 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
         # Users without explicit hour — use per-language defaults
         no_explicit = UserProfile.objects.filter(notification_hour_utc__isnull=True)
         for profile in no_explicit:
-            lang_hour = django_settings.HOROSCOPE_GENERATION_HOURS_UTC.get(
+            lang_hour = settings.HOROSCOPE_GENERATION_HOURS_UTC.get(
                 profile.preferred_language,
-                django_settings.HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC,
+                settings.HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC,
             )
             if lang_hour == hour_utc:
                 result.append(profile.user_telegram_uid)
