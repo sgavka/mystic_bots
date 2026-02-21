@@ -36,3 +36,4 @@ Add an initial delay (offset) to the send_daily_horoscope_notifications schedule
 - Is the proposed approach (initial delay on send task) acceptable, or would you prefer a different mechanism (e.g., event-based trigger after generation completes)?
 - Should the offset also apply to periodic teaser notifications?
 - Should the bug on line 112 (`func=30 * 60` instead of `func=send_periodic_teaser_notifications`) be fixed as part of this task?
+response: skip this
