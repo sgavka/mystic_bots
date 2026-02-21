@@ -110,7 +110,7 @@ class Command(BaseCommand):
         )
         self._scheduler.schedule(
             func=send_periodic_teaser_notifications,
-            interval_seconds=1 * 60,
+            interval_seconds=15 * 60,
             name="send-periodic-teaser-notifications",
         )
         # Subscription tasks remain on daily interval
