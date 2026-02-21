@@ -1,7 +1,7 @@
 # TASK_072 - Improvement: optimize get_telegram_uids_by_notification_hour query
 
 ## Is task investigated
-yes
+yes (implemented)
 
 ## Commit ID
 _(not yet completed)_
@@ -13,8 +13,8 @@ _(none)_
 The `get_telegram_uids_by_notification_hour()` method in `horoscope/repositories/user_profile.py` loads ALL user profiles without an explicit notification hour into memory, then iterates each one to check their language default. This is an N+1/full-scan problem that will degrade with more users.
 
 ## Checklist
-- [ ] Replace Python-side iteration with a single DB query using Q objects
-- [ ] Add tests for the optimized query
+- [x] Replace Python-side iteration with a single DB query using Q objects
+- [x] Add tests for the optimized query
 
 ## Investigation
 

@@ -112,6 +112,147 @@ class TestUserProfileRepository:
         uids = self.repo.get_all_telegram_uids()
         assert uids == []
 
+    def test_get_telegram_uids_by_notification_hour_explicit(self):
+        """Users with explicit notification_hour_utc matching the hour are returned."""
+        UserProfile.objects.create(
+            user_telegram_uid=111,
+            name="A",
+            date_of_birth=date(1990, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            notification_hour_utc=8,
+        )
+        UserProfile.objects.create(
+            user_telegram_uid=222,
+            name="B",
+            date_of_birth=date(1991, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            notification_hour_utc=10,
+        )
+
+        result = self.repo.get_telegram_uids_by_notification_hour(hour_utc=8)
+
+        assert result == [111]
+
+    def test_get_telegram_uids_by_notification_hour_language_default(self, monkeypatch):
+        """Users without explicit hour use their language's default hour."""
+        from config import settings as cfg
+        monkeypatch.setattr(cfg, 'HOROSCOPE_GENERATION_HOURS_UTC', {'en': 6, 'ru': 5})
+        monkeypatch.setattr(cfg, 'HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC', 6)
+
+        UserProfile.objects.create(
+            user_telegram_uid=111,
+            name="A",
+            date_of_birth=date(1990, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            preferred_language='ru',
+        )
+        UserProfile.objects.create(
+            user_telegram_uid=222,
+            name="B",
+            date_of_birth=date(1991, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            preferred_language='en',
+        )
+
+        result = self.repo.get_telegram_uids_by_notification_hour(hour_utc=5)
+
+        assert result == [111]
+
+    def test_get_telegram_uids_by_notification_hour_unconfigured_lang_uses_default(self, monkeypatch):
+        """Users with a language not in HOROSCOPE_GENERATION_HOURS_UTC use the default hour."""
+        from config import settings as cfg
+        monkeypatch.setattr(cfg, 'HOROSCOPE_GENERATION_HOURS_UTC', {'en': 6, 'ru': 5})
+        monkeypatch.setattr(cfg, 'HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC', 6)
+
+        UserProfile.objects.create(
+            user_telegram_uid=111,
+            name="A",
+            date_of_birth=date(1990, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            preferred_language='de',  # Not in HOROSCOPE_GENERATION_HOURS_UTC
+        )
+
+        # Default hour is 6, so querying for 6 should return this user
+        result = self.repo.get_telegram_uids_by_notification_hour(hour_utc=6)
+
+        assert 111 in result
+
+    def test_get_telegram_uids_by_notification_hour_mixed(self, monkeypatch):
+        """Mix of explicit and language-default users."""
+        from config import settings as cfg
+        monkeypatch.setattr(cfg, 'HOROSCOPE_GENERATION_HOURS_UTC', {'en': 6, 'ru': 5})
+        monkeypatch.setattr(cfg, 'HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC', 6)
+
+        # Explicit hour=6
+        UserProfile.objects.create(
+            user_telegram_uid=111,
+            name="A",
+            date_of_birth=date(1990, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            notification_hour_utc=6,
+            preferred_language='ru',
+        )
+        # Language default: en -> 6
+        UserProfile.objects.create(
+            user_telegram_uid=222,
+            name="B",
+            date_of_birth=date(1991, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            preferred_language='en',
+        )
+        # Language default: ru -> 5 (not matching hour 6)
+        UserProfile.objects.create(
+            user_telegram_uid=333,
+            name="C",
+            date_of_birth=date(1992, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            preferred_language='ru',
+        )
+
+        result = self.repo.get_telegram_uids_by_notification_hour(hour_utc=6)
+
+        assert set(result) == {111, 222}
+
+    def test_get_telegram_uids_by_notification_hour_empty(self):
+        """No users at all returns empty list."""
+        result = self.repo.get_telegram_uids_by_notification_hour(hour_utc=6)
+        assert result == []
+
+    def test_get_telegram_uids_by_notification_hour_no_match(self, monkeypatch):
+        """No users match the given hour."""
+        from config import settings as cfg
+        monkeypatch.setattr(cfg, 'HOROSCOPE_GENERATION_HOURS_UTC', {'en': 6})
+        monkeypatch.setattr(cfg, 'HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC', 6)
+
+        UserProfile.objects.create(
+            user_telegram_uid=111,
+            name="A",
+            date_of_birth=date(1990, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            notification_hour_utc=8,
+        )
+        UserProfile.objects.create(
+            user_telegram_uid=222,
+            name="B",
+            date_of_birth=date(1991, 1, 1),
+            place_of_birth="X",
+            place_of_living="Y",
+            preferred_language='en',
+        )
+
+        result = self.repo.get_telegram_uids_by_notification_hour(hour_utc=10)
+
+        assert result == []
+
 
 @pytest.mark.django_db
 class TestHoroscopeRepository:

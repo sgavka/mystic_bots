@@ -117,7 +117,7 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
 
     def get_telegram_uids_by_notification_hour(self, hour_utc: int) -> list[int]:
         """Get telegram UIDs of users whose effective notification hour matches the given UTC hour."""
-        result = []
+        result: list[int] = []
         # Users with explicit notification_hour_utc set
         explicit = list(
             UserProfile.objects.filter(
@@ -126,15 +126,35 @@ class UserProfileRepository(BaseRepository[UserProfile, UserProfileEntity]):
         )
         result.extend(explicit)
 
-        # Users without explicit hour — use per-language defaults
-        no_explicit = UserProfile.objects.filter(notification_hour_utc__isnull=True)
-        for profile in no_explicit:
-            lang_hour = settings.HOROSCOPE_GENERATION_HOURS_UTC.get(
-                profile.preferred_language,
-                settings.HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC,
+        # Users without explicit hour — use per-language defaults (pure DB queries)
+        # Find languages whose configured hour matches
+        matching_langs = [
+            lang for lang, hour in settings.HOROSCOPE_GENERATION_HOURS_UTC.items()
+            if hour == hour_utc
+        ]
+        all_configured_langs = list(settings.HOROSCOPE_GENERATION_HOURS_UTC.keys())
+        default_hour_matches = settings.HOROSCOPE_DEFAULT_GENERATION_HOUR_UTC == hour_utc
+
+        # Users with a language that maps to this hour
+        if matching_langs:
+            lang_matches = list(
+                UserProfile.objects.filter(
+                    notification_hour_utc__isnull=True,
+                    preferred_language__in=matching_langs,
+                ).values_list('user_telegram_uid', flat=True)
             )
-            if lang_hour == hour_utc:
-                result.append(profile.user_telegram_uid)
+            result.extend(lang_matches)
+
+        # Users whose language is NOT in the configured mapping — they use the default hour
+        if default_hour_matches:
+            default_matches = list(
+                UserProfile.objects.filter(
+                    notification_hour_utc__isnull=True,
+                ).exclude(
+                    preferred_language__in=all_configured_langs,
+                ).values_list('user_telegram_uid', flat=True)
+            )
+            result.extend(default_matches)
 
         return result
 
