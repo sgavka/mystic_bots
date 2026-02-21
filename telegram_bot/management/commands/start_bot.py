@@ -105,11 +105,11 @@ class Command(BaseCommand):
         )
         self._scheduler.schedule(
             func=send_daily_horoscope_notifications,
-            interval_seconds=hourly_interval,
+            interval_seconds=15 * 60,
             name="send-daily-horoscope-notifications",
         )
         self._scheduler.schedule(
-            func=send_periodic_teaser_notifications,
+            func=30 * 60,
             interval_seconds=hourly_interval,
             name="send-periodic-teaser-notifications",
         )

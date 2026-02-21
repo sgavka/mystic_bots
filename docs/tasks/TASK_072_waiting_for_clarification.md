@@ -58,3 +58,4 @@ This replaces O(n) Python iteration with 1-2 database queries.
 
 ## Questions
 - Is this optimization worth doing now, or is the user count still small enough that it doesn't matter?
+responce: do it
