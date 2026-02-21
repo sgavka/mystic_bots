@@ -2,11 +2,11 @@
 
 ## Next step
 
-Implementing TASK_074: two-phase teaser sending (daily first 5 days, then periodic every 5 days).
+TASK_074 complete. All implementable tasks done. TASK_073 skipped. Running "all tasks complete" workflow.
 
 ## Tasks
 
-- [ ] **TASK_074** (processing) — Improvement: two-phase teaser sending (daily then periodic)
+- [x] **TASK_074** (complete) — Improvement: two-phase teaser sending (daily then periodic)
 - [x] **TASK_072** (complete) — Improvement: optimize get_telegram_uids_by_notification_hour query
 - [ ] **TASK_073** (waiting_for_clarification / skipped) — Improvement: add offset between generate and send scheduler tasks
 - [x] **TASK_071** (complete) — Fix: horoscope generated but not sent to users
